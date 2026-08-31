@@ -1,0 +1,219 @@
+/* ==========================================================================
+   /journal and /journal/[slug]
+   ========================================================================== */
+
+.jfeature {
+  position: relative;
+  display: grid;
+  border: 1px solid var(--rule);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+@media (min-width: 900px) {
+  .jfeature {
+    grid-template-columns: 1.15fr 0.85fr;
+  }
+}
+
+.jfeature__media {
+  overflow: hidden;
+}
+
+.jfeature__media .media,
+.jfeature__media .media__img {
+  height: 100%;
+}
+
+.jfeature__media .media__img {
+  transition: transform 1.2s var(--ease-out);
+}
+
+.jfeature:hover .jfeature__media .media__img {
+  transform: scale(1.04);
+}
+
+.jfeature__body {
+  padding: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+  display: grid;
+  gap: 1rem;
+  align-content: center;
+  justify-items: start;
+}
+
+.jfeature__title {
+  font-family: var(--font-display);
+  font-size: clamp(1.6rem, 1.15rem + 2vw, 2.75rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.jfilters {
+  margin-bottom: clamp(1.75rem, 1rem + 2.5vw, 3rem);
+}
+
+.jgrid {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 1.75rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .jgrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1050px) {
+  .jgrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- article -------------------------------------------------------------- */
+.jhero {
+  padding-top: calc(var(--nav-h) + clamp(3rem, 2rem + 4vw, 6rem));
+  background: var(--obsidian);
+}
+
+.jhero__inner {
+  display: grid;
+  gap: var(--gap);
+  max-width: 60rem;
+  margin-inline: auto;
+  padding-bottom: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+}
+
+.jhero__title {
+  font-size: clamp(2rem, 1.3rem + 3.2vw, 4.25rem);
+  max-width: 22ch;
+}
+
+.jhero__excerpt {
+  max-width: 58ch;
+}
+
+.jhero__meta {
+  color: var(--fg-faint);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.jhero__media {
+  border: 1px solid var(--rule);
+  overflow: hidden;
+}
+
+.jlayout {
+  display: grid;
+  gap: clamp(2rem, 1.5rem + 3vw, 4rem);
+  align-items: start;
+  max-width: 68rem;
+}
+
+@media (min-width: 1000px) {
+  .jlayout {
+    grid-template-columns: 15rem 1fr;
+  }
+}
+
+.jtoc {
+  display: grid;
+  gap: 1rem;
+  align-content: start;
+}
+
+@media (min-width: 1000px) {
+  .jtoc {
+    position: sticky;
+    top: calc(var(--nav-h) + 1.5rem);
+  }
+}
+
+.jtoc__title {
+  color: var(--fg-faint);
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid var(--rule);
+}
+
+.jtoc__list {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.jtoc__list a {
+  display: flex;
+  gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.5rem 0.75rem;
+  font-size: var(--t-small);
+  line-height: 1.4;
+  color: var(--fg-dim);
+  border-left: 2px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.jtoc__list a:hover {
+  color: var(--fg);
+}
+
+.jtoc__list a.is-on {
+  color: var(--accent);
+  border-left-color: var(--accent);
+}
+
+.jtoc__n {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+  flex: none;
+}
+
+/* --- body ---------------------------------------------------------------- */
+.jbody {
+  max-width: 68ch;
+  min-width: 0;
+}
+
+.jbody__p {
+  font-size: clamp(1rem, 0.95rem + 0.3vw, 1.125rem);
+  line-height: 1.72;
+  color: var(--fg-dim);
+  margin-bottom: 1.4rem;
+  text-wrap: pretty;
+}
+
+.jbody__p:first-child {
+  font-size: var(--t-lead);
+  color: var(--fg);
+  line-height: 1.55;
+}
+
+.jbody__h2 {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  line-height: 1.2;
+  color: var(--fg);
+  margin: clamp(2.25rem, 1.5rem + 2.5vw, 3.5rem) 0 1.1rem;
+  scroll-margin-top: calc(var(--nav-h) + 2rem);
+}
+
+.jbody__quote {
+  margin: clamp(1.75rem, 1rem + 2vw, 2.75rem) 0;
+  padding: 0 0 0 clamp(1.25rem, 1rem + 1.5vw, 2rem);
+  border-left: 2px solid var(--accent);
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 1rem + 1vw, 1.7rem);
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: -0.018em;
+  color: var(--fg);
+  text-wrap: pretty;
+}

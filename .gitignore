@@ -1,0 +1,29 @@
+# --- python / django ---
+.venv/
+__pycache__/
+*.py[cod]
+backend/db.sqlite3
+backend/staticfiles/
+backend/uploads/
+backend/.env
+
+# --- node / vite ---
+node_modules/
+frontend/dist/
+frontend/.vite/
+npm-debug.log*
+
+# --- generated media -------------------------------------------------------
+# Rebuilt from the masters in "Zion HD Photos - Generated", "Zion Website",
+# logos/ and videos-*/ by the scripts in assets-src/. ~164 MB, so it is not
+# worth versioning; run `python assets-src/build_all.py` after a clone.
+frontend/public/media/
+
+# --- source masters (large; keep in the studio's own storage) --------------
+videos-20260828T181837Z-1-004/
+
+# --- editors / os ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

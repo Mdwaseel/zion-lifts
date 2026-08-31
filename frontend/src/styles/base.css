@@ -1,0 +1,435 @@
+/* ==========================================================================
+   Reset, base typography and the primitives every section reuses.
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: var(--obsidian);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  font-size: var(--t-body);
+  line-height: var(--lh-body);
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+}
+
+body.is-locked {
+  overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+p,
+figure,
+blockquote {
+  margin: 0;
+}
+
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+img,
+video,
+canvas,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  background: none;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+::selection {
+  background: var(--teal);
+  color: #fff;
+}
+
+/* --- scrollbar ---------------------------------------------------------- */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--obsidian);
+}
+::-webkit-scrollbar-thumb {
+  background: #2b2e31;
+  border: 3px solid var(--obsidian);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3d4145;
+}
+
+/* ==========================================================================
+   Layout primitives
+   ========================================================================== */
+
+.section {
+  position: relative;
+  background: var(--bg);
+  color: var(--fg);
+  padding-block: var(--section-y);
+  isolation: isolate;
+}
+
+.section--tight {
+  padding-block: var(--section-y-tight);
+}
+
+.section--flush {
+  padding-block: 0;
+}
+
+.shell {
+  width: 100%;
+  max-width: var(--maxw);
+  margin-inline: auto;
+  padding-inline: var(--page-x);
+}
+
+.shell--text {
+  max-width: var(--maxw-text);
+}
+
+.stack > * + * {
+  margin-top: var(--flow, 1.25rem);
+}
+
+.grid {
+  display: grid;
+  gap: var(--gap);
+}
+
+/* ==========================================================================
+   Type primitives
+   ========================================================================== */
+
+/* A quiet label above a heading. It used to be tracked-out teal monospace
+   behind a rule, which shouted louder than the heading it introduced and
+   spent the accent colour on something you cannot click. Now it sits in the
+   text face at body weight and lets the headline lead. */
+.eyebrow {
+  font-size: var(--t-eyebrow);
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-label);
+  line-height: 1.3;
+  color: var(--fg-faint);
+}
+
+.display {
+  font-weight: var(--w-semibold);
+  font-size: var(--t-h1);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-h1);
+  text-wrap: balance;
+}
+
+.display--mega {
+  font-size: var(--t-mega);
+  letter-spacing: var(--tr-mega);
+}
+
+.h2 {
+  font-weight: var(--w-semibold);
+  font-size: var(--t-h2);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--tr-h2);
+  text-wrap: balance;
+}
+
+.h3 {
+  font-weight: var(--w-semibold);
+  font-size: var(--t-h3);
+  line-height: 1.16;
+  letter-spacing: var(--tr-h3);
+  text-wrap: balance;
+}
+
+.h4 {
+  font-size: var(--t-h4);
+  font-weight: var(--w-semibold);
+  line-height: 1.25;
+  letter-spacing: var(--tr-h4);
+}
+
+.lead {
+  font-size: var(--t-lead);
+  line-height: 1.38;
+  letter-spacing: var(--tr-lead);
+  color: var(--fg-dim);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.body {
+  letter-spacing: var(--tr-body);
+  color: var(--fg-dim);
+  max-width: var(--measure);
+  text-wrap: pretty;
+}
+
+.small {
+  font-size: var(--t-small);
+  letter-spacing: var(--tr-small);
+  color: var(--fg-dim);
+}
+
+/* Reserved for figures that genuinely benefit from tabular alignment —
+   dimensions, capacities, reference codes — not for decorative labels. */
+.mono {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.accent {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Buttons
+   ========================================================================== */
+
+/* Pills, in sentence case. The old buttons were uppercase rectangles that
+   filled from the bottom on hover — the fill took 550ms to arrive and nothing
+   at all happened on press, so the control felt dead exactly when it was being
+   used. Feedback now lands on pointer-down. */
+.btn {
+  --btn-fg: var(--fg);
+  --btn-bd: var(--rule);
+  --btn-bg: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.4rem;
+  border: 1px solid var(--btn-bd);
+  color: var(--btn-fg);
+  background: var(--btn-bg);
+  font-size: var(--t-small);
+  font-weight: var(--w-medium);
+  letter-spacing: var(--tr-small);
+  border-radius: var(--radius-pill);
+  white-space: nowrap;
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.btn:hover {
+  border-color: var(--fg);
+}
+
+.btn:active {
+  transform: scale(0.97);
+  transition-duration: 0.1s;
+}
+
+.btn__arrow {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.btn:hover .btn__arrow {
+  transform: translateX(3px);
+}
+
+/* The one primary action per surface. Uses the solid teal, not the link
+   teal — white on the bright teal is only 2.2:1. */
+.btn--accent {
+  --btn-bg: var(--accent-solid);
+  --btn-bd: var(--accent-solid);
+  --btn-fg: #fff;
+  font-weight: var(--w-semibold);
+}
+
+.btn--accent:hover {
+  --btn-bg: var(--teal-deep);
+  --btn-bd: var(--teal-deep);
+}
+
+.btn--solid {
+  --btn-bg: var(--fg);
+  --btn-bd: var(--fg);
+  --btn-fg: var(--bg);
+  font-weight: var(--w-semibold);
+}
+
+.btn--solid:hover {
+  filter: brightness(0.88);
+}
+
+.btn--ghost {
+  --btn-bd: var(--rule);
+  --btn-fg: var(--fg-dim);
+}
+
+.btn--ghost:hover {
+  --btn-fg: var(--fg);
+  --btn-bg: var(--surface);
+}
+
+.btn--sm {
+  padding: 0.5rem 1rem;
+  font-size: var(--t-micro);
+}
+
+/* Text action. Apple pairs the label with a chevron and underlines on hover
+   rather than animating a rule in from the left. */
+.link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--t-body);
+  font-weight: var(--w-regular);
+  letter-spacing: var(--tr-body);
+  color: var(--accent);
+  transition: opacity var(--dur-fast) var(--ease-out);
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+  text-decoration-thickness: 1px;
+}
+
+.link:active {
+  opacity: 0.7;
+}
+
+.link svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.link:hover svg {
+  transform: translateX(3px);
+}
+
+/* ==========================================================================
+   Rules, numbers, misc
+   ========================================================================== */
+
+.rule {
+  height: 1px;
+  background: var(--rule);
+  border: 0;
+  margin: 0;
+}
+
+.index-num {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  color: var(--fg-faint);
+}
+
+.section-head {
+  display: grid;
+  gap: var(--gap);
+  margin-bottom: clamp(2.5rem, 1.5rem + 3vw, 5rem);
+}
+
+@media (min-width: 900px) {
+  .section-head--split {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+    gap: var(--gap-xl);
+    align-items: end;
+  }
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 200;
+  padding: 0.75rem 1.25rem;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: var(--t-small);
+  font-weight: 600;
+  transform: translateY(-150%);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.skip-link:focus-visible {
+  transform: translateY(0);
+}
+
+/* ==========================================================================
+   Reduced motion — the site must stay fully usable without any of it.
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

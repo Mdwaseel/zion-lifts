@@ -1,0 +1,111 @@
+.media {
+  position: relative;
+  overflow: hidden;
+  background: var(--obsidian-2);
+  width: 100%;
+  height: 100%;
+}
+
+.media--empty {
+  background: linear-gradient(135deg, var(--obsidian-2), var(--obsidian-3));
+}
+
+.media__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out);
+  will-change: opacity;
+}
+
+.media.is-loaded .media__img {
+  opacity: 1;
+}
+
+.media--video .media__img {
+  opacity: 1;
+}
+
+.media__blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(18px) saturate(1.15);
+  transform: scale(1.12);
+  opacity: 0.85;
+}
+
+.media.is-loaded .media__blur {
+  opacity: 0;
+  transition: opacity 0.6s var(--ease-out) 0.1s;
+}
+
+/* --- full player -------------------------------------------------------- */
+.videoplayer {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--obsidian-2);
+  border-radius: var(--radius);
+}
+
+.videoplayer__el {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.videoplayer__cover {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(11, 11, 11, 0.15),
+    rgba(11, 11, 11, 0.55)
+  );
+  color: #fff;
+  transition: background var(--dur) var(--ease-out);
+}
+
+.videoplayer__cover:hover {
+  background: rgba(11, 11, 11, 0.32);
+}
+
+.videoplayer__btn {
+  display: grid;
+  place-items: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 50%;
+  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.08);
+  padding-left: 3px;
+  transition:
+    transform var(--dur) var(--ease-out),
+    background var(--dur) var(--ease-out),
+    border-color var(--dur) var(--ease-out);
+}
+
+.videoplayer__cover:hover .videoplayer__btn {
+  transform: scale(1.08);
+  background: var(--teal);
+  border-color: var(--teal);
+}
+
+.videoplayer__label {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  font-weight: var(--w-semibold);
+}

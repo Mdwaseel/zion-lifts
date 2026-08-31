@@ -1,0 +1,738 @@
+/* ==========================================================================
+   Cross-page patterns: page heroes, cards, tables, accordions, forms.
+   Section-specific styling lives with its page.
+   ========================================================================== */
+
+/* --- route loading bar --------------------------------------------------- */
+.route-fallback {
+  position: fixed;
+  inset: 0 0 auto;
+  height: 2px;
+  z-index: 100;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.route-fallback__bar {
+  display: block;
+  height: 100%;
+  width: 35%;
+  background: var(--teal-bright);
+  animation: routebar 1.1s var(--ease-in-out) infinite;
+}
+
+@keyframes routebar {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(400%);
+  }
+}
+
+/* ==========================================================================
+   Page hero — the standard opening for every page except Home
+   ========================================================================== */
+
+.pagehero {
+  position: relative;
+  background: var(--obsidian);
+  color: var(--fg);
+  padding-top: calc(var(--nav-h) + clamp(3.5rem, 2rem + 6vw, 8rem));
+  padding-bottom: clamp(3rem, 2rem + 4vw, 6rem);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.pagehero--media {
+  min-height: clamp(30rem, 78vh, 48rem);
+  display: flex;
+  align-items: flex-end;
+}
+
+.pagehero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+}
+
+.pagehero__bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(11, 11, 11, 0.95) 4%,
+    rgba(11, 11, 11, 0.66) 38%,
+    rgba(11, 11, 11, 0.42) 100%
+  );
+}
+
+.pagehero__inner {
+  display: grid;
+  gap: var(--gap);
+  width: 100%;
+}
+
+.pagehero__title {
+  max-width: 18ch;
+}
+
+.pagehero__lead {
+  max-width: 56ch;
+}
+
+.pagehero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem 2rem;
+  margin-top: 0.75rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.pagehero__crumb {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  font-weight: var(--w-semibold);
+}
+
+.pagehero__crumb a:hover {
+  color: var(--accent);
+}
+
+/* ==========================================================================
+   Stat rows
+   ========================================================================== */
+
+.stats {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 11rem), 1fr));
+}
+
+.stat {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  padding: clamp(1.5rem, 1rem + 2vw, 2.75rem) clamp(1rem, 0.6rem + 1.4vw, 1.75rem);
+  display: grid;
+  gap: 0.4rem;
+  align-content: start;
+}
+
+.stat__value {
+  font-family: var(--font-display);
+  font-size: clamp(1.85rem, 1.2rem + 2.4vw, 3.25rem);
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat__label {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.stat__caption {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   Cards
+   ========================================================================== */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  transition:
+    border-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out),
+    background var(--dur) var(--ease-out);
+}
+
+.card:hover {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+}
+
+.card__media {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+}
+
+.card__media .media__img {
+  transition:
+    transform 1.1s var(--ease-out),
+    opacity 0.7s var(--ease-out);
+}
+
+.card:hover .card__media .media__img {
+  transform: scale(1.055);
+}
+
+.card__body {
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+  padding: clamp(1.15rem, 0.9rem + 1vw, 1.75rem);
+  flex: 1;
+}
+
+.card__eyebrow {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  font-weight: var(--w-semibold);
+}
+
+.card__title {
+  font-family: var(--font-display);
+  font-size: var(--t-h4);
+  font-weight: 400;
+  line-height: 1.22;
+  letter-spacing: -0.015em;
+}
+
+.card__text {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.58;
+}
+
+.card__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin-top: auto;
+  padding-top: 1rem;
+  border-top: 1px solid var(--rule-soft);
+}
+
+.card__spec {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.05em;
+  color: var(--fg-faint);
+}
+
+.card__spec b {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+/* stretched link so the whole card is one target */
+.card__link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   Spec tables
+   ========================================================================== */
+
+.spectable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-small);
+}
+
+.spectable caption {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: 0.9rem;
+}
+
+.spectable th,
+.spectable td {
+  text-align: left;
+  padding: 0.85rem 1rem 0.85rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.spectable th {
+  font-weight: 400;
+  color: var(--fg-dim);
+  width: 42%;
+}
+
+.spectable td {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.spectable td small {
+  display: block;
+  font-weight: 400;
+  color: var(--fg-faint);
+  margin-top: 0.2rem;
+  font-size: var(--t-micro);
+}
+
+.tablescroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ==========================================================================
+   Accordion
+   ========================================================================== */
+
+.acc {
+  border-top: 1px solid var(--rule);
+}
+
+.acc__item {
+  border-bottom: 1px solid var(--rule);
+}
+
+.acc__btn {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: clamp(1.1rem, 0.9rem + 0.7vw, 1.6rem) 0;
+  text-align: left;
+  color: var(--fg);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.acc__btn:hover {
+  color: var(--accent);
+}
+
+.acc__q {
+  font-size: clamp(1rem, 0.94rem + 0.3vw, 1.2rem);
+  font-weight: 450;
+  line-height: 1.38;
+  letter-spacing: -0.01em;
+  max-width: 52ch;
+}
+
+.acc__icon {
+  flex: none;
+  margin-top: 0.25rem;
+  color: var(--accent);
+  transition: transform var(--dur) var(--ease-out);
+}
+
+.acc__item.is-open .acc__icon {
+  transform: rotate(45deg);
+}
+
+.acc__panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--dur) var(--ease-out);
+}
+
+.acc__item.is-open .acc__panel {
+  grid-template-rows: 1fr;
+}
+
+.acc__panel-inner {
+  overflow: hidden;
+}
+
+.acc__a {
+  color: var(--fg-dim);
+  max-width: 66ch;
+  padding-bottom: 1.5rem;
+  line-height: 1.65;
+}
+
+.acc__a .link {
+  margin-top: 1rem;
+}
+
+/* ==========================================================================
+   Forms
+   ========================================================================== */
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.field__label {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  color: var(--fg-dim);
+  font-weight: var(--w-semibold);
+}
+
+.field__label .req {
+  color: var(--accent);
+}
+
+.field input[type='text'],
+.field input[type='tel'],
+.field input[type='email'],
+.field input[type='number'],
+.field select,
+.field textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--field-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--fg);
+  font-size: var(--t-body);
+  letter-spacing: var(--tr-body);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+  appearance: none;
+}
+
+.field select {
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position:
+    calc(100% - 1.15rem) 1.35rem,
+    calc(100% - 0.75rem) 1.35rem;
+  background-size:
+    6px 6px,
+    6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 2.5rem;
+  cursor: pointer;
+}
+
+.field select option {
+  background: var(--obsidian-2);
+  color: #e8e6e1;
+}
+
+.field textarea {
+  min-height: 8rem;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+  color: var(--fg-faint);
+}
+
+.field--error input,
+.field--error select,
+.field--error textarea {
+  border-color: #d4664f;
+}
+
+.field__error {
+  font-size: var(--t-micro);
+  color: #e4836d;
+}
+
+.field__hint {
+  font-size: var(--t-micro);
+  color: var(--fg-faint);
+}
+
+.formgrid {
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 620px) {
+  .formgrid--2 {
+    grid-template-columns: 1fr 1fr;
+  }
+  .formgrid__wide {
+    grid-column: 1 / -1;
+  }
+}
+
+/* choice chips — used for property type, lift type, urgency */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  padding: 0.55rem 1.05rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  background: transparent;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+}
+
+.chip:active {
+  transform: scale(0.96);
+  transition-duration: 0.1s;
+}
+
+.chip:hover {
+  border-color: var(--fg-dim);
+  color: var(--fg);
+}
+
+.chip.is-on {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+
+.checkbox {
+  display: flex;
+  gap: 0.75rem;
+  align-items: flex-start;
+  cursor: pointer;
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.5;
+}
+
+.checkbox input {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-top: 0.2rem;
+  accent-color: var(--teal);
+}
+
+/* the honeypot the bots fill and people never see */
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   Filter bar
+   ========================================================================== */
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding-block: 1.25rem;
+  border-block: 1px solid var(--rule);
+}
+
+.filters__btn {
+  padding: 0.5rem 0.95rem;
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+  font-weight: var(--w-semibold);
+}
+
+.filters__btn:hover {
+  color: var(--fg);
+}
+
+.filters__btn.is-on {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.filters__btn sup {
+  margin-left: 0.35rem;
+  opacity: 0.65;
+  font-size: 0.75em;
+}
+
+/* ==========================================================================
+   Empty / error states
+   ========================================================================== */
+
+.state {
+  display: grid;
+  gap: 0.75rem;
+  justify-items: start;
+  padding-block: clamp(3rem, 2rem + 4vw, 6rem);
+  max-width: 46ch;
+}
+
+.state__title {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: 600;
+}
+
+/* skeleton shimmer for loading collections */
+.skeleton {
+  background: linear-gradient(
+    100deg,
+    var(--surface) 30%,
+    var(--surface-2) 50%,
+    var(--surface) 70%
+  );
+  background-size: 220% 100%;
+  animation: shimmer 1.4s linear infinite;
+  border-radius: var(--radius);
+}
+
+@keyframes shimmer {
+  to {
+    background-position-x: -220%;
+  }
+}
+
+/* ==========================================================================
+   Shared: pinned-section scaffolding used by Home and About
+   ========================================================================== */
+
+.pin {
+  position: relative;
+}
+
+.pin__stage {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+}
+
+.pin__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.7s var(--ease-out);
+}
+
+.pin__layer.is-on {
+  opacity: 1;
+}
+
+.pin__caption {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: grid;
+  gap: 0.75rem;
+  justify-items: center;
+  padding-inline: var(--page-x);
+}
+
+/* ==========================================================================
+   Quotes
+   ========================================================================== */
+
+.quotegrid {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+}
+
+.quote {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  margin: 0;
+  padding: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  display: grid;
+  gap: 1.5rem;
+  align-content: space-between;
+}
+
+.quote__text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.4rem);
+  font-weight: 400;
+  line-height: 1.42;
+  letter-spacing: -0.012em;
+  text-wrap: pretty;
+}
+
+.quote__by {
+  display: grid;
+  gap: 0.25rem;
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+}
+
+.quote__by strong {
+  color: var(--fg);
+  font-weight: 500;
+}
+
+.quote__by .link {
+  margin-top: 0.5rem;
+}
+
+/* ==========================================================================
+   CTA band
+   ========================================================================== */
+
+.ctaband {
+  border-top: 1px solid var(--rule);
+}
+
+.ctaband__inner {
+  display: grid;
+  gap: var(--gap);
+  justify-items: start;
+  max-width: 62ch;
+}
+
+.ctaband__title {
+  max-width: 16ch;
+}
+
+.ctaband__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}

@@ -1,0 +1,212 @@
+/* ==========================================================================
+   Zion Lifts — design tokens
+
+   Built on Apple's interface foundations: the system font stack, a type scale
+   where tracking is a function of size, high-contrast neutrals, generous radii
+   and translucent materials. The brand keeps its obsidian / warm-white ground
+   and its teal, but the teal is now reserved for things you can act on —
+   never as decoration.
+   ========================================================================== */
+
+:root {
+  /* --- ground ---------------------------------------------------------- */
+  /* Apple's darks are true black with a lifted secondary surface, which is
+     what lets photography sit on the page without a visible seam. */
+  --obsidian: #000;
+  --obsidian-2: #0e0e0f;
+  --obsidian-3: #1d1d1f;
+  --ink: #1d1d1f;
+
+  --paper: #f5f4f2; /* warm neutral, a half-step off Apple's #f5f5f7 */
+  --paper-2: #ebe9e6;
+  --paper-3: #dedbd6;
+
+  --stone: #c7c2b8;
+  --stone-dark: #a49d90;
+  --metal: #86868b;
+  --metal-light: #b9bec2;
+
+  /* --- brand ----------------------------------------------------------- */
+  /* --teal is the fill: 5.4:1 as link text on paper, 6.0:1 under white
+     text as a button. --teal-bright is text-on-dark only (10.3:1). */
+  --teal: #066f70;
+  --teal-bright: #2ec9ca;
+  --teal-deep: #04595a;
+  --blue: #134c9e;
+  --brass: #b08d57;
+  --brass-light: #d0ab74;
+
+  /* --- semantic: dark sections ----------------------------------------- */
+  --bg: var(--obsidian);
+  --fg: #f5f5f7;
+  --fg-dim: #a1a1a6; /* Apple's secondary-on-dark — 7.2:1, not decorative grey */
+  --fg-faint: #86868b;
+  --rule: rgba(255, 255, 255, 0.16);
+  --rule-soft: rgba(255, 255, 255, 0.09);
+  --surface: rgba(255, 255, 255, 0.05);
+  --surface-2: rgba(255, 255, 255, 0.09);
+  /* Form fields sit on their own surface so they read as somewhere to
+     type rather than as another tinted panel. */
+  --field-bg: rgba(255, 255, 255, 0.06);
+  --accent: var(--teal-bright);
+  /* Filled controls need a darker teal than link text does, so the two
+     roles get separate tokens instead of one colour used for both. */
+  --accent-solid: var(--teal);
+
+  /* Translucent chrome. Content scrolls underneath rather than being pushed
+     out of the way by an opaque bar. */
+  --material: rgba(0, 0, 0, 0.72);
+  --material-blur: saturate(180%) blur(20px);
+  --material-edge: rgba(255, 255, 255, 0.12);
+
+  /* --- type ------------------------------------------------------------ */
+  /* SF Pro where it exists; Inter is a close metric-compatible stand-in
+     everywhere else. No display serif and no decorative monospace. */
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Inter',
+    'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-display: var(--font-sans);
+  /* Editorial display serif. Deliberately not the default: it is used
+     where a section is typographic by design, not for every heading. */
+  --font-serif: 'Fraunces', Georgia, 'Times New Roman', serif;
+  --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
+
+  /* fluid scale, 360px → 1600px */
+  --t-eyebrow: clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
+  --t-micro: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem);
+  --t-small: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
+  --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
+  --t-lead: clamp(1.125rem, 1.02rem + 0.5vw, 1.5rem);
+  --t-h4: clamp(1.1875rem, 1.08rem + 0.5vw, 1.5rem);
+  --t-h3: clamp(1.4375rem, 1.2rem + 1.15vw, 2.25rem);
+  --t-h2: clamp(2rem, 1.45rem + 2.7vw, 4rem);
+  --t-h1: clamp(2.75rem, 1.7rem + 5.2vw, 6.5rem);
+  --t-mega: clamp(3.25rem, 1.4rem + 8.4vw, 9.5rem);
+
+  /* Tracking is size-specific: large type reads too loose at 0, small type
+     too tight. One letter-spacing value would be wrong at both ends. */
+  --tr-mega: -0.025em;
+  --tr-h1: -0.022em;
+  --tr-h2: -0.019em;
+  --tr-h3: -0.015em;
+  --tr-h4: -0.011em;
+  --tr-lead: -0.014em;
+  --tr-body: -0.011em;
+  --tr-small: 0;
+  --tr-label: 0.02em;
+  --tr-wide: 0.06em;
+
+  /* Leading tightens as type grows. */
+  --lh-tight: 1.05;
+  --lh-snug: 1.09;
+  --lh-body: 1.47;
+
+  /* --- weight ---------------------------------------------------------- */
+  --w-regular: 400;
+  --w-medium: 500;
+  --w-semibold: 600;
+  --w-bold: 700;
+
+  /* --- space ----------------------------------------------------------- */
+  --gap-xs: 0.5rem;
+  --gap-s: 0.875rem;
+  --gap: 1.5rem;
+  --gap-l: 2.5rem;
+  --gap-xl: 4rem;
+  --section-y: clamp(4.5rem, 3rem + 7vw, 10rem);
+  --section-y-tight: clamp(3rem, 2rem + 4vw, 6rem);
+  --page-x: clamp(1.25rem, 0.6rem + 3.2vw, 4.5rem);
+  --measure: 62ch;
+  --measure-tight: 46ch;
+
+  /* --- shell ----------------------------------------------------------- */
+  --maxw: 1560px;
+  --maxw-text: 1180px;
+  --nav-h: 3.5rem;
+
+  /* Apple's radii are large and consistent: chips, cards, then full pills
+     for anything you press. */
+  --radius: 12px;
+  --radius-l: 18px;
+  --radius-xl: 28px;
+  --radius-pill: 980px;
+
+  /* --- motion ---------------------------------------------------------- */
+  /* Apple's standard curve, plus one lightly under-damped variant reserved
+     for motion that follows a gesture. */
+  --ease-out: cubic-bezier(0.28, 0.11, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-spring: cubic-bezier(0.2, 0.9, 0.28, 1.03);
+  --dur-fast: 0.2s;
+  --dur: 0.4s;
+  --dur-slow: 0.7s;
+
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.16);
+  --shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.4);
+  --shadow-lift: 0 24px 64px -24px rgba(0, 0, 0, 0.55);
+  --z-nav: 80;
+  --z-menu: 90;
+  --z-preloader: 120;
+}
+
+/* Sections that invert to the warm-white ground opt in with .on-paper. */
+.on-paper {
+  --bg: var(--paper);
+  --fg: var(--ink);
+  --fg-dim: #6e6e73; /* Apple's secondary-on-light */
+  --fg-faint: #86868b;
+  --rule: rgba(0, 0, 0, 0.16);
+  --rule-soft: rgba(0, 0, 0, 0.08);
+  --surface: rgba(0, 0, 0, 0.035);
+  --field-bg: #fff;
+  --surface-2: rgba(0, 0, 0, 0.06);
+  --accent: var(--teal);
+  --accent-solid: var(--teal);
+  --material: rgba(245, 244, 242, 0.78);
+  --material-edge: rgba(0, 0, 0, 0.08);
+}
+
+.on-stone {
+  --bg: var(--paper-2);
+  --fg: var(--ink);
+  --fg-dim: #6e6e73;
+  --fg-faint: #86868b;
+  --rule: rgba(0, 0, 0, 0.17);
+  --rule-soft: rgba(0, 0, 0, 0.09);
+  --surface: rgba(0, 0, 0, 0.04);
+  --field-bg: #fff;
+  --surface-2: rgba(0, 0, 0, 0.07);
+  --accent: var(--teal);
+  --accent-solid: var(--teal);
+  --material: rgba(235, 233, 230, 0.78);
+  --material-edge: rgba(0, 0, 0, 0.08);
+}
+
+/* Translucency is a preference, not a given: frost solid when it is refused,
+   and firm up the borders when more contrast is asked for. */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --material: #000;
+    --material-blur: none;
+  }
+  .on-paper {
+    --material: var(--paper);
+  }
+  .on-stone {
+    --material: var(--paper-2);
+  }
+}
+
+@media (prefers-contrast: more) {
+  :root {
+    --fg-dim: #d2d2d7;
+    --fg-faint: #a1a1a6;
+    --rule: rgba(255, 255, 255, 0.34);
+  }
+  .on-paper,
+  .on-stone {
+    --fg-dim: #48484a;
+    --fg-faint: #6e6e73;
+    --rule: rgba(0, 0, 0, 0.34);
+  }
+}

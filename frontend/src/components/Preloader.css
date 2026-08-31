@@ -1,0 +1,106 @@
+.preloader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-preloader);
+  background: #070708;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  transition:
+    opacity 0.8s var(--ease-out),
+    visibility 0s linear 0.9s;
+}
+
+.preloader.is-leaving {
+  opacity: 0;
+  visibility: hidden;
+}
+
+/* the single vertical line, accelerating upward */
+.preloader__line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: linear-gradient(
+    to top,
+    transparent,
+    rgba(11, 176, 177, 0.06) 20%,
+    var(--teal-bright) 50%,
+    rgba(11, 176, 177, 0.06) 80%,
+    transparent
+  );
+  transform-origin: bottom;
+  animation: ascend 2.6s cubic-bezier(0.5, 0, 0.2, 1) infinite;
+}
+
+@keyframes ascend {
+  0% {
+    transform: translateY(105%) scaleY(0.35);
+    opacity: 0;
+  }
+  22% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-105%) scaleY(1);
+    opacity: 0;
+  }
+}
+
+.preloader__lockup {
+  position: relative;
+  display: grid;
+  gap: 0.5rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.preloader__word {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1rem + 2.4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: #f3f1ec;
+  padding-left: 0.22em;
+}
+
+.preloader__sub {
+  font-size: var(--t-eyebrow);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: rgba(232, 230, 225, 0.42);
+  font-weight: var(--w-semibold);
+}
+
+.preloader__floor {
+  position: absolute;
+  bottom: clamp(1.75rem, 5vh, 3.5rem);
+  right: var(--page-x);
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  color: var(--teal-bright);
+}
+
+.preloader__num {
+  font-family: var(--font-mono);
+  font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.preloader__arrow {
+  font-size: 1rem;
+  opacity: 0.7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preloader__line {
+    animation: none;
+    opacity: 0.35;
+  }
+}

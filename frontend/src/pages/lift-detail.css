@@ -1,0 +1,455 @@
+/* ==========================================================================
+   /lifts/[slug] — the product template, shared by all nine systems
+   ========================================================================== */
+
+.pdhero {
+  display: grid;
+  background: var(--obsidian);
+  min-height: 100svh;
+  padding-top: var(--nav-h);
+}
+
+@media (min-width: 900px) {
+  .pdhero {
+    grid-template-columns: 1.1fr 0.9fr;
+    padding-top: 0;
+  }
+}
+
+.pdhero__media {
+  position: relative;
+  min-height: clamp(18rem, 44vh, 32rem);
+  overflow: hidden;
+}
+
+.pdhero__media .media,
+.pdhero__media .media__img {
+  height: 100%;
+}
+
+.pdhero__panel {
+  display: grid;
+  align-content: center;
+  gap: 1.15rem;
+  padding: clamp(2rem, 1.5rem + 3vw, 4.5rem) var(--page-x);
+  justify-items: start;
+}
+
+@media (min-width: 900px) {
+  .pdhero__panel {
+    padding-top: calc(var(--nav-h) + 2rem);
+  }
+}
+
+.pdhero__title {
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 4.25rem);
+}
+
+.pdhero__specs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.15rem 1.75rem;
+  width: 100%;
+  margin: 0.75rem 0 0;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--rule);
+}
+
+.pdhero__specs dt {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 0.3rem;
+}
+
+.pdhero__specs dd {
+  margin: 0;
+  font-size: var(--t-small);
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.pdhero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 0.5rem;
+}
+
+/* --- overview ------------------------------------------------------------ */
+.overview {
+  display: grid;
+  gap: clamp(1.5rem, 1rem + 2.5vw, 3rem);
+}
+
+@media (min-width: 900px) {
+  .overview {
+    grid-template-columns: 0.28fr 0.72fr;
+  }
+}
+
+.overview__body {
+  display: grid;
+  gap: 1.35rem;
+  max-width: 66ch;
+}
+
+.overview__lead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: var(--fg);
+  text-wrap: pretty;
+}
+
+/* --- best for ------------------------------------------------------------ */
+.bestfor {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.bestfor__chip {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  padding: clamp(1.1rem, 0.9rem + 1vw, 1.6rem);
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.bestfor__chip svg {
+  color: var(--accent);
+  flex: none;
+  margin-top: 0.25rem;
+}
+
+.bestfor__chip strong {
+  display: block;
+  font-size: var(--t-small);
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.bestfor__chip em {
+  font-style: normal;
+  font-size: var(--t-micro);
+  color: var(--fg-dim);
+  line-height: 1.5;
+}
+
+/* --- variants ------------------------------------------------------------ */
+.variants {
+  display: grid;
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+}
+
+@media (min-width: 800px) {
+  .variants {
+    grid-template-columns: 0.85fr 1.15fr;
+  }
+}
+
+.variants__rail {
+  background: var(--bg);
+  display: grid;
+  align-content: start;
+}
+
+.variants__tab {
+  width: 100%;
+  text-align: left;
+  padding: 1.1rem clamp(1.15rem, 2vw, 1.75rem);
+  border-bottom: 1px solid var(--rule-soft);
+  border-left: 2px solid transparent;
+  display: grid;
+  grid-template-columns: auto auto;
+  gap: 0.2rem 0.85rem;
+  color: var(--fg-dim);
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.variants__tab.is-on {
+  background: var(--surface);
+  border-left-color: var(--accent);
+  color: var(--fg);
+}
+
+.variants__n {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  color: var(--fg-faint);
+  align-self: center;
+}
+
+.variants__code {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.06em;
+  color: var(--fg-faint);
+}
+
+.variants__name {
+  grid-column: 2;
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.variants__panel {
+  background: var(--bg);
+  padding: clamp(1.5rem, 1rem + 2.5vw, 2.75rem);
+  display: grid;
+  gap: 1.25rem;
+  align-content: start;
+  justify-items: start;
+}
+
+.variants__title {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+.variants__specs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 8rem), 1fr));
+  gap: 1.15rem 1.75rem;
+  width: 100%;
+  margin: 0;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--rule);
+}
+
+.variants__specs dt {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  margin-bottom: 0.3rem;
+}
+
+.variants__specs dd {
+  margin: 0;
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+/* --- dimensions ---------------------------------------------------------- */
+.dims {
+  display: grid;
+  gap: clamp(2rem, 1.5rem + 3vw, 4rem);
+}
+
+@media (min-width: 900px) {
+  .dims {
+    grid-template-columns: 0.85fr 1.15fr;
+    align-items: start;
+  }
+}
+
+.dims__diagram {
+  display: grid;
+  gap: 1.5rem;
+  position: sticky;
+  top: calc(var(--nav-h) + 1.5rem);
+}
+
+.shaftdiagram {
+  width: 100%;
+  max-width: 20rem;
+  height: auto;
+  color: var(--fg-dim);
+}
+
+.shaftdiagram__label text {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.14em;
+  fill: var(--fg-faint);
+}
+
+.shaftdiagram__car {
+  fill: var(--accent) !important;
+  letter-spacing: 0.2em;
+}
+
+.dims__key {
+  display: grid;
+  gap: 0.85rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.25rem;
+  max-width: 20rem;
+}
+
+.dims__key li {
+  display: grid;
+  gap: 0.2rem;
+}
+
+.dims__key strong {
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.dims__tables {
+  display: grid;
+  gap: clamp(1.75rem, 1rem + 2.5vw, 3rem);
+}
+
+/* --- product gallery ----------------------------------------------------- */
+.pdgallery {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 1.75rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .pdgallery {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1000px) {
+  .pdgallery {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.pdgallery__cell {
+  margin: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.pdgallery__cell figcaption {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+}
+
+.pddetails {
+  display: grid;
+  gap: clamp(0.75rem, 0.4rem + 1.2vw, 1.25rem);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+@media (min-width: 900px) {
+  .pddetails {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.pddetails__cell {
+  margin: 0;
+  display: grid;
+  gap: 0.6rem;
+}
+
+/* --- drive --------------------------------------------------------------- */
+.drive__inner {
+  display: grid;
+  gap: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .drive__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.drive__copy {
+  display: grid;
+  gap: 1.15rem;
+  justify-items: start;
+}
+
+.drive__partners {
+  display: grid;
+  gap: 0.85rem;
+  width: 100%;
+  margin-top: 0.5rem;
+  padding-top: 1.35rem;
+  border-top: 1px solid var(--rule);
+}
+
+.drive__partners li {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.drive__partners strong {
+  font-size: var(--t-small);
+  font-weight: 500;
+}
+
+.drive__partners span {
+  font-size: var(--t-micro);
+  color: var(--fg-faint);
+  line-height: 1.45;
+}
+
+/* --- process ------------------------------------------------------------- */
+.process {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.process__step {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  padding: clamp(1.25rem, 1rem + 1.2vw, 1.85rem);
+  display: grid;
+  gap: 0.6rem;
+  align-content: start;
+}
+
+.process__title {
+  font-family: var(--font-display);
+  font-size: var(--t-h4);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.process__body {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.55;
+}
+
+/* --- aftercare ----------------------------------------------------------- */
+.aftercare {
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+}
+
+.aftercare__item {
+  display: grid;
+  gap: 0.5rem;
+  padding-top: 1.15rem;
+  border-top: 2px solid var(--accent);
+}
+
+.aftercare__title {
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.aftercare__body {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.55;
+}

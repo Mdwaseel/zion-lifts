@@ -1,0 +1,96 @@
+/* ==========================================================================
+   /faq — a decision tool, not an accordion dump
+   ========================================================================== */
+
+.faqlayout {
+  display: grid;
+  gap: clamp(2rem, 1.5rem + 3vw, 4rem);
+  align-items: start;
+}
+
+@media (min-width: 900px) {
+  .faqlayout {
+    grid-template-columns: 17rem 1fr;
+  }
+}
+
+.faqnav {
+  display: grid;
+  gap: 1.5rem;
+  align-content: start;
+}
+
+@media (min-width: 900px) {
+  .faqnav {
+    position: sticky;
+    top: calc(var(--nav-h) + 1.5rem);
+  }
+}
+
+.faqnav__list {
+  display: grid;
+  gap: 0.15rem;
+  border-top: 1px solid var(--rule);
+  padding-top: 0.85rem;
+}
+
+.faqnav__btn {
+  width: 100%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  border-left: 2px solid transparent;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.faqnav__btn:hover {
+  color: var(--fg);
+  background: var(--surface);
+}
+
+.faqnav__btn.is-on {
+  color: var(--accent);
+  border-left-color: var(--accent);
+  background: var(--surface);
+}
+
+.faqnav__btn sup {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  opacity: 0.7;
+}
+
+.faqbody {
+  display: grid;
+  gap: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+  min-width: 0;
+}
+
+.faqbody__count {
+  color: var(--fg-faint);
+}
+
+.faqgroup__head {
+  margin-bottom: 1.5rem;
+}
+
+.faqgroup__title {
+  font-family: var(--font-display);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.022em;
+}
+
+.faqgroup__desc {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  margin-top: 0.4rem;
+}

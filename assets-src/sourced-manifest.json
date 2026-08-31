@@ -1,0 +1,307 @@
+{
+  "factory-machining": {
+    "query": "cnc machining metal lathe",
+    "title": "Metalworking equipment",
+    "creator": "Unknown",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/6075509/metalworking-equipment",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      683
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 10 / About 07 - machining"
+  },
+  "factory-welding": {
+    "query": "welding sparks metal worker",
+    "title": "Welder sparks metal construction",
+    "creator": "Unknown",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/9658158/welding",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      681
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 10 / About 07 - welding"
+  },
+  "factory-assembly": {
+    "query": "factory assembly line workers",
+    "title": "Professional Packaging Systems' Quality Packaging",
+    "creator": "U.S. Department of Agriculture",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/3306981/free-photo-image-truck-warehouse-factory",
+    "widths": [
+      640,
+      1280
+    ],
+    "native": [
+      1300,
+      867
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "About 07 - dispatch"
+  },
+  "factory-floor": {
+    "query": "industrial factory interior machines",
+    "title": "Machine shop repairs & upkeep",
+    "creator": "libraryofcongress",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/6996156/machine-shop-for-repairs-upkeep-liberty-motors-101519",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      797
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "About 03 - archival factory floor"
+  },
+  "macro-circuit": {
+    "query": "circuit board electronics macro",
+    "title": "Circuit Macro",
+    "creator": "Lenharth Systems",
+    "creator_url": "https://www.lenharthsystems.com",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "stocksnap",
+    "foreign_landing_url": "https://stocksnap.io/photo/circuit-macro-MADL8CN3KW",
+    "widths": [
+      640
+    ],
+    "native": [
+      960,
+      641
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 05 - control board"
+  },
+  "blueprint-technical": {
+    "query": "architectural blueprint technical drawing",
+    "title": "Hospitals asylums world. Vols. 1-2",
+    "creator": "Unknown",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/14011060/hospitals-and-asylums-the-world-vols-1-2-asylums-henry-burdett",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      733
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Home 08 - blueprint stage"
+  },
+  "macro-bearing": {
+    "query": "ball bearing metal macro",
+    "title": "Return handle, the business end",
+    "creator": "mpclemens",
+    "creator_url": "https://www.flickr.com/photos/24364103@N04",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/24364103@N04/7448543844",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      768
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 05 - precision measurement"
+  },
+  "macro-sensor": {
+    "query": "industrial sensor electronics",
+    "title": "Nikon D70S CCD sensor",
+    "creator": "camera_recycler",
+    "creator_url": "https://www.flickr.com/photos/50446943@N03",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/50446943@N03/6341312659",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      680
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 05 - sensors"
+  },
+  "macro-brake": {
+    "query": "brake disc mechanism metal",
+    "title": "Mechanic holding lug nuts in his hand and a brake disc in the blurry background",
+    "creator": "Ivan Radic",
+    "creator_url": "https://www.flickr.com/photos/26344495@N05",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/26344495@N05/49963716608",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      683
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 14 - hands at work"
+  },
+  "people-engineer": {
+    "query": "engineer technician working portrait",
+    "title": "Working their way out of poverty",
+    "creator": "DFID - UK Department for International Development",
+    "creator_url": "https://www.flickr.com/photos/14214150@N02",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/14214150@N02/8756741421",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      683
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 14 - installation team"
+  },
+  "people-electrician": {
+    "query": "electrician working control panel",
+    "title": "Pueblo Chemical Agent-Destruction Pilot Plant Cooling Towers (15473762549)",
+    "creator": "PEO ACWA",
+    "creator_url": "https://www.flickr.com/people/39388148@N04",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=80268498",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      4608,
+      3072
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 05 - plant / controls"
+  },
+  "people-team": {
+    "query": "engineers team site meeting helmet",
+    "title": "The electrical engineering team is working in a solar panel farm or repair photovoltaic",
+    "creator": "EU-Ukraine cooperation",
+    "creator_url": "https://www.flickr.com/photos/149400054@N04",
+    "license": "BY-SA",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/149400054@N04/54436372234",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      683
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 14 / About 11 - site engineers"
+  },
+  "people-drafting": {
+    "query": "architect drafting technical drawing",
+    "title": "",
+    "creator": "Unknown",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+    "source": "rawpixel",
+    "foreign_landing_url": "https://www.rawpixel.com/image/5954117/free-public-domain-cc0-photo",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      768
+    ],
+    "replace_with_real_shoot": true,
+    "used_for": "Home 08 - blueprint stage"
+  },
+  "skyline-city": {
+    "query": "city skyline dusk aerial",
+    "title": "Berlin skyline",
+    "creator": "A.Cahlenstein Photography",
+    "creator_url": "https://www.flickr.com/photos/65296735@N08",
+    "license": "BY",
+    "license_version": "2.0",
+    "license_url": "https://creativecommons.org/licenses/by/2.0/",
+    "source": "flickr",
+    "foreign_landing_url": "https://www.flickr.com/photos/65296735@N08/19873763906",
+    "widths": [
+      640
+    ],
+    "native": [
+      1024,
+      576
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Home 16 - final ascent plate"
+  },
+  "skyline-hyderabad": {
+    "query": "hyderabad city skyline",
+    "title": "Hyderabad Hi-Tech City Skyline at Night \u2013 India's Emerging Silicon Valley (2025)",
+    "creator": "Mohammad Anees Qamar",
+    "creator_url": "https://commons.wikimedia.org/wiki/User:Mohammad_Anees_Qamar",
+    "license": "BY",
+    "license_version": "4.0",
+    "license_url": "https://creativecommons.org/licenses/by/4.0/",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/w/index.php?curid=166825294",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      2048,
+      922
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Home 16 - Hyderabad skyline"
+  }
+}

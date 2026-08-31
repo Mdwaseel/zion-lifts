@@ -1,0 +1,233 @@
+/* ==========================================================================
+   /lifts — index, finder, comparison
+   ========================================================================== */
+
+.finder__grid {
+  display: grid;
+  gap: clamp(1.25rem, 1rem + 1.5vw, 2.25rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 800px) {
+  .finder__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.finder__group {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.85rem;
+  align-content: start;
+}
+
+.finder__result {
+  margin-top: clamp(1.5rem, 1rem + 2vw, 2.5rem);
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  font-weight: var(--w-semibold);
+}
+
+.finder__result strong {
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.finder__reset {
+  margin-left: auto;
+}
+
+/* --- grid ---------------------------------------------------------------- */
+.liftgrid {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 1.75rem);
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .liftgrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (min-width: 1050px) {
+  .liftgrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* --- comparison table ---------------------------------------------------- */
+.comparetable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--t-small);
+  min-width: 54rem;
+}
+
+.comparetable th,
+.comparetable td {
+  text-align: left;
+  padding: 1rem 1.25rem 1rem 0;
+  border-bottom: 1px solid var(--rule);
+  vertical-align: top;
+}
+
+.comparetable thead th {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+  border-bottom-color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+.comparetable tbody th {
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+  padding-right: 2rem;
+}
+
+.comparetable tbody th a:hover {
+  color: var(--accent);
+}
+
+.comparetable td {
+  color: var(--fg-dim);
+}
+
+.comparetable tbody tr {
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.comparetable tbody tr:hover {
+  background: var(--surface);
+}
+
+.comparetable__go {
+  width: 3rem;
+  text-align: right;
+  padding-right: 0;
+}
+
+.comparetable__go a {
+  color: var(--fg-faint);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-out);
+  display: inline-block;
+}
+
+.comparetable tbody tr:hover .comparetable__go a {
+  color: var(--accent);
+  transform: translateX(3px);
+}
+
+/* --- applications -------------------------------------------------------- */
+.applist {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+}
+
+.applist__item {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  padding: clamp(1.25rem, 1rem + 1.2vw, 1.85rem);
+  display: grid;
+  gap: 0.5rem;
+  align-content: start;
+}
+
+.applist__name {
+  font-family: var(--font-display);
+  font-size: var(--t-h4);
+  font-weight: 400;
+  letter-spacing: -0.015em;
+}
+
+.applist__desc {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.55;
+}
+
+.applist__group {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule-soft);
+  color: var(--fg-faint);
+}
+
+/* --- engineering at a glance --------------------------------------------- */
+.glance__inner {
+  display: grid;
+  gap: clamp(1.75rem, 1rem + 3vw, 3.5rem);
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .glance__inner {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.glance__copy {
+  display: grid;
+  gap: 1.15rem;
+  justify-items: start;
+}
+
+/* --- safety list --------------------------------------------------------- */
+.safetylist {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.safetylist__item {
+  background: var(--bg);
+  /* hairline drawn per cell, not by a container colour showing through the
+     gaps — a ragged final row used to leave that colour as a grey block */
+  box-shadow: 0 0 0 1px var(--rule);
+  padding: clamp(1.25rem, 1rem + 1.2vw, 1.85rem);
+  display: grid;
+  gap: 0.55rem;
+  align-content: start;
+}
+
+.safetylist__icon {
+  color: var(--accent);
+  margin-bottom: 0.35rem;
+}
+
+.safetylist__name {
+  font-size: var(--t-small);
+  font-weight: 600;
+}
+
+.safetylist__line {
+  font-size: var(--t-small);
+  color: var(--fg-dim);
+  line-height: 1.55;
+}
+
+.safetylist__std {
+  margin-top: auto;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--rule-soft);
+  color: var(--fg-faint);
+}
