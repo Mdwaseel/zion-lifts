@@ -1,0 +1,217 @@
+"""Ordered LLM router: try each provider in turn, guarded by a circuit breaker."""
+
+from __future__ import annotations
+
+from collections.abc import AsyncIterator
+
+from app.core.logging import get_logger
+from app.llm.base import (
+    LLMClient,
+    LLMError,
+    LLMMessage,
+    LLMResult,
+    ProviderUnavailableError,
+)
+from app.llm.circuit_breaker import CircuitBreaker, CircuitOpenError
+
+logger = get_logger(__name__)
+
+
+class AllProvidersFailedError(RuntimeError):
+    def __init__(self, errors: dict[str, str]) -> None:
+        detail = "; ".join(f"{name}: {msg}" for name, msg in errors.items())
+        super().__init__(f"All LLM providers failed ({detail})")
+        self.errors = errors
+
+
+class FallbackLLM(LLMClient):
+    """Presents a list of providers as one client.
+
+    A non-retryable error (bad request, invalid key) fails fast for that
+    provider but still moves on to the next; a healthy provider should not be
+    blocked by a peer's misconfiguration.
+    """
+
+    name = "fallback"
+
+    def __init__(
+        self,
+        clients: list[LLMClient],
+        fail_threshold: int = 3,
+        reset_seconds: float = 60.0,
+    ) -> None:
+        if not clients:
+            raise ValueError("FallbackLLM requires at least one provider.")
+        self._clients = clients
+        self._breakers = {
+            client.name: CircuitBreaker(client.name, fail_threshold, reset_seconds)
+            for client in clients
+        }
+        self._last_used = clients[0].name
+
+    @property
+    def model(self) -> str:
+        return self._clients[0].model
+
+    @property
+    def providers(self) -> list[str]:
+        return [client.name for client in self._clients]
+
+    def breaker_states(self) -> list[dict[str, object]]:
+        return [breaker.snapshot() for breaker in self._breakers.values()]
+
+    async def complete(
+        self,
+        messages: list[LLMMessage],
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+    ) -> LLMResult:
+        errors: dict[str, str] = {}
+
+        for client in self._clients:
+            breaker = self._breakers[client.name]
+            try:
+                await breaker.ensure_allowed()
+            except CircuitOpenError as exc:
+                errors[client.name] = str(exc)
+                continue
+
+            try:
+                result = await client.complete(messages, temperature, max_tokens)
+            except Exception as exc:
+                await breaker.record_failure()
+                errors[client.name] = str(exc)
+                logger.warning(
+                    "provider failed, falling back",
+                    extra={"provider": client.name, "err": str(exc)},
+                )
+                continue
+
+            await breaker.record_success()
+            self._last_used = client.name
+            return result
+
+        raise AllProvidersFailedError(errors)
+
+    async def stream(
+        self,
+        messages: list[LLMMessage],
+        temperature: float | None = None,
+        max_tokens: int | None = None,
+    ) -> AsyncIterator[str]:
+        errors: dict[str, str] = {}
+
+        for client in self._clients:
+            breaker = self._breakers[client.name]
+            try:
+                await breaker.ensure_allowed()
+            except CircuitOpenError as exc:
+                errors[client.name] = str(exc)
+                continue
+
+            emitted = False
+            try:
+                async for delta in client.stream(messages, temperature, max_tokens):
+                    emitted = True
+                    yield delta
+            except Exception as exc:
+                await breaker.record_failure()
+                errors[client.name] = str(exc)
+                if emitted:
+                    # Partial output already reached the client; switching now
+                    # would splice two different answers together.
+                    raise ProviderUnavailableError(
+                        f"Stream interrupted: {exc}", client.name
+                    ) from exc
+                logger.warning(
+                    "stream provider failed, falling back",
+                    extra={"provider": client.name, "err": str(exc)},
+                )
+                continue
+
+            await breaker.record_success()
+            self._last_used = client.name
+            return
+
+        raise AllProvidersFailedError(errors)
+
+    @property
+    def last_used(self) -> str:
+        return self._last_used
+
+    async def health(self) -> bool:
+        return any(
+            breaker.state.value != "open" for breaker in self._breakers.values()
+        )
+
+    async def close(self) -> None:
+        for client in self._clients:
+            try:
+                await client.close()
+            except Exception as exc:
+                logger.debug("close failed", extra={"provider": client.name, "err": str(exc)})
+
+
+def build_llm(settings: object) -> FallbackLLM:
+    """Construct the provider chain from settings, skipping unconfigured ones."""
+    from app.llm.providers.gemini import GeminiClient
+    from app.llm.providers.groq import GroqClient
+    from app.llm.providers.openai import OpenAIClient
+
+    factories = {
+        "gemini": lambda: GeminiClient(
+            api_key=settings.gemini_api_key,
+            model=settings.gemini_model,
+            timeout=settings.llm_timeout,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+        ),
+        "groq": lambda: GroqClient(
+            api_key=settings.groq_api_key,
+            model=settings.groq_model,
+            timeout=settings.llm_timeout,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+        ),
+        "openai": lambda: OpenAIClient(
+            api_key=settings.openai_api_key,
+            model=settings.openai_model,
+            base_url=settings.openai_base_url,
+            timeout=settings.llm_timeout,
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+        ),
+    }
+    keys = {
+        "gemini": settings.gemini_api_key,
+        "groq": settings.groq_api_key,
+        "openai": settings.openai_api_key,
+    }
+
+    clients: list[LLMClient] = []
+    for name in settings.llm_provider_order:
+        if name not in factories:
+            logger.warning("unknown provider in order", extra={"provider": name})
+            continue
+        if not keys.get(name):
+            logger.info("provider skipped, no api key", extra={"provider": name})
+            continue
+        try:
+            clients.append(factories[name]())
+        except Exception as exc:
+            logger.error("provider init failed", extra={"provider": name, "err": str(exc)})
+
+    if not clients:
+        raise LLMError(
+            "No LLM provider configured. Set at least one of "
+            "GEMINI_API_KEY, GROQ_API_KEY, OPENAI_API_KEY.",
+            provider="fallback",
+            retryable=False,
+        )
+
+    logger.info("llm chain ready", extra={"providers": [c.name for c in clients]})
+    return FallbackLLM(
+        clients,
+        fail_threshold=settings.breaker_fail_threshold,
+        reset_seconds=settings.breaker_reset_seconds,
+    )
