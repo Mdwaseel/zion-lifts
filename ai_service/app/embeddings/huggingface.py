@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import asyncio
 from functools import partial
+from typing import Any
 
 from app.core.logging import get_logger
 from app.embeddings.cache import EmbeddingCache, cache_key
@@ -30,7 +31,10 @@ class HuggingFaceEmbeddings(EmbeddingProvider):
         self._batch_size = batch_size
         self._normalize = normalize
         self._cache = EmbeddingCache(cache_size)
-        self._model = None
+        # Loaded on first use by `load()`. Typed Any because the class is
+        # imported lazily — naming SentenceTransformer here would pull torch
+        # into every import of this module.
+        self._model: Any = None
         self._load_lock = asyncio.Lock()
 
     @property
@@ -57,9 +61,10 @@ class HuggingFaceEmbeddings(EmbeddingProvider):
                 SentenceTransformer, self._model_name, device=self._device
             )
             logger.info("embedding model ready", extra={"dim": self.dimension})
+            return None
 
     def _encode(self, texts: list[str]) -> list[list[float]]:
-        vectors = self._model.encode(  # type: ignore[union-attr]
+        vectors = self._model.encode(
             texts,
             batch_size=self._batch_size,
             normalize_embeddings=self._normalize,
@@ -83,9 +88,7 @@ class HuggingFaceEmbeddings(EmbeddingProvider):
                 pending.append((i, text))
 
         if pending:
-            encoded = await asyncio.to_thread(
-                partial(self._encode, [text for _, text in pending])
-            )
+            encoded = await asyncio.to_thread(partial(self._encode, [text for _, text in pending]))
             for (i, text), vector in zip(pending, encoded, strict=True):
                 results[i] = vector
                 self._cache.set(cache_key(self._model_name, text), vector)

@@ -50,7 +50,7 @@ function url(path) {
  * knowing it is useless to another site, which still cannot read it from *our*
  * origin and so cannot put it in a forged request's header.
  */
-function csrfToken() {
+export function csrfToken() {
   return document.cookie.match(/(?:^|;\s*)csrftoken=([^;]+)/)?.[1] ?? ''
 }
 
@@ -65,9 +65,16 @@ function refreshSession() {
   return refreshing
 }
 
+/** FormData is passed through untouched; anything else is sent as JSON. */
+function isUpload(body) {
+  return typeof FormData !== 'undefined' && body instanceof FormData
+}
+
 async function send(path, { method = 'GET', body, signal, _retry = false } = {}) {
   const headers = { Accept: 'application/json' }
-  if (body !== undefined) headers['Content-Type'] = 'application/json'
+  // Never set Content-Type for FormData: the browser has to add the multipart
+  // boundary itself, and naming the type by hand omits it and breaks the parse.
+  if (body !== undefined && !isUpload(body)) headers['Content-Type'] = 'application/json'
   if (!SAFE_METHODS.has(method)) {
     const token = csrfToken()
     if (token) headers['X-CSRFToken'] = token
@@ -79,7 +86,7 @@ async function send(path, { method = 'GET', body, signal, _retry = false } = {})
     signal,
     credentials: 'include', // the whole point: cookies travel, JS never sees them
   }
-  if (body !== undefined) init.body = JSON.stringify(body)
+  if (body !== undefined) init.body = isUpload(body) ? body : JSON.stringify(body)
 
   let res
   try {
@@ -109,6 +116,10 @@ async function send(path, { method = 'GET', body, signal, _retry = false } = {})
 export const api = {
   get: (path, options) => send(path, { ...options, method: 'GET' }),
   post: (path, body, options) => send(path, { ...options, method: 'POST', body }),
+  patch: (path, body, options) => send(path, { ...options, method: 'PATCH', body }),
+  put: (path, body, options) => send(path, { ...options, method: 'PUT', body }),
+  // `delete` is a reserved word in enough contexts to be worth avoiding.
+  remove: (path, options) => send(path, { ...options, method: 'DELETE' }),
 }
 
-export { refreshSession }
+export { BASE as apiBase, refreshSession }

@@ -28,6 +28,11 @@ ignore = [
 "tests/*" = ["S101"]
 
 [tool.mypy]
-python_version = "3.11"
+# No `python_version` pin. It was set to 3.11 while the interpreter in use is
+# newer, and mypy then parses installed stubs under the older grammar — numpy's
+# stubs use `type` statements and the check died on a syntax error before it
+# reached any of our code. Following the running interpreter means the local
+# check and the CI check (which pins the Python the Dockerfile uses) both
+# describe a real environment.
 warn_unused_ignores = true
 ignore_missing_imports = true

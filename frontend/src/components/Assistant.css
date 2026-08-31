@@ -1,0 +1,776 @@
+/* ==========================================================================
+   Ask Zion — the docked product assistant
+
+   The widget keeps its own dark ground rather than inheriting the section it
+   floats over. Pages alternate between obsidian and warm white as you scroll,
+   and a panel that changed colour underneath a half-read answer would read as
+   a glitch. A single dark material also states plainly what it is: a tool
+   layered over the site, not a part of the page.
+   ========================================================================== */
+
+.asst,
+.asst-launcher {
+  /* Local scope so the panel's own surfaces survive .on-paper sections. */
+  --asst-bg: rgba(14, 14, 15, 0.82);
+  --asst-solid: #0e0e0f;
+  --asst-fg: #f5f5f7;
+  --asst-dim: #a1a1a6;
+  --asst-rule: rgba(255, 255, 255, 0.12);
+  --asst-surface: rgba(255, 255, 255, 0.06);
+  --asst-accent: var(--teal-bright);
+  --asst-edge: clamp(1rem, 2.5vw, 1.75rem);
+  color: var(--asst-fg);
+  font-family: var(--font-sans);
+}
+
+/* --- launcher ------------------------------------------------------------ */
+
+.asst-launcher {
+  position: fixed;
+  right: var(--asst-edge);
+  bottom: var(--asst-edge);
+  z-index: var(--z-menu);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 48px; /* comfortably past the 44px touch target floor */
+  padding: 0 1.125rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-pill);
+  background: var(--asst-bg);
+  -webkit-backdrop-filter: var(--material-blur);
+  backdrop-filter: var(--material-blur);
+  box-shadow: var(--shadow-lift);
+  font-size: var(--t-small);
+  font-weight: var(--w-medium);
+  letter-spacing: var(--tr-body);
+  transition:
+    transform var(--dur-fast) var(--ease-spring),
+    opacity var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out);
+}
+
+.asst-launcher svg {
+  color: var(--asst-accent);
+}
+
+/* The mascot sits slightly proud of the cap height so the pill reads as a
+   badge with a face on it rather than a button with a picture inside. */
+.asst-launcher__mark {
+  display: block;
+  flex: none;
+  margin-left: -0.25rem;
+}
+
+.asst-launcher__mark img {
+  display: block;
+  width: 26px;
+  height: auto;
+  /* The artwork is already a glowing blue; a drop shadow lifts it off the
+     obsidian pill without adding a second colour. */
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.45));
+}
+
+@media (hover: hover) {
+  .asst-launcher:hover {
+    transform: translateY(-2px);
+    border-color: rgba(46, 201, 202, 0.45);
+  }
+}
+
+.asst-launcher:active {
+  transform: scale(0.97);
+}
+
+/* The panel replaces the launcher rather than sitting beside it — two controls
+   for one thing, one of them now redundant, is clutter. */
+.asst-launcher.is-open {
+  opacity: 0;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+/* --- panel --------------------------------------------------------------- */
+
+.asst {
+  position: fixed;
+  right: var(--asst-edge);
+  bottom: var(--asst-edge);
+  z-index: var(--z-menu);
+  width: min(400px, calc(100vw - 2 * var(--asst-edge)));
+  height: min(640px, calc(100dvh - 2 * var(--asst-edge)));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-xl);
+  background: var(--asst-bg);
+  -webkit-backdrop-filter: var(--material-blur);
+  backdrop-filter: var(--material-blur);
+  box-shadow: var(--shadow-lift);
+
+  /* `hidden` is what keeps the closed panel out of the tab order and the
+     accessibility tree. These two lines are what let it still animate on the
+     way in and out, in browsers that support them; elsewhere it simply
+     appears, which is a fine floor. */
+  transition:
+    opacity var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-spring),
+    overlay var(--dur) allow-discrete,
+    display var(--dur) allow-discrete;
+}
+
+.asst[hidden] {
+  display: none;
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+}
+
+.asst.is-open {
+  opacity: 1;
+  transform: none;
+}
+
+@starting-style {
+  .asst.is-open {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .asst,
+  .asst-launcher {
+    background: var(--asst-solid);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+/* --- header -------------------------------------------------------------- */
+
+.asst__head {
+  flex: none;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--gap-s);
+  padding: 1rem 1rem 0.875rem 1.125rem;
+  border-bottom: 1px solid var(--asst-rule);
+}
+
+.asst__id {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+/* Was a teal dot. The mascot says the same thing — "something is here to
+   answer you" — and says whose it is as well. */
+.asst__mark {
+  display: block;
+  flex: none;
+  margin-top: 0.1rem;
+}
+
+.asst__mark img {
+  display: block;
+  width: 30px;
+  height: auto;
+}
+
+.asst__title {
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-body);
+}
+
+.asst__sub {
+  margin-top: 0.15rem;
+  font-size: var(--t-micro);
+  color: var(--asst-dim);
+  letter-spacing: var(--tr-small);
+}
+
+.asst__head-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.asst__ghost {
+  padding: 0.4rem 0.7rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--t-micro);
+  color: var(--asst-dim);
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.asst__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  color: var(--asst-dim);
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.asst__ghost:hover,
+.asst__icon:hover {
+  color: var(--asst-fg);
+  background: var(--asst-surface);
+}
+
+/* --- transcript ---------------------------------------------------------- */
+
+.asst__log {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain; /* the page behind must not scroll with it */
+  padding: 1.125rem;
+  scrollbar-width: thin;
+}
+
+.asst__thread {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  list-style: none;
+}
+
+.asst-msg {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  letter-spacing: var(--tr-body);
+}
+
+.asst-msg--you {
+  align-self: flex-end;
+  max-width: 85%;
+  padding: 0.6rem 0.875rem;
+  border-radius: var(--radius-l) var(--radius-l) 4px var(--radius-l);
+  background: rgba(46, 201, 202, 0.13);
+  border: 1px solid rgba(46, 201, 202, 0.22);
+}
+
+.asst-msg--zion {
+  max-width: 100%;
+}
+
+/* --- answer body --------------------------------------------------------- */
+
+.asst-answer > * + * {
+  margin-top: 0.7rem;
+}
+
+.asst-answer__h {
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-body);
+}
+
+/* The site strips list markers globally, which is right for navigation and
+   card grids and wrong here: an answer's list is prose, and the markers are
+   what make a set of specifications scannable. */
+.asst-answer__list {
+  padding-left: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+ul.asst-answer__list {
+  list-style: disc;
+}
+
+ol.asst-answer__list {
+  list-style: decimal;
+}
+
+.asst-answer li::marker {
+  color: var(--asst-dim);
+}
+
+.asst-answer code {
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: var(--asst-surface);
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+
+.asst-answer strong {
+  font-weight: var(--w-semibold);
+}
+
+/* Inline citation marker. Superscript so it reads as a footnote rather than
+   as a number that belongs to the sentence. */
+.asst-cite {
+  display: inline-block;
+  min-width: 1.15em;
+  /* Asymmetric on purpose: a marker is almost always followed by a comma or a
+     full stop, and an even margin leaves the punctuation looking orphaned. */
+  margin: 0 0.02em 0 0.14em;
+  padding: 0 0.25em;
+  border-radius: 4px;
+  background: var(--asst-surface);
+  color: var(--asst-accent);
+  font-size: 0.68em;
+  font-weight: var(--w-semibold);
+  line-height: 1.5;
+  vertical-align: 0.4em;
+  transition: background var(--dur-fast) var(--ease-out);
+}
+
+.asst-cite:hover {
+  background: rgba(46, 201, 202, 0.2);
+}
+
+/* The streaming caret. Not a spinner: it sits at the end of the text so the
+   answer looks like it is still being written, which is what is happening. */
+.asst-caret {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--asst-accent);
+  animation: asst-blink 1s steps(2, start) infinite;
+}
+
+@keyframes asst-blink {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Retrieval runs before the first token, so there is a real pause to fill. */
+.asst-thinking {
+  display: flex;
+  gap: 5px;
+  padding: 0.35rem 0;
+}
+
+.asst-thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--asst-dim);
+  animation: asst-pulse 1.2s var(--ease-in-out) infinite;
+}
+
+.asst-thinking span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.asst-thinking span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes asst-pulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.28;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* --- confidence ---------------------------------------------------------- */
+
+.asst-confidence {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-top: 0.7rem;
+  padding: 0.5rem 0.65rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(176, 141, 87, 0.35);
+  background: rgba(176, 141, 87, 0.12);
+  color: var(--brass-light);
+  font-size: var(--t-micro);
+  line-height: 1.45;
+}
+
+.asst-confidence svg {
+  flex: none;
+  margin-top: 0.1rem;
+}
+
+/* --- sources ------------------------------------------------------------- */
+
+.asst-sources {
+  margin-top: 0.7rem;
+}
+
+.asst-sources__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 32px;
+  padding: 0 0.7rem 0 0.4rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-pill);
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.asst-sources__toggle:hover {
+  color: var(--asst-fg);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+
+.asst-sources__count {
+  display: grid;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--asst-surface);
+  color: var(--asst-accent);
+  font-weight: var(--w-semibold);
+  font-size: 0.6875rem;
+}
+
+.asst-sources__chev {
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.asst-sources__toggle[aria-expanded='true'] .asst-sources__chev {
+  transform: translateY(1px) rotate(-135deg);
+}
+
+.asst-sources__list {
+  margin-top: 0.55rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.asst-source {
+  display: flex;
+  gap: 0.55rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  background: var(--asst-surface);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+/* The entry a marker was clicked for, so the eye lands in the right place. */
+.asst-source.is-active {
+  border-color: rgba(46, 201, 202, 0.45);
+}
+
+.asst-source__n {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  margin-top: 0.1rem;
+  border-radius: 50%;
+  background: rgba(46, 201, 202, 0.16);
+  color: var(--asst-accent);
+  font-size: 0.6875rem;
+  font-weight: var(--w-semibold);
+}
+
+.asst-source__body {
+  min-width: 0;
+}
+
+.asst-source__title {
+  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
+  overflow-wrap: anywhere;
+}
+
+a.asst-source__title {
+  color: var(--asst-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.asst-source__snippet {
+  margin-top: 0.25rem;
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  line-height: 1.5;
+  /* The passage is evidence, not reading matter: enough to recognise, with the
+     full text a copy away. */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.asst-source__copy {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.4rem;
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.asst-source__copy:hover {
+  color: var(--asst-fg);
+}
+
+/* --- failure ------------------------------------------------------------- */
+
+.asst-fail {
+  padding: 0.75rem 0.875rem;
+  border-radius: var(--radius);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: var(--asst-surface);
+  font-size: var(--t-micro);
+}
+
+.asst-fail p {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--asst-fg);
+}
+
+.asst-fail__actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.6rem;
+}
+
+.asst-fail__actions button,
+.asst-fail__actions a {
+  color: var(--asst-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-size: var(--t-micro);
+}
+
+/* --- empty state --------------------------------------------------------- */
+
+.asst__empty-lead {
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--asst-dim);
+  letter-spacing: var(--tr-body);
+}
+
+.asst__openers {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  list-style: none;
+}
+
+.asst__openers button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 44px;
+  padding: 0.6rem 0.8rem;
+  text-align: left;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius);
+  font-size: var(--t-micro);
+  line-height: 1.4;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.asst__openers button svg {
+  flex: none;
+  color: var(--asst-accent);
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.asst__openers button:hover {
+  border-color: rgba(46, 201, 202, 0.4);
+  background: var(--asst-surface);
+}
+
+.asst__openers button:hover svg,
+.asst__openers button:focus-visible svg {
+  opacity: 1;
+  transform: none;
+}
+
+.asst__disclaimer {
+  margin-top: 1.125rem;
+  font-size: var(--t-micro);
+  line-height: 1.5;
+  color: var(--fg-faint);
+}
+
+.asst__disclaimer a {
+  color: var(--asst-accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* --- composer ------------------------------------------------------------ */
+
+.asst__composer {
+  flex: none;
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border-top: 1px solid var(--asst-rule);
+  background: rgba(0, 0, 0, 0.28);
+}
+
+.asst__input {
+  flex: 1;
+  min-width: 0;
+  max-height: 8.5rem; /* ~5 lines, then it scrolls rather than eating the log */
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-l);
+  background: rgba(255, 255, 255, 0.06);
+  font-size: var(--t-small);
+  line-height: 1.45;
+  letter-spacing: var(--tr-body);
+  resize: none;
+  overflow-y: auto;
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+.asst__input::placeholder {
+  color: var(--fg-faint);
+}
+
+.asst__input:focus {
+  outline: none;
+  border-color: rgba(46, 201, 202, 0.5);
+}
+
+.asst__send,
+.asst__stop {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  transition:
+    background var(--dur-fast) var(--ease-out),
+    opacity var(--dur-fast) var(--ease-out),
+    transform var(--dur-fast) var(--ease-spring);
+}
+
+.asst__send {
+  background: var(--teal);
+  color: #fff;
+}
+
+.asst__send:hover:not(:disabled) {
+  background: var(--teal-bright);
+  color: var(--obsidian);
+  transform: scale(1.05);
+}
+
+.asst__send:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.asst__stop {
+  border: 1px solid var(--asst-rule);
+  background: var(--asst-surface);
+}
+
+.asst__stop span {
+  width: 11px;
+  height: 11px;
+  border-radius: 2px;
+  background: var(--asst-fg);
+}
+
+.asst__stop:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.asst__limit {
+  flex: none;
+  padding: 0 0.9rem 0.75rem;
+  color: var(--brass-light);
+  font-size: var(--t-micro);
+}
+
+/* --- phones -------------------------------------------------------------- */
+
+/* Below this the panel stops pretending to float. It takes the screen, the
+   page behind it is locked, and it is announced as modal. */
+@media (max-width: 640px) {
+  .asst.is-sheet {
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+    border: 0;
+    border-radius: 0;
+  }
+
+  .asst.is-sheet[hidden] {
+    transform: translateY(2rem);
+  }
+
+  .asst.is-sheet .asst__composer {
+    /* clear of the home indicator on iOS */
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+  }
+
+  .asst.is-sheet .asst__input {
+    /* iOS zooms the viewport on focus for anything under 16px */
+    font-size: 16px;
+  }
+}
+
+/* --- reduced motion ------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .asst,
+  .asst-launcher,
+  .asst__send,
+  .asst__openers button svg {
+    transition-duration: 0.01ms;
+  }
+
+  .asst[hidden] {
+    transform: none;
+  }
+
+  /* The caret still marks the live end of the answer; it just stops flashing. */
+  .asst-caret,
+  .asst-thinking span {
+    animation: none;
+  }
+
+  .asst-thinking span {
+    opacity: 0.6;
+  }
+}

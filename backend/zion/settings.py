@@ -26,11 +26,10 @@ INSTALLED_APPS = [
     "corsheaders",
     "django_filters",
     "apps.accounts",
-    "apps.core",
-    "apps.catalog",
-    "apps.projects",
-    "apps.content",
-    "apps.enquiries",
+    # The site's models, the control room over them, and the public read API
+    # all live in one app — see apps/adminpanel/models.py for why.
+    "apps.adminpanel",
+    "apps.knowledge",
 ]
 
 MIDDLEWARE = [
@@ -43,6 +42,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Last, so the duration it records covers every middleware above it and
+    # `request.user` is already resolved when the completion line is written.
+    "zion.observability.middleware.RequestObservabilityMiddleware",
 ]
 
 ROOT_URLCONF = "zion.urls"
@@ -265,19 +267,35 @@ ENQUIRY_NOTIFY_TO = [
 # Point AUTH_LOG_FILE at a path in production to keep the trail off stdout.
 _auth_log_file = os.getenv("AUTH_LOG_FILE", "").strip()
 
+# Structured in production, readable in development. Both formatters redact:
+# see zion/observability/redaction.py for what is removed and what is reduced to
+# a hash instead.
+LOG_FORMAT = os.getenv("LOG_FORMAT", "json" if not DEBUG else "console").strip().lower()
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").strip().upper()
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "zion.observability.logging.RequestIdFilter"},
+    },
     "formatters": {
         "security": {
             "format": "{asctime} {levelname} {name} {message}",
             "style": "{",
-        }
+        },
+        "json": {"()": "zion.observability.logging.JsonFormatter"},
+        "console": {"()": "zion.observability.logging.ConsoleFormatter"},
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "formatter": "security",
+        },
+        "structured": {
+            "class": "logging.StreamHandler",
+            "formatter": LOG_FORMAT if LOG_FORMAT in ("json", "console") else "console",
+            "filters": ["request_id"],
         },
         **(
             {
@@ -294,7 +312,22 @@ LOGGING = {
             else {}
         ),
     },
+    "root": {"handlers": ["structured"], "level": LOG_LEVEL},
     "loggers": {
+        # Request records and application telemetry. Kept off the "security"
+        # handler on purpose: an audit trail answering "who changed this" and
+        # telemetry answering "why is this slow" have different readers, and
+        # different retention.
+        "zion.request": {
+            "handlers": ["structured"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+        "apps.knowledge": {
+            "handlers": ["structured"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
         "apps.accounts.security": {
             "handlers": ["console"] + (["auth_file"] if _auth_log_file else []),
             "level": os.getenv("AUTH_LOG_LEVEL", "INFO"),
@@ -308,8 +341,53 @@ LOGGING = {
     },
 }
 
+# --- observability ----------------------------------------------------------
+# The header a correlation id arrives on and is echoed back in. Must match
+# REQUEST_ID_HEADER on the ai_service side, or one upload produces two
+# unconnected halves of a trace.
+REQUEST_ID_HEADER = os.getenv("REQUEST_ID_HEADER", "X-Request-ID")
+
+# How long an ingestion job may stay in flight before an operator should look at
+# it. Detection only: nothing is failed automatically on this signal, because a
+# job that is merely slow and a job whose worker died are indistinguishable from
+# the outside, and only one of them is safe to give up on.
+INGESTION_STALE_AFTER_SECONDS = int(os.getenv("INGESTION_STALE_AFTER_SECONDS", 1800))
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
+
+# --- knowledge base / ai_service -------------------------------------------
+# Django owns the document records; ai_service owns retrieval. The only thing
+# crossing between them is a Celery message, so the only configuration Django
+# needs about the AI side is the broker they share and the name of the embedding
+# each version was built with — which is stamped onto the version at upload so
+# the record stays true after the AI service is reconfigured.
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", _redis_url)
+AI_EMBEDDING_MODEL = os.getenv("AI_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+AI_EMBEDDING_MODEL_VERSION = os.getenv("AI_EMBEDDING_MODEL_VERSION", "v1")
+
+# Mirrors MAX_UPLOAD_BYTES in ai_service. Enforced here because this is where
+# the upload actually arrives.
+KNOWLEDGE_MAX_UPLOAD_BYTES = int(os.getenv("KNOWLEDGE_MAX_UPLOAD_BYTES", 25 * 1024 * 1024))
+
+# The shared secret on /api/internal/knowledge/. Both services must hold the
+# same value: the worker presents it to report progress and to fetch a stored
+# document, and this side compares it in constant time. It is not a user
+# credential and must never be used as one.
+#
+# Unset means the internal routes refuse everything, which is the right failure:
+# a misconfigured deployment should stop ingesting, not accept anonymous writes
+# to its document pipeline. It is required whenever DEBUG is off.
+AI_SERVICE_INTERNAL_TOKEN = os.getenv("AI_SERVICE_INTERNAL_TOKEN", "").strip()
+
+# Reading ai_service's operational endpoints needs a *different* secret from the
+# one above. AI_SERVICE_INTERNAL_TOKEN is what the worker presents when calling
+# into Django; this is what Django presents when calling into ai_service, and it
+# must equal ai_service's own INTERNAL_TOKEN. Two names because they are two
+# credentials — sharing one would mean a leak in either direction compromised
+# both.
+AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "").strip().rstrip("/")
+AI_SERVICE_OPS_TOKEN = os.getenv("AI_SERVICE_OPS_TOKEN", "").strip()
 
 # --- Production hardening ---------------------------------------------------
 # Applied automatically whenever DJANGO_DEBUG=0, so a deployment cannot forget
@@ -356,6 +434,16 @@ if not DEBUG:
         raise ImproperlyConfigured(
             "CORS_ALLOWED_ORIGINS and FRONTEND_URL must name the real site when "
             f"DEBUG is off; found development origins: {', '.join(_dev_origins)}"
+        )
+
+    # The worker's callback is the only way an ingestion result reaches this
+    # database. An unset token does not merely disable it — it makes every
+    # uploaded document sit in PROCESSING for ever with no explanation.
+    if not AI_SERVICE_INTERNAL_TOKEN or len(AI_SERVICE_INTERNAL_TOKEN) < 32:
+        raise ImproperlyConfigured(
+            "AI_SERVICE_INTERNAL_TOKEN must be a random value of at least 32 "
+            "characters when DEBUG is off; the ingestion worker authenticates "
+            "with it and the internal routes reject everything without it."
         )
 
     # The JWT signing key falls back to SECRET_KEY, and SECRET_KEY has a

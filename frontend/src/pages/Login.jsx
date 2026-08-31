@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 import { fieldErrors, messageFor } from '@/api/auth'
 import Captcha from '@/components/auth/Captcha'
@@ -8,8 +8,12 @@ import { useAuth } from '@/lib/auth'
 
 import './login.css'
 
-/** Django serves the admin, so leaving for it is a document navigation, not a route. */
-const ADMIN_URL = import.meta.env.VITE_ADMIN_URL ?? '/admin/'
+/**
+ * Where a signed-in staff user lands. The custom control room is a route in
+ * this same app, so navigate() is enough — the full page load that Django's
+ * server-rendered /admin/ needed is not.
+ */
+const CONTROL_URL = import.meta.env.VITE_CONTROL_URL ?? '/control'
 
 const EMPTY = { email: '', password: '', captcha_answer: '' }
 
@@ -87,6 +91,7 @@ function NoAccess({ user, onSignOut, busy }) {
 
 export default function Login() {
   const { user, isLoading, isAuthenticated, isStaff, signIn, signOut } = useAuth()
+  const navigate = useNavigate()
 
   const [form, setForm] = useState(EMPTY)
   const [errors, setErrors] = useState({})
@@ -106,9 +111,9 @@ export default function Login() {
   useEffect(() => {
     if (!isLoading && isAuthenticated && isStaff) {
       setStatus('leaving')
-      window.location.assign(ADMIN_URL)
+      navigate(CONTROL_URL, { replace: true })
     }
-  }, [isLoading, isAuthenticated, isStaff])
+  }, [isLoading, isAuthenticated, isStaff, navigate])
 
   // Move the reader to the message rather than leaving it announced but unfound.
   useEffect(() => {
@@ -154,7 +159,7 @@ export default function Login() {
 
       if (account.is_staff) {
         setStatus('leaving')
-        window.location.assign(ADMIN_URL)
+        navigate(CONTROL_URL, { replace: true })
         return
       }
       setStatus('idle') // the NoAccess panel takes over from here

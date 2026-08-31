@@ -1,16 +1,38 @@
+# Pins are the versions the application is actually built and tested against.
+#
+# The web/vector/settings block below was re-pinned in Phase 2 to match the
+# installed environment rather than the other way round: the tree had drifted
+# well ahead of these numbers, and pydantic-settings 2.15 in particular changed
+# how complex fields are read from the environment (see app/core/config.py).
+# Downgrading to make an old pin true would have hidden that, not fixed it.
+
 # --- Web framework ---
-fastapi==0.115.6
+fastapi==0.141.1
 uvicorn[standard]==0.34.0
-pydantic==2.10.4
-pydantic-settings==2.7.1
-python-multipart==0.0.20
+pydantic==2.13.5
+pydantic-settings==2.15.0
+python-multipart==0.0.32
+
+# --- Worker ---
+# The ingestion worker. Django holds these too, but only to *send*: the task
+# implementations live here, in the image that already has Qdrant.
+celery==5.4.0
+redis==5.2.1
 
 # --- Vector store ---
-qdrant-client==1.12.2
+qdrant-client==1.19.0
 
-# --- Embeddings & reranking ---
-sentence-transformers==3.3.1
-torch==2.5.1
+# --- Embeddings ---
+# Nothing to pin. Embeddings come from the Hugging Face Serverless Inference
+# API over httpx (see app/embeddings/api_huggingface.py), which is what removed
+# torch and sentence-transformers from this file — together roughly 2.5 GB of
+# wheels, carried by every API container and every worker child to do a few
+# hundred floats of arithmetic per chunk.
+#
+# EMBEDDING_PROVIDER=local still selects the in-process implementation in
+# app/embeddings/huggingface.py, which is kept and tested. It is not installable
+# from this file on purpose: an image that wants it installs the extras in
+# requirements-local-models.txt and accepts the size.
 
 # --- LLM providers ---
 google-genai==0.5.0

@@ -13,7 +13,7 @@ from fastapi import Depends, Request
 
 from app.core.config import Settings, get_settings
 from app.core.logging import get_logger
-from app.embeddings.huggingface import HuggingFaceEmbeddings
+from app.embeddings.factory import build_embeddings
 from app.embeddings.provider import EmbeddingProvider
 from app.ingestion.processors.chunker import RecursiveChunker
 from app.ingestion.service import IngestionService
@@ -22,9 +22,15 @@ from app.rag.answer_generator import AnswerGenerator
 from app.rag.context_builder import ContextBuilder
 from app.rag.pipeline import RagPipeline
 from app.retrieval.hybrid_search import HybridSearch
-from app.retrieval.keyword_search import KeywordSearch
 from app.retrieval.query_rewriter import QueryRewriter
-from app.retrieval.reranker import CrossEncoderReranker, NoopReranker
+from app.retrieval.reranker import (
+    CrossEncoderReranker,
+    NoopReranker,
+    crossencoder_available,
+)
+from app.retrieval.scope import RetrievalScope
+from app.retrieval.sparse import SparseEncoder
+from app.retrieval.sparse_search import SparseSearch
 from app.retrieval.vector_search import VectorSearch
 from app.services.chat_service import ChatService
 from app.services.document_service import DocumentService
@@ -47,12 +53,7 @@ class Container:
 
     @classmethod
     async def build(cls, settings: Settings) -> Container:
-        embeddings = HuggingFaceEmbeddings(
-            model_name=settings.embedding_model,
-            device=settings.embedding_device,
-            batch_size=settings.embedding_batch_size,
-            cache_size=settings.embedding_cache_size,
-        )
+        embeddings = build_embeddings(settings)
         await embeddings.load()
 
         store = QdrantVectorStore(
@@ -71,29 +72,60 @@ class Container:
             default_collection=settings.qdrant_collection,
         )
 
-        reranker = (
-            CrossEncoderReranker(settings.reranker_model, settings.embedding_device)
-            if settings.reranker_enabled
-            else NoopReranker()
-        )
+        # Reranking is configured on but the model cannot be loaded in an image
+        # built without sentence-transformers. Said once, here, because the
+        # alternative is `rerank` catching the ImportError on every query and
+        # returning fusion order with a line nobody reads.
+        reranker: CrossEncoderReranker | NoopReranker
+        if settings.reranker_enabled and not crossencoder_available():
+            logger.error(
+                "RERANKER_ENABLED is true but sentence-transformers is not installed; "
+                "answering from fusion order instead. Install "
+                "requirements-local-models.txt, or set RERANKER_ENABLED=false to "
+                "make this deliberate",
+                extra={"model": settings.reranker_model},
+            )
+            reranker = NoopReranker()
+        elif settings.reranker_enabled:
+            reranker = CrossEncoderReranker(settings.reranker_model, settings.embedding_device)
+        else:
+            reranker = NoopReranker()
 
         pipeline = RagPipeline(
             search=HybridSearch(
                 vector_search=VectorSearch(embeddings, store),
-                keyword_search=KeywordSearch(store),
+                sparse_search=SparseSearch(
+                    store, SparseEncoder(max_terms=settings.sparse_max_terms)
+                ),
                 alpha=settings.hybrid_alpha,
+                dense_top_k=settings.dense_top_k,
+                sparse_top_k=settings.sparse_top_k,
+                fusion_top_k=settings.fusion_top_k,
+                min_score=settings.min_retrieval_score,
+                rrf_k=settings.rrf_k,
             ),
             reranker=reranker,
             generator=AnswerGenerator(
                 llm=llm,
-                context_builder=ContextBuilder(),
+                context_builder=ContextBuilder(max_chars=settings.max_context_chars),
                 temperature=settings.llm_temperature,
                 max_tokens=settings.llm_max_tokens,
             ),
             rewriter=QueryRewriter(llm, enabled=settings.query_rewrite_enabled),
-            default_collection=settings.qdrant_collection,
-            top_k=settings.top_k,
+            embedding_model=settings.embedding_model,
+            embedding_model_version=settings.embedding_model_version,
+            top_k=settings.rerank_top_k,
+            min_rerank_score=settings.min_rerank_score,
+            confidence_high=settings.confidence_high,
+            confidence_low=settings.confidence_low,
+            min_context_documents=settings.min_context_documents,
         )
+
+        # Requests that name no knowledge base read the corpus indexed before
+        # knowledge bases existed. Once documents are ingested through the
+        # Django-owned models this becomes that deployment's default knowledge
+        # base instead, and no caller has to change.
+        default_scope = RetrievalScope.legacy(settings.qdrant_collection)
 
         logger.info("container ready", extra={"collection": settings.qdrant_collection})
         return cls(
@@ -103,13 +135,19 @@ class Container:
             llm=llm,
             ingestion=ingestion,
             pipeline=pipeline,
-            chat_service=ChatService(pipeline),
+            chat_service=ChatService(pipeline, default_scope=default_scope),
             document_service=DocumentService(ingestion),
         )
 
     async def close(self) -> None:
         await self.store.close()
         await self.llm.close()
+        # Only the API embedding provider holds an HTTP client; the local one
+        # and the router have nothing to release, so this is asked rather than
+        # required of the interface.
+        aclose = getattr(self.embeddings, "aclose", None)
+        if callable(aclose):
+            await aclose()
 
 
 def get_container(request: Request) -> Container:

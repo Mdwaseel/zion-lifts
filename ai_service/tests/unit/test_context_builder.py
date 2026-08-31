@@ -3,9 +3,7 @@ from app.vectorstore.base import ScoredChunk
 
 
 def chunk(cid: str, text: str, title: str = "Doc") -> ScoredChunk:
-    return ScoredChunk(
-        id=cid, text=text, document_id="d1", score=0.5, metadata={"title": title}
-    )
+    return ScoredChunk(id=cid, text=text, document_id="d1", score=0.5, metadata={"title": title})
 
 
 def test_passages_are_numbered_from_one():

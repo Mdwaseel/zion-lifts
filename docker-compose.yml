@@ -1,0 +1,52 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: zion_redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+
+  ai_service:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: zion_ai_service
+    ports:
+      - "8080:8000"
+    env_file:
+      - ./ai_service/.env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
+
+  ai_worker:
+    build:
+      context: ./ai_service
+      dockerfile: Dockerfile
+    container_name: zion_ai_worker
+    command: ["celery", "-A", "app.tasks.celery_app:celery_app", "worker", "-Q", "ai_ingestion", "--concurrency", "1"]
+    # The image's HEALTHCHECK asks an HTTP port this container does not serve,
+    # so it would sit "unhealthy" forever while working perfectly. Turned off
+    # rather than faked; a worker check belongs against the broker.
+    healthcheck:
+      disable: true
+    env_file:
+      - ./ai_service/.env
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_healthy
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped

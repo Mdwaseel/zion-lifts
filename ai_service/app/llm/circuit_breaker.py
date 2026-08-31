@@ -6,14 +6,16 @@ import asyncio
 import time
 from enum import StrEnum
 
+from app.core import events
 from app.core.logging import get_logger
+from app.core.metrics import metrics
 
 logger = get_logger(__name__)
 
 
 class BreakerState(StrEnum):
-    CLOSED = "closed"      # healthy, calls pass through
-    OPEN = "open"          # failing, calls rejected immediately
+    CLOSED = "closed"  # healthy, calls pass through
+    OPEN = "open"  # failing, calls rejected immediately
     HALF_OPEN = "half_open"  # probing with a single trial call
 
 
@@ -58,7 +60,17 @@ class CircuitBreaker:
                 if self._retry_in() <= 0:
                     self._state = BreakerState.HALF_OPEN
                     self._successes = 0
-                    logger.info("circuit half-open", extra={"circuit": self.name})
+                    metrics.increment(
+                        "circuit_transitions_total", provider=self.name, to="half_open"
+                    )
+                    logger.info(
+                        events.CIRCUIT_HALF_OPEN,
+                        extra={
+                            "event": events.CIRCUIT_HALF_OPEN,
+                            "provider": self.name,
+                            "failure_count": self._failures,
+                        },
+                    )
                     return True
                 return False
             return True
@@ -73,7 +85,11 @@ class CircuitBreaker:
                 self._successes += 1
                 if self._successes >= self._success_threshold:
                     self._reset_locked()
-                    logger.info("circuit closed", extra={"circuit": self.name})
+                    metrics.increment("circuit_transitions_total", provider=self.name, to="closed")
+                    logger.info(
+                        events.CIRCUIT_CLOSED,
+                        extra={"event": events.CIRCUIT_CLOSED, "provider": self.name},
+                    )
             else:
                 self._failures = 0
 
@@ -83,9 +99,18 @@ class CircuitBreaker:
             if self._state is BreakerState.HALF_OPEN or self._failures >= self._fail_threshold:
                 self._state = BreakerState.OPEN
                 self._opened_at = time.monotonic()
+                metrics.increment("circuit_transitions_total", provider=self.name, to="open")
+                # The provider's own error text is deliberately absent: it can
+                # echo the request, and an opened circuit is diagnosed from the
+                # failure count and the cooldown, not from the last message.
                 logger.warning(
-                    "circuit opened",
-                    extra={"circuit": self.name, "failures": self._failures},
+                    events.CIRCUIT_OPENED,
+                    extra={
+                        "event": events.CIRCUIT_OPENED,
+                        "provider": self.name,
+                        "failure_count": self._failures,
+                        "cooldown_s": self._reset_seconds,
+                    },
                 )
 
     def _reset_locked(self) -> None:

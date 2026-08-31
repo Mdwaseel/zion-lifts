@@ -182,9 +182,14 @@ class LogoutView(APIView):
 
 @method_decorator(ensure_csrf_cookie, name="dispatch")
 class MeView(APIView):
-    """Who is signed in. The front end's session check on first paint."""
+    """Who is signed in. The front end's session check on first paint.
 
-    authentication_classes = [JWTCookieAuthentication]
+    Uses the project default — the JWT cookie first, then the Django session —
+    rather than pinning JWT only. Every other authenticated endpoint accepts
+    both, and a staff user already signed into /admin/ should not be told they
+    are anonymous when they open the control room.
+    """
+
     permission_classes = [IsAuthenticated]
 
     def get(self, request):

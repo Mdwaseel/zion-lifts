@@ -14,7 +14,7 @@ from app.api.schemas.document import SearchRequest, SearchResponse
 from app.core.logging import get_logger
 from app.core.security import require_api_key
 from app.llm.fallback import AllProvidersFailedError
-from app.services.chat_service import ChatService
+from app.services.chat_service import ChatService, ScopeError
 
 logger = get_logger(__name__)
 
@@ -39,6 +39,10 @@ async def ask(
 ) -> ChatResponse:
     try:
         return await service.ask(request)
+    except ScopeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc
     except AllProvidersFailedError as exc:
         logger.error("all llm providers failed", extra={"errors": exc.errors})
         raise HTTPException(
@@ -65,4 +69,9 @@ async def search(
     service: ChatService = Depends(get_chat_service),
 ) -> SearchResponse:
     """Returns the ranked passages only. Useful for debugging retrieval quality."""
-    return await service.search(request)
+    try:
+        return await service.search(request)
+    except ScopeError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=str(exc)
+        ) from exc

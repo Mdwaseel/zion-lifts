@@ -35,9 +35,9 @@ sys.path.insert(0, str(ROOT / "backend"))
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "zion.settings")
 django.setup()
 
-from apps.catalog.models import LiftImage, LiftType          # noqa: E402
-from apps.content.models import Award, GalleryItem, JournalPost, Milestone, TeamMember  # noqa: E402
-from apps.projects.models import Project, ProjectImage       # noqa: E402
+from apps.adminpanel.models import (                        # noqa: E402
+    Award, BlogPost, GalleryItem, Lift, Milestone, Project, TeamMember,
+)
 
 db_missing = []
 
@@ -47,16 +47,18 @@ def check(label, value):
         db_missing.append((label, value))
 
 
-for lift in LiftType.objects.all():
-    check(f"LiftType {lift.slug}.hero", lift.hero_image_url)
-    check(f"LiftType {lift.slug}.video", lift.hero_video_url)
-for img in LiftImage.objects.all():
-    check(f"LiftImage {img.lift_type.slug}/{img.kind}", img.image_url)
+# Images are lists on their parent now, so these read the JSON column rather
+# than a second table.
+for lift in Lift.objects.all():
+    check(f"Lift {lift.slug}.hero", lift.hero_image_url)
+    check(f"Lift {lift.slug}.video", lift.hero_video_url)
+    for img in lift.images:
+        check(f"Lift {lift.slug}/{img.get('kind')}", img.get("src"))
 for p in Project.objects.all():
     for field in ("hero_image_url", "hero_video_url", "loop_video_url", "poster_url"):
         check(f"Project {p.slug}.{field}", getattr(p, field))
-for img in ProjectImage.objects.all():
-    check(f"ProjectImage {img.project.slug}/{img.stage}", img.image_url)
+    for img in p.images:
+        check(f"Project {p.slug}/{img.get('stage')}", img.get("src"))
 for g in GalleryItem.objects.all():
     check(f"Gallery #{g.pk}", g.image_url)
 for m in Milestone.objects.all():
@@ -65,8 +67,8 @@ for t in TeamMember.objects.all():
     check(f"Team {t.name}", t.photo_url)
 for a in Award.objects.all():
     check(f"Award {a.year}", a.image_url)
-for j in JournalPost.objects.all():
-    check(f"Journal {j.slug}", j.hero_image_url)
+for post in BlogPost.objects.all():
+    check(f"Blog {post.slug}", post.hero_image_url)
 
 print(f"\ndatabase: {len(db_missing)} missing")
 for label, value in db_missing:

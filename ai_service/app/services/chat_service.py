@@ -10,26 +10,54 @@ from app.api.schemas.document import SearchHit, SearchRequest, SearchResponse
 from app.core.constants import ConfidenceLevel
 from app.core.logging import get_logger
 from app.rag.pipeline import RagPipeline
+from app.retrieval.scope import RetrievalScope
 
 logger = get_logger(__name__)
 
 
+class ScopeError(ValueError):
+    """The caller asked for a corpus it cannot have, or described one that
+    makes no sense. Surfaced as a 422, never as an empty result — silently
+    searching something other than what was asked for is worse than refusing."""
+
+
 class ChatService:
     """Translates between API schemas and the RAG pipeline. Route handlers stay
-    thin; nothing here knows about FastAPI."""
+    thin; nothing here knows about FastAPI.
 
-    def __init__(self, pipeline: RagPipeline) -> None:
+    It is also where a request stops being able to choose its own corpus: the
+    caller may name a knowledge base, and this class turns that into a
+    :class:`RetrievalScope`. Once permissions exist the check goes in
+    ``_scope_for`` and every caller inherits it, because it is the only route
+    from a request to a search.
+    """
+
+    def __init__(self, pipeline: RagPipeline, default_scope: RetrievalScope) -> None:
         self._pipeline = pipeline
+        self._default_scope = default_scope
+
+    def _scope_for(self, knowledge_base_id: str | None, document_ids: list[str]) -> RetrievalScope:
+        if not knowledge_base_id:
+            # The service default, which for a single-corpus deployment is the
+            # legacy collection named in configuration.
+            if not document_ids:
+                return self._default_scope
+            raise ScopeError("document_ids requires a knowledge_base_id")
+
+        return RetrievalScope.for_knowledge_base(
+            knowledge_base_id=knowledge_base_id,
+            document_ids=document_ids,
+        )
 
     async def ask(self, request: ChatRequest) -> ChatResponse:
         session_id = request.session_id or uuid.uuid4().hex
+        scope = self._scope_for(request.knowledge_base_id, request.document_ids)
 
         result = await self._pipeline.ask(
             question=request.question,
+            scope=scope,
             history=request.history,
-            collection=request.collection,
             top_k=request.top_k,
-            filters=request.filters,
         )
 
         confidence = result.confidence
@@ -42,6 +70,7 @@ class ChatService:
                 "confidence": confidence.score if confidence else 0.0,
                 "citations": len(result.citations),
                 "took_ms": round(result.took_ms, 1),
+                **scope.describe(),
             },
         )
 
@@ -64,12 +93,12 @@ class ChatService:
 
     async def stream(self, request: ChatRequest) -> AsyncIterator[StreamChunk]:
         try:
+            scope = self._scope_for(request.knowledge_base_id, request.document_ids)
             async for event, payload in self._pipeline.ask_stream(
                 question=request.question,
+                scope=scope,
                 history=request.history,
-                collection=request.collection,
                 top_k=request.top_k,
-                filters=request.filters,
             ):
                 if event == "delta":
                     yield StreamChunk(type="delta", content=str(payload))
@@ -87,9 +116,8 @@ class ChatService:
         started = time.perf_counter()
         chunks, _ = await self._pipeline.retrieve(
             question=request.query,
-            collection=request.collection,
+            scope=self._scope_for(request.knowledge_base_id, request.document_ids),
             top_k=request.top_k,
-            filters=request.filters,
         )
         return SearchResponse(
             query=request.query,

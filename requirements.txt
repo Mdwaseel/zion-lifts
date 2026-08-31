@@ -11,3 +11,9 @@ python-dotenv==1.2.3
 sqlparse==0.6.0
 tzdata==2026.3
 whitenoise==6.12.0
+
+# Django only ever *sends* tasks — the ingestion worker lives in the
+# ai_service image, where torch and the Qdrant client already are. These
+# two are the broker client for apps/knowledge/dispatch.py and nothing more.
+celery==5.4.0
+redis==5.2.1

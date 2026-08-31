@@ -35,7 +35,9 @@ class DocumentService:
         enriched = metadata.model_copy(update={"title": metadata.title or result.title})
         return DocumentResponse(
             document_id=result.document_id,
-            status=DocumentStatus.INDEXED,
+            # READY, not INDEXED: the status vocabulary is now the one Django
+            # speaks, and 'indexed' was this service's private word for it.
+            status=DocumentStatus.READY,
             chunk_count=result.chunk_count,
             collection=result.collection,
             metadata=enriched,

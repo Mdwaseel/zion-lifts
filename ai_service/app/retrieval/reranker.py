@@ -1,13 +1,34 @@
-"""Cross-encoder reranking of retrieval candidates."""
+"""Cross-encoder reranking of retrieval candidates.
+
+The cross-encoder runs in-process and needs sentence-transformers, which the
+default image no longer installs — embeddings moved to the Hugging Face API and
+torch left with them. ``crossencoder_available()`` exists so the composition
+root can find that out at start-up and say so once, rather than having
+``rerank`` swallow an ImportError on every single query and quietly return
+fusion order forever. Reranking meaningfully improves the shortlist, so a
+deployment that has turned it on and is not getting it should be told.
+"""
 
 from __future__ import annotations
 
 import asyncio
+from importlib.util import find_spec
+from typing import Any
 
 from app.core.logging import get_logger
 from app.vectorstore.base import ScoredChunk
 
 logger = get_logger(__name__)
+
+
+def crossencoder_available() -> bool:
+    """Whether the in-process cross-encoder can be loaded at all.
+
+    Checks for the module rather than importing it: this is called during
+    start-up, and importing sentence-transformers costs seconds even when the
+    answer is going to be yes.
+    """
+    return find_spec("sentence_transformers") is not None
 
 
 class CrossEncoderReranker:
@@ -18,7 +39,8 @@ class CrossEncoderReranker:
         self._model_name = model_name
         self._device = device
         self._batch_size = batch_size
-        self._model = None
+        # Loaded on first use; see the note in embeddings/huggingface.py.
+        self._model: Any = None
         self._lock = asyncio.Lock()
 
     async def load(self) -> None:
@@ -35,12 +57,10 @@ class CrossEncoderReranker:
             )
 
     def _predict(self, pairs: list[tuple[str, str]]) -> list[float]:
-        scores = self._model.predict(pairs, batch_size=self._batch_size)  # type: ignore[union-attr]
+        scores = self._model.predict(pairs, batch_size=self._batch_size)
         return [float(s) for s in scores]
 
-    async def rerank(
-        self, query: str, chunks: list[ScoredChunk], top_k: int
-    ) -> list[ScoredChunk]:
+    async def rerank(self, query: str, chunks: list[ScoredChunk], top_k: int) -> list[ScoredChunk]:
         if not chunks:
             return []
         try:
@@ -72,7 +92,5 @@ class NoopReranker:
     async def load(self) -> None:
         return None
 
-    async def rerank(
-        self, query: str, chunks: list[ScoredChunk], top_k: int
-    ) -> list[ScoredChunk]:
+    async def rerank(self, query: str, chunks: list[ScoredChunk], top_k: int) -> list[ScoredChunk]:
         return chunks[:top_k]

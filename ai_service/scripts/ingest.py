@@ -55,9 +55,7 @@ async def run(args: argparse.Namespace) -> int:
         for i, target in enumerate(targets, start=1):
             try:
                 if target.startswith(("http://", "https://")):
-                    result = await container.ingestion.ingest_url(
-                        target, metadata, args.collection
-                    )
+                    result = await container.ingestion.ingest_url(target, metadata, args.collection)
                 else:
                     path = Path(target)
                     result = await container.ingestion.ingest_file(

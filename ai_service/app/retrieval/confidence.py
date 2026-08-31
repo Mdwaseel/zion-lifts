@@ -35,11 +35,21 @@ class ConfidenceReport:
         return self.level is not ConfidenceLevel.LOW
 
 
-def assess(chunks: list[ScoredChunk], min_chunks: int = 1) -> ConfidenceReport:
+def assess(
+    chunks: list[ScoredChunk],
+    min_chunks: int = 1,
+    high: float = CONFIDENCE_HIGH,
+    low: float = CONFIDENCE_LOW,
+) -> ConfidenceReport:
     """Combine top relevance, support depth and source agreement.
 
     A single strong chunk is weaker evidence than several agreeing ones, so
     agreement across distinct documents is folded into the score.
+
+    ``high`` and ``low`` default to the module constants and are supplied from
+    ``Settings`` in the running service — the band between them decides whether
+    an answer is generated at all, which is not a number that should need a
+    deploy to change.
     """
     if len(chunks) < min_chunks or not chunks:
         return ConfidenceReport(0.0, ConfidenceLevel.LOW, 0.0, 0.0, 0.0, "no relevant context")
@@ -53,9 +63,9 @@ def assess(chunks: list[ScoredChunk], min_chunks: int = 1) -> ConfidenceReport:
 
     score = round(0.6 * top + 0.25 * mean + 0.15 * agreement, 4)
 
-    if score >= CONFIDENCE_HIGH:
+    if score >= high:
         level, reason = ConfidenceLevel.HIGH, "strong, well-supported match"
-    elif score >= CONFIDENCE_LOW:
+    elif score >= low:
         level, reason = ConfidenceLevel.MEDIUM, "partial support in the corpus"
     else:
         level, reason = ConfidenceLevel.LOW, "weak match; answer may not be grounded"

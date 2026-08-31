@@ -25,6 +25,8 @@ const JournalDetail = lazy(() => import('@/pages/JournalDetail'))
 const Legal = lazy(() => import('@/pages/Legal'))
 // Deliberately outside <Layout>: the control room door is not part of the site.
 const Login = lazy(() => import('@/pages/Login'))
+// The custom control room. Split out so none of it reaches a public visitor.
+const AdminApp = lazy(() => import('@/admin/AdminApp'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 function RouteFallback() {
@@ -71,7 +73,8 @@ function useLenis(enabled) {
 export default function App() {
   // The control room is a door, not a destination: no brand intro, and no
   // momentum scrolling on a single-screen form.
-  const isAuthRoute = useLocation().pathname.startsWith('/login')
+  const path = useLocation().pathname
+  const isAuthRoute = path.startsWith('/login') || path.startsWith('/control')
 
   const [intro, setIntro] = useState(() => !hasSeenIntro() && !isAuthRoute)
   useLenis(!intro && !isAuthRoute)
@@ -92,6 +95,14 @@ export default function App() {
             element={
               <AuthProvider>
                 <Login />
+              </AuthProvider>
+            }
+          />
+          <Route
+            path="control/*"
+            element={
+              <AuthProvider>
+                <AdminApp />
               </AuthProvider>
             }
           />

@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from typing import Any
-
 from pydantic import Field, field_validator
 
 from app.api.schemas.common import BaseSchema
@@ -16,12 +14,31 @@ class Message(BaseSchema):
 
 
 class ChatRequest(BaseSchema):
+    """What a caller may ask for.
+
+    Deliberately absent: ``collection`` and ``filters``. Both used to be taken
+    from here and passed to Qdrant unchanged, which made the index's own naming
+    the access-control boundary — any caller could name any collection, or send
+    a filter matching everything. The corpus is now decided server-side by a
+    :class:`~app.retrieval.scope.RetrievalScope`, and the most a caller can do
+    is *narrow* it with the two fields below, which are validated against what
+    they are already allowed to see.
+    """
+
     question: str = Field(min_length=1, max_length=MAX_QUESTION_CHARS)
     history: list[Message] = Field(default_factory=list, max_length=MAX_HISTORY_TURNS * 2)
     session_id: str | None = None
-    collection: str | None = None
+    knowledge_base_id: str | None = Field(
+        default=None,
+        max_length=64,
+        description="Which knowledge base to search. Falls back to the service default.",
+    )
+    document_ids: list[str] = Field(
+        default_factory=list,
+        max_length=50,
+        description="Narrow the search to these documents, within the knowledge base above.",
+    )
     top_k: int | None = Field(default=None, ge=1, le=50)
-    filters: dict[str, Any] = Field(default_factory=dict)
     stream: bool = False
 
     @field_validator("question")

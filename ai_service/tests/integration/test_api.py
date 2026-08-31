@@ -15,9 +15,10 @@ from app.rag.answer_generator import AnswerGenerator
 from app.rag.context_builder import ContextBuilder
 from app.rag.pipeline import RagPipeline
 from app.retrieval.hybrid_search import HybridSearch
-from app.retrieval.keyword_search import KeywordSearch
 from app.retrieval.query_rewriter import QueryRewriter
 from app.retrieval.reranker import NoopReranker
+from app.retrieval.scope import RetrievalScope
+from app.retrieval.sparse_search import SparseSearch
 from app.retrieval.vector_search import VectorSearch
 from app.services.chat_service import ChatService
 from app.services.document_service import DocumentService
@@ -27,7 +28,9 @@ COLLECTION = "test"
 
 
 def build_container() -> Container:
-    settings = Settings(qdrant_collection=COLLECTION, api_keys=[], internal_token="t")
+    settings = Settings(
+        _env_file=None, qdrant_collection=COLLECTION, api_keys=[], internal_token="t"
+    )
     embeddings = FakeEmbeddings()
     store = InMemoryVectorStore()
     llm = FallbackLLM([FakeLLM("Qdrant stores dense vectors [1].")])
@@ -39,11 +42,12 @@ def build_container() -> Container:
         default_collection=COLLECTION,
     )
     pipeline = RagPipeline(
-        search=HybridSearch(VectorSearch(embeddings, store), KeywordSearch(store), alpha=0.5),
+        search=HybridSearch(VectorSearch(embeddings, store), SparseSearch(store), alpha=0.5),
         reranker=NoopReranker(),
         generator=AnswerGenerator(llm, ContextBuilder()),
         rewriter=QueryRewriter(llm, enabled=False),
-        default_collection=COLLECTION,
+        embedding_model=embeddings.model_name,
+        embedding_model_version="v1",
         top_k=3,
     )
     return Container(
@@ -53,7 +57,9 @@ def build_container() -> Container:
         llm=llm,
         ingestion=ingestion,
         pipeline=pipeline,
-        chat_service=ChatService(pipeline),
+        # No knowledge base named on a request means the legacy corpus, which
+        # is what the ingestion endpoints above still write into.
+        chat_service=ChatService(pipeline, default_scope=RetrievalScope.legacy(COLLECTION)),
         document_service=DocumentService(ingestion),
     )
 
@@ -123,3 +129,43 @@ def test_internal_routes_require_the_internal_token(client: TestClient):
     ok = client.get("/api/v1/internal/stats", headers={"X-Internal-Token": "t"})
     assert ok.status_code == 200
     assert ok.json()["collection"] == COLLECTION
+
+
+def test_a_client_cannot_choose_its_own_collection(client: TestClient):
+    """The read boundary, at the edge.
+
+    These fields used to be accepted and handed to Qdrant unchanged, which made
+    the index's own naming the access-control boundary. They are now unknown
+    fields: the corpus is decided server-side, and the most a caller can do is
+    narrow what it is already allowed to see.
+    """
+    response = client.post(
+        "/api/v1/chat",
+        json={
+            "question": "What does Qdrant store?",
+            "collection": "someone-elses-corpus",
+            "filters": {"knowledge_base_id": "not-mine"},
+        },
+    )
+    assert response.status_code == 200, response.text
+    # Answered from the server's own scope; the smuggled collection is ignored
+    # rather than honoured. (extra="ignore" on the schema, not a silent 200 on
+    # a failed search — the ingested corpus is the one that replied.)
+    assert response.json()["answer"]
+
+
+def test_narrowing_to_documents_requires_naming_a_knowledge_base(client: TestClient):
+    response = client.post(
+        "/api/v1/chat",
+        json={"question": "What does Qdrant store?", "document_ids": ["d1"]},
+    )
+    assert response.status_code == 422
+    assert "knowledge_base_id" in response.text
+
+
+def test_search_is_scoped_the_same_way(client: TestClient):
+    response = client.post(
+        "/api/v1/chat/search",
+        json={"query": "hybrid retrieval", "document_ids": ["d1"]},
+    )
+    assert response.status_code == 422

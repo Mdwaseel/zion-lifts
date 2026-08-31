@@ -8,7 +8,7 @@ from typing import Any
 import pytest
 
 from app.llm.base import LLMClient, LLMMessage, LLMResult, LLMUsage
-from app.vectorstore.base import ScoredChunk, VectorRecord, VectorStore
+from app.vectorstore.base import ScoredChunk, SparseVector, VectorRecord, VectorStore
 
 
 class FakeEmbeddings:
@@ -42,11 +42,16 @@ class FakeEmbeddings:
 class InMemoryVectorStore(VectorStore):
     def __init__(self) -> None:
         self.collections: dict[str, dict[str, VectorRecord]] = {}
+        # Recorded so a dimension mismatch can be exercised without a Qdrant.
+        self.dimensions: dict[str, int] = {}
 
     async def ensure_collection(self, name: str, vector_size: int) -> None:
         self.collections.setdefault(name, {})
+        self.dimensions.setdefault(name, vector_size)
 
-    async def upsert(self, collection: str, records: list[VectorRecord]) -> int:
+    async def upsert(
+        self, collection: str, records: list[VectorRecord], batch_size: int = 128
+    ) -> int:
         bucket = self.collections.setdefault(collection, {})
         for record in records:
             bucket[record.id] = record
@@ -55,6 +60,46 @@ class InMemoryVectorStore(VectorStore):
     @staticmethod
     def _cosine(a: list[float], b: list[float]) -> float:
         return sum(x * y for x, y in zip(a, b, strict=True))
+
+    @staticmethod
+    def _sparse_score(query: SparseVector, record: VectorRecord) -> float:
+        """Dot product over shared dimensions.
+
+        Not Qdrant's scoring — the real store applies IDF across the collection,
+        which no in-memory double can reproduce faithfully. It ranks a chunk
+        that shares more query terms above one that shares fewer, which is the
+        property the tests around it actually depend on.
+        """
+        if record.sparse is None or record.sparse.is_empty:
+            return 0.0
+        weights = dict(zip(record.sparse.indices, record.sparse.values, strict=True))
+        return sum(
+            value * weights.get(index, 0.0)
+            for index, value in zip(query.indices, query.values, strict=True)
+        )
+
+    async def search_sparse(
+        self,
+        collection: str,
+        sparse: SparseVector,
+        top_k: int,
+        filters: dict[str, Any] | None = None,
+    ) -> list[ScoredChunk]:
+        if sparse.is_empty:
+            return []
+        scored = [
+            ScoredChunk(
+                id=r.id,
+                text=r.text,
+                document_id=r.document_id,
+                score=score,
+                metadata=r.metadata,
+            )
+            for r in self.collections.get(collection, {}).values()
+            if self._matches(r, filters) and (score := self._sparse_score(sparse, r)) > 0
+        ]
+        scored.sort(key=lambda c: c.score, reverse=True)
+        return scored[:top_k]
 
     @staticmethod
     def _matches(record: VectorRecord, filters: dict[str, Any] | None) -> bool:
@@ -109,14 +154,48 @@ class InMemoryVectorStore(VectorStore):
         return chunks, None
 
     async def delete_document(self, collection: str, document_id: str) -> int:
+        return await self.delete_where(collection, {"document_id": document_id})
+
+    def _select(
+        self,
+        collection: str,
+        filters: dict[str, Any],
+        exclude: dict[str, Any] | None = None,
+    ) -> list[str]:
+        return [
+            key
+            for key, record in self.collections.get(collection, {}).items()
+            if self._matches(record, filters) and not (exclude and self._matches(record, exclude))
+        ]
+
+    async def delete_where(
+        self, collection: str, filters: dict[str, Any], exclude: dict[str, Any] | None = None
+    ) -> int:
+        if not filters:
+            raise ValueError("refusing to delete with an empty filter")
         bucket = self.collections.get(collection, {})
-        ids = [k for k, v in bucket.items() if v.document_id == document_id]
-        for key in ids:
+        keys = self._select(collection, filters, exclude)
+        for key in keys:
             del bucket[key]
-        return len(ids)
+        return len(keys)
+
+    async def set_flag(
+        self, collection: str, filters: dict[str, Any], field: str, value: bool
+    ) -> None:
+        if not filters:
+            raise ValueError("refusing to set a payload flag with an empty filter")
+        bucket = self.collections.get(collection, {})
+        for key in self._select(collection, filters):
+            bucket[key].metadata[field] = value
 
     async def count(self, collection: str) -> int:
         return len(self.collections.get(collection, {}))
+
+    async def count_where(self, collection: str, filters: dict[str, Any]) -> int:
+        return len(self._select(collection, filters))
+
+    async def collection_dimension(self, collection: str) -> int | None:
+        return self.dimensions.get(collection)
 
     async def health(self) -> bool:
         return True

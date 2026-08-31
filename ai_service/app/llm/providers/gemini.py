@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from typing import Any
 
 from app.core.logging import get_logger
 from app.llm.base import (
@@ -44,15 +45,17 @@ class GeminiClient(LLMClient):
     def model(self) -> str:
         return self._model
 
+    # Returns `Any` rather than `object`: the SDK's config type is only
+    # importable inside this function, and the content dicts are a nested
+    # literal structure no annotation here would describe usefully.
     def _prepare(
         self, messages: list[LLMMessage], temperature: float | None, max_tokens: int | None
-    ) -> tuple[list[dict[str, object]], object]:
+    ) -> tuple[list[dict[str, Any]], Any]:
         from google.genai import types
 
         system, rest = split_system(messages)
         contents = [
-            {"role": _ROLE_MAP.get(m.role, "user"), "parts": [{"text": m.content}]}
-            for m in rest
+            {"role": _ROLE_MAP.get(m.role, "user"), "parts": [{"text": m.content}]} for m in rest
         ]
         config = types.GenerateContentConfig(
             system_instruction=system,

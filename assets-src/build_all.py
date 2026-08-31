@@ -17,6 +17,7 @@ import time
 
 STEPS = [
     ("brand",   "build_brand",  "logo cut-outs, light and dark"),
+    ("chatbot", "build_chatbot", "the assistant's mascot, launcher-sized"),
     ("images",  "build_images", "interiors, product renders, project photo"),
     ("frames",  "build_frames", "stills pulled from the 4K project masters"),
     ("video",   "build_video",  "web-ready mp4 + poster + muted loop"),
@@ -37,13 +38,21 @@ def run(module_name, label):
 
 
 def main():
-    if not shutil.which("ffmpeg"):
-        print("ffmpeg is not on PATH — install it before running this.", file=sys.stderr)
-        return 1
-
     only = set(sys.argv[1:])
     steps = STEPS + OPTIONAL if "--with-sourced" in only else STEPS
     only.discard("--with-sourced")
+
+    selected = [key for key, _, _ in steps if not only or key in only]
+    if not selected:
+        print(f"Nothing to do. Known steps: {', '.join(k for k, _, _ in steps)}", file=sys.stderr)
+        return 1
+
+    # Only the video and frame steps shell out to ffmpeg. Demanding it for all
+    # of them meant a contributor without it could not rebuild the logo or the
+    # assistant's mascot either.
+    if {"video", "frames"} & set(selected) and not shutil.which("ffmpeg"):
+        print("ffmpeg is not on PATH — install it before running this.", file=sys.stderr)
+        return 1
 
     for key, module_name, label in steps:
         if only and key not in only:

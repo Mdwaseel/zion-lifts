@@ -43,10 +43,17 @@ async def stats(
             "circuits": container.llm.breaker_states(),
         },
         "retrieval": {
-            "top_k": settings.top_k,
+            "dense_top_k": settings.dense_top_k,
+            "sparse_top_k": settings.sparse_top_k,
+            "fusion_top_k": settings.fusion_top_k,
+            "rerank_top_k": settings.rerank_top_k,
             "hybrid_alpha": settings.hybrid_alpha,
             "reranker": settings.reranker_model if settings.reranker_enabled else None,
             "query_rewrite": settings.query_rewrite_enabled,
+            "min_retrieval_score": settings.min_retrieval_score,
+            "min_rerank_score": settings.min_rerank_score,
+            "confidence_bands": [settings.confidence_low, settings.confidence_high],
+            "max_context_tokens": settings.max_context_tokens,
         },
     }
 
