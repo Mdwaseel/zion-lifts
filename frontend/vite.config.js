@@ -13,6 +13,10 @@ export default defineConfig({
       // the Django API and its uploaded media, so the app is same-origin in dev
       '/api': { target: 'http://127.0.0.1:8000', changeOrigin: true },
       '/uploads': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      // /login redirects a signed-in staff user here; proxying keeps the whole
+      // flow on one origin in dev, which is what makes SameSite=Lax cookies work.
+      '/admin': { target: 'http://127.0.0.1:8000', changeOrigin: true },
+      '/static': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
   build: {

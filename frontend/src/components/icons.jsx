@@ -52,6 +52,45 @@ export function Check({ size = 16, ...rest }) {
   )
 }
 
+/* --- authentication marks ------------------------------------------------ */
+
+export function Eye({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z" />
+      <circle cx="12" cy="12" r="3" />
+    </svg>
+  )
+}
+
+export function EyeOff({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <path d="M10.6 6.1A9.9 9.9 0 0112 6c6.4 0 10 6 10 6a17 17 0 01-3.2 3.8M6.2 8.2A17 17 0 002 12s3.6 6.5 10 6.5a10 10 0 003.6-.65" />
+      <path d="M9.9 9.9a3 3 0 004.2 4.2" />
+      <path d="M3.5 3.5l17 17" />
+    </svg>
+  )
+}
+
+export function Alert({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7.5v5.5M12 16.3v.2" />
+    </svg>
+  )
+}
+
+export function Lock({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <rect x="4.5" y="10.5" width="15" height="9.5" rx="2" />
+      <path d="M8.2 10.5V7.8a3.8 3.8 0 017.6 0v2.7" />
+    </svg>
+  )
+}
+
 /* --- service pillar marks ------------------------------------------------ */
 
 export function Wrench({ size = 22, ...rest }) {

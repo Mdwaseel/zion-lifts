@@ -1,0 +1,437 @@
+/* ==========================================================================
+   /login — control room access
+
+   Two panels: a drafted elevation on the obsidian ground, and the form on the
+   warm white. The split is the whole design; there is no ornament beyond the
+   drawing, which is the same line weight the rest of the site uses for its
+   marks. Everything reuses the shared .field and .btn primitives, so a change
+   to the design system reaches this page too.
+   ========================================================================== */
+
+.login {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  background: var(--obsidian);
+}
+
+/* --- left: the elevation ------------------------------------------------- */
+.login__visual {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  padding: clamp(2.5rem, 1.5rem + 4vw, 5.5rem);
+  background: var(--obsidian);
+  color: #f5f5f7;
+  isolation: isolate;
+}
+
+/* Drafting paper. Two rules at 40px, held well under the text contrast so it
+   reads as substrate rather than as pattern. */
+.login__grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 1px, transparent 1px);
+  background-size: 40px 40px;
+  /* Fades toward the seam so the two halves meet on a soft edge. */
+  mask-image: radial-gradient(120% 90% at 25% 45%, #000 30%, transparent 100%);
+  z-index: -1;
+}
+
+.login__visual-inner {
+  display: grid;
+  gap: clamp(1rem, 0.6rem + 1.4vw, 2rem);
+  max-width: 34rem;
+  width: 100%;
+}
+
+.login__eyebrow {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--teal-bright);
+}
+
+.login__wordmark {
+  font-size: clamp(3rem, 1.6rem + 6vw, 6.5rem);
+  line-height: 0.92;
+  letter-spacing: var(--tr-h1);
+  font-weight: var(--w-semibold);
+  color: #f5f5f7;
+}
+
+.login__lead {
+  font-size: var(--t-lead);
+  letter-spacing: var(--tr-lead);
+  color: var(--fg-dim);
+  max-width: 24ch;
+}
+
+.login__meta {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+/* --- the drawing --------------------------------------------------------- */
+.login-art {
+  width: min(100%, 20rem);
+  height: auto;
+  max-height: 38vh;
+  justify-self: start;
+}
+
+.login-art g {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.login-art__rails {
+  color: rgba(255, 255, 255, 0.42);
+}
+
+.login-art__levels {
+  color: rgba(255, 255, 255, 0.24);
+}
+
+.login-art__levels text,
+.login-art__dims text {
+  stroke: none;
+  fill: var(--fg-faint);
+  font-family: var(--font-mono);
+  /* The viewBox is 260 wide and the drawing renders around 320px, so 8px in
+     user units landed under 10px on screen — a smudge rather than a label. */
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.login-art__dims {
+  color: rgba(255, 255, 255, 0.34);
+}
+
+/* The car settles into place once, on load. One movement, no loop: this is a
+   login page, not a screensaver. */
+.login-art__car {
+  color: var(--teal-bright);
+  animation: login-car-settle 1.4s var(--ease-out) both;
+}
+
+@keyframes login-car-settle {
+  from {
+    transform: translateY(26px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+/* --- right: the form ----------------------------------------------------- */
+.login__form-side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(1.5rem, 1rem + 3vw, 4rem);
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.login-card {
+  width: min(100%, 27rem);
+}
+
+.login-card__panel {
+  display: grid;
+  gap: var(--gap-s);
+  animation: login-card-in var(--dur-slow) var(--ease-out) both;
+}
+
+@keyframes login-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.login-card__panel--waiting {
+  justify-items: center;
+  text-align: center;
+  gap: var(--gap);
+  padding-block: 4rem;
+}
+
+.login-card__eyebrow {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.login-card__title {
+  font-size: var(--t-h2);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-h2);
+  font-weight: var(--w-semibold);
+}
+
+.login-card__lead {
+  font-size: var(--t-body);
+  color: var(--fg-dim);
+  margin-bottom: var(--gap-s);
+}
+
+.login-card__mark {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  color: var(--accent);
+}
+
+.login-card__wide {
+  width: 100%;
+  padding-block: 0.95rem;
+  margin-top: var(--gap-xs);
+}
+
+.login-card__foot {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: var(--gap);
+  padding-top: var(--gap);
+  border-top: 1px solid var(--rule-soft);
+  font-size: var(--t-small);
+  color: var(--fg-faint);
+}
+
+.login-card__back {
+  font-size: var(--t-small);
+  justify-self: start;
+}
+
+/* --- form ---------------------------------------------------------------- */
+.login-form {
+  display: grid;
+  gap: var(--gap);
+}
+
+/* Never colour alone: the alert carries an icon and a rule as well as the tint,
+   so it survives a monochrome display and a red/green deficiency. */
+.login-form__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #c2543c;
+  border-left-width: 3px;
+  border-radius: var(--radius);
+  background: rgba(194, 84, 60, 0.08);
+  color: #8f3521; /* 6.3:1 on --paper */
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.login-form__alert svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.login-form__alert:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+.login-form__password {
+  position: relative;
+}
+
+.login-form__password input {
+  padding-right: 3.25rem;
+}
+
+.login-form__reveal {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  /* 44px, so it is a comfortable target on a phone. */
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--fg-faint);
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.login-form__reveal:hover:not(:disabled),
+.login-form__reveal:focus-visible {
+  color: var(--fg);
+  background: var(--surface);
+}
+
+/* --- captcha ------------------------------------------------------------- */
+.auth-captcha__frame {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.auth-captcha__image {
+  flex: 1 1 15rem;
+  min-height: 78px;
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: #fff;
+  overflow: hidden;
+}
+
+.auth-captcha__image img {
+  /* The challenge has to stay legible on a 360px screen, so it scales down
+     with the card rather than being cropped or scrolled. */
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.auth-captcha__placeholder {
+  font-size: var(--t-micro);
+  color: var(--fg-faint);
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.auth-captcha__refresh {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
+  color: var(--fg-dim);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.auth-captcha__refresh:hover:not(:disabled) {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.auth-captcha__refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- pending ------------------------------------------------------------- */
+.login-card__spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: login-spin 0.7s linear infinite;
+}
+
+.login-card__spinner--sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+  border-top-color: currentColor;
+  border-color: rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-card__wide:disabled,
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* --- responsive ---------------------------------------------------------- */
+/* Below the split, the visual becomes a header band: the brand stays, the
+   drawing goes, and the form gets the screen. */
+@media (max-width: 900px) {
+  .login {
+    grid-template-columns: 1fr;
+    min-height: 100svh;
+  }
+
+  .login__visual {
+    padding: clamp(1.75rem, 1rem + 4vw, 3rem) var(--page-x);
+    align-items: flex-end;
+    min-height: 13rem;
+  }
+
+  .login__grid {
+    mask-image: linear-gradient(to bottom, #000 20%, transparent 100%);
+  }
+
+  .login__wordmark {
+    font-size: clamp(2.25rem, 1.4rem + 4.5vw, 3.25rem);
+    line-height: 0.95;
+  }
+
+  .login__wordmark br {
+    display: none;
+  }
+
+  .login-art,
+  .login__meta {
+    display: none;
+  }
+
+  .login__form-side {
+    padding-block: clamp(2rem, 1.5rem + 3vw, 3.5rem);
+    align-items: flex-start;
+  }
+}
+
+@media (max-width: 420px) {
+  .auth-captcha__frame {
+    gap: 0.6rem;
+  }
+
+  .auth-captcha__refresh {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-art__car,
+  .login-card__panel {
+    animation: none;
+  }
+
+  .login-card__spinner {
+    animation-duration: 1.6s;
+  }
+}
