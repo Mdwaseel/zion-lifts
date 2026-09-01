@@ -40,8 +40,8 @@ class AnalyticsView(APIView):
     """Base: staff-only, range-aware, cached.
 
     Subclasses implement :meth:`payload` and get the rest. ``cache_key_parts``
-    lets a view that reads extra query parameters — a page number, a geography
-    level — keep them out of each other's cache entries.
+    lets a view that reads extra query parameters — a page number, a page path
+    — keep them out of each other's cache entries.
     """
 
     permission_classes = [IsAdminPanelUser]
@@ -198,24 +198,6 @@ class DevicesView(AnalyticsView):
             "browsers": selectors.browsers(window.start, window.end),
             "operating_systems": selectors.operating_systems(window.start, window.end),
             "labels": dict(Device.choices),
-        }
-
-
-class GeographyView(AnalyticsView):
-    """``/geography/`` — countries, regions or cities, depending on ``?level=``."""
-
-    def cache_key_parts(self, request):
-        return (request.query_params.get("level", "country"),)
-
-    def payload(self, request, window):
-        level = request.query_params.get("level", "country")
-        if level not in {"country", "region", "city"}:
-            level = "country"
-        return {
-            **_meta(window),
-            "level": level,
-            "available": selectors.geography_available(),
-            "rows": selectors.geography(window.start, window.end, level=level),
         }
 
 

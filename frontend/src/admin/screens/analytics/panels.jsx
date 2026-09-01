@@ -18,13 +18,7 @@ import { Link } from 'react-router-dom'
 import { BarList, DonutChart, colorFor, compact } from '../../components/charts'
 import { EmptyState, ErrorState, Pagination, Spinner } from '../../components/ui'
 import { useAsync } from '../../hooks'
-import {
-  fetchDevices,
-  fetchGeography,
-  fetchPages,
-  fetchRealtime,
-  fetchSources,
-} from '../../analytics-api'
+import { fetchDevices, fetchPages, fetchRealtime, fetchSources } from '../../analytics-api'
 
 /* ==========================================================================
    Frame
@@ -359,77 +353,6 @@ export function DeviceBreakdown({ range }) {
             </div>
           </div>
         </>
-      </PanelState>
-    </Panel>
-  )
-}
-
-/* ==========================================================================
-   Geography
-   ========================================================================== */
-
-export function Geography({ range }) {
-  const [level, setLevel] = useState('country')
-  const state = useAsync(
-    (signal) => fetchGeography(range, level, { signal }),
-    [rangeKey(range), level],
-  )
-  const rows = state.data?.rows ?? []
-  // "Available" is about the deployment, not the window: no proxy means no
-  // location data will ever appear, and saying so is more useful than an empty
-  // table that looks like a quiet week.
-  const unavailable = state.data && !state.data.available
-
-  return (
-    <Panel
-      title="Geography"
-      subtitle="Where visitors are"
-      actions={
-        <div className="cf-filters__group" role="group" aria-label="Level">
-          {['country', 'region', 'city'].map((option) => (
-            <button
-              key={option}
-              type="button"
-              className={`cf-chip${level === option ? ' is-active' : ''}`}
-              onClick={() => setLevel(option)}
-              aria-pressed={level === option}
-            >
-              {option[0].toUpperCase() + option.slice(1)}
-            </button>
-          ))}
-        </div>
-      }
-    >
-      <PanelState
-        state={state}
-        isEmpty={!state.loading && rows.length === 0}
-        emptyTitle={unavailable ? 'No location data' : 'Nothing in this period'}
-        emptyBody={
-          unavailable
-            ? 'Location is only recorded when a CDN or proxy in front of the site resolves it and passes it on. Nothing here looks up IP addresses.'
-            : 'No located visits in this range.'
-        }
-      >
-        <div className="cf-table__scroll">
-          <table className="cf-table cf-table--compact">
-            <thead>
-              <tr>
-                <th scope="col">{level[0].toUpperCase() + level.slice(1)}</th>
-                <th scope="col" className="cf-cell__num">Visitors</th>
-                <th scope="col" className="cf-cell__num">Page views</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((row) => (
-                <tr key={row.name}>
-                  <td>{row.name}</td>
-                  <td className="cf-cell__num">{row.visitors.toLocaleString()}</td>
-                  <td className="cf-cell__num">{row.page_views.toLocaleString()}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
       </PanelState>
     </Panel>
   )

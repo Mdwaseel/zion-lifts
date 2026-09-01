@@ -89,9 +89,9 @@ because the constraints being tested (unique version numbers per document) are
 database behaviour that SQLite would let pass vacuously.
 
 ```bash
-cd backend && ../.venv/Scripts/python manage.py test apps            # 441 tests
+cd backend && ../.venv/Scripts/python manage.py test apps            # 486 tests
 cd backend && ../.venv/Scripts/python manage.py test apps.accounts   # 66 auth tests
-cd backend && ../.venv/Scripts/python manage.py test apps.analytics  # 86 analytics tests
+cd backend && ../.venv/Scripts/python manage.py test apps.analytics  # 83 analytics tests
 cd frontend && npm test                                             # 12 auth-client tests
 cd ai_service && .venv/Scripts/python -m pytest -m 'not integration'  # 248 tests
 cd ai_service && REDIS_URL=redis://localhost:6379/1 QDRANT_TEST_URL=http://localhost:6333 \n    .venv/Scripts/python -m pytest -m integration
@@ -737,11 +737,12 @@ count as one visitor rather than five, and it identifies a browser across visits
 and nothing else about the person holding it. Clearing cookies is the intended
 way to opt out — the visitor simply becomes a new anonymous id.
 
-**Geography** is recorded only when a CDN or proxy has already resolved it and
+**Location** is recorded only when a CDN or proxy has already resolved it and
 passed it down as a header (`geo.py` reads Cloudflare, Vercel, Fastly and Google
 Cloud's by default; `ANALYTICS_GEO_HEADERS` overrides the list). Nothing here
-looks up an IP address. Without such a proxy the columns stay empty and the
-panel says so, rather than inventing a location.
+looks up an IP address. Without such a proxy the columns stay empty. There is no
+geography panel — the live feed's Location column is the only thing that reads
+them.
 
 The live feed shows a page, a device, a channel and a city — never a visitor id.
 It is a panel people read over each other's shoulders.
@@ -782,7 +783,6 @@ GET  /api/admin/analytics/visitors/     timeseries for the main chart
 GET  /api/admin/analytics/pages/        top pages (paginated); ?path= for one page
 GET  /api/admin/analytics/sources/      channels + referring domains
 GET  /api/admin/analytics/devices/      devices, browsers, operating systems
-GET  /api/admin/analytics/geography/    ?level=country|region|city
 GET  /api/admin/analytics/realtime/     online now + activity feed (uncached)
 GET  /api/admin/analytics/export/       the current view as CSV
 POST /api/analytics/track/              the public beacon — open, throttled
@@ -803,6 +803,23 @@ visits. **New** means the visitor's first-ever view falls inside the window.
 **Bounce rate** is the share of visits that saw one page, and on Top Pages it is
 measured against the page people *landed* on — the page that failed to hold
 them, not every page it appears on.
+
+### Unread badges
+
+The two inbox collections are the only things in the panel that arrive on their
+own, so they are the only ones that carry a count. The sidebar badges what has
+`status="new"` — arrived, nobody has picked it up — declared per collection as
+`Resource.unread_status` and computed in `apps/adminpanel/notifications.py`.
+
+There is deliberately no separate `is_read` flag. A record could then be read but
+unhandled, or handled but unread, and the badge would stop matching the filter it
+links to. The count clears when the status moves off "new", which is the moment
+somebody actually did something about it.
+
+Counts ride along on `/navigation/` so the badges are right on the first paint,
+then refresh from `/notifications/` — two integers, polled every 30s, skipped
+entirely while the tab is hidden, and forced on navigation so leaving an enquiry
+you just handled clears it on the way out.
 
 ### The dashboard
 

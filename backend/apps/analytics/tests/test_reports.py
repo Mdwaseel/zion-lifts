@@ -14,8 +14,7 @@ from apps.analytics.models import Channel, Device, PageView, Session, Visitor
 from .base import ADMIN, AnalyticsTestCase
 
 ENDPOINTS = (
-    "/overview/", "/visitors/", "/pages/", "/sources/",
-    "/devices/", "/geography/", "/realtime/",
+    "/overview/", "/visitors/", "/pages/", "/sources/", "/devices/", "/realtime/",
 )
 
 
@@ -210,31 +209,11 @@ class DimensionReportTests(AnalyticsTestCase):
         self.assertEqual(rows["social"], 1)
         self.assertEqual(rows["direct"], 1)
 
-    def test_countries_are_ranked_by_visitors(self):
-        body = self.get("/geography/", range="today")
-        self.assertTrue(body["available"])
-        self.assertEqual(body["rows"][0]["name"], "India")
-        self.assertEqual(body["rows"][0]["visitors"], 2)
-
-    def test_cities_can_be_asked_for_instead(self):
-        body = self.get("/geography/", range="today", level="city")
-        self.assertEqual(body["level"], "city")
-        self.assertEqual({row["name"] for row in body["rows"]}, {"Hyderabad", "Mumbai", "Austin"})
-
     def test_percentages_across_a_breakdown_sum_to_a_hundred(self):
         for panel in ("devices", "browsers", "operating_systems"):
             with self.subTest(panel=panel):
                 rows = self.get("/devices/", range="today")[panel]
                 self.assertAlmostEqual(sum(row["percentage"] for row in rows), 100.0, places=0)
-
-
-class GeographyAbsentTests(AnalyticsTestCase):
-    def test_with_no_location_data_the_panel_says_so_rather_than_inventing_one(self):
-        self.visit("/", at=timezone.now())
-        body = self.get("/geography/", range="today")
-
-        self.assertFalse(body["available"])
-        self.assertEqual(body["rows"], [])
 
 
 class RealtimeTests(AnalyticsTestCase):
@@ -374,7 +353,6 @@ class EmptyDatabaseTests(AnalyticsTestCase):
 
     def test_the_tables_are_empty_rather_than_populated_with_examples(self):
         self.assertEqual(self.get("/pages/", range="30d")["results"], [])
-        self.assertEqual(self.get("/geography/", range="30d")["rows"], [])
 
     def test_breakdowns_are_empty_rather_than_showing_default_percentages(self):
         devices = self.get("/devices/", range="30d")

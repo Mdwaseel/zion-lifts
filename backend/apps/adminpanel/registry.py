@@ -84,6 +84,14 @@ class Resource:
     # The FK back to an owning resource, e.g. LiftImage.lift_type. The UI uses
     # it to offer "images for this lift" from the parent's page, and to filter.
     parent_field: str = ""
+    # The `status` value meaning "arrived, nobody has picked it up yet". Set it
+    # and the sidebar shows a badge counting those rows; leave it empty and
+    # there is no badge.
+    #
+    # Only worth setting on a collection that fills up on its own. Everything
+    # else in the panel changes because staff changed it, so a count on it would
+    # be their own work reported back to them.
+    unread_status: str = ""
     # The key of the resource this one is a *tab* of. A resource with a section
     # gets no sidebar link of its own; it is reached from that section's screen.
     #

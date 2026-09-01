@@ -2,7 +2,7 @@
 
 from .base import AdminResourceViewSet, SingletonAdminViewSet, for_resource
 from .dashboard import DashboardView
-from .meta import ActivityView, NavigationView
+from .meta import ActivityView, NavigationView, NotificationsView
 from .operations import (
     OperationsIngestionView,
     OperationsOverviewView,
@@ -17,6 +17,7 @@ __all__ = [
     "DashboardView",
     "ActivityView",
     "NavigationView",
+    "NotificationsView",
     "OperationsOverviewView",
     "OperationsIngestionView",
     "OperationsProvidersView",

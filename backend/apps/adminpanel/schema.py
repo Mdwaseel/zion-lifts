@@ -301,6 +301,11 @@ def describe_resource(resource: Resource, *, detail: bool = True) -> dict[str, A
             "edit": resource.can_edit,
             "delete": resource.can_delete and not resource.singleton,
         },
+        # The `status` value the sidebar badge counts, or "" for no badge. The
+        # count itself is not here: a schema is a description of a collection
+        # and does not change, while an unread count changes every time somebody
+        # sends an enquiry. Caching one would mean caching the other.
+        "unread_status": resource.unread_status,
         # The other collections reached from the same screen, owner first.
         # Empty for a resource that stands alone, which is how the list view
         # knows to render no tab bar rather than a bar with one tab in it.

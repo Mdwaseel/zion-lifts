@@ -23,6 +23,7 @@ from .views import (
     ActivityView,
     DashboardView,
     NavigationView,
+    NotificationsView,
     OperationsIngestionView,
     OperationsOverviewView,
     OperationsProvidersView,
@@ -40,6 +41,8 @@ urlpatterns = [
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("navigation/", NavigationView.as_view(), name="navigation"),
     path("activity/", ActivityView.as_view(), name="activity"),
+    # Polled by the sidebar, so it is deliberately small: two integers.
+    path("notifications/", NotificationsView.as_view(), name="notifications"),
     # Media from an operator's own computer. One route for every collection —
     # the panel has one form component, so it needs one upload endpoint.
     path("uploads/", UploadView.as_view(), name="uploads"),

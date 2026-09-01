@@ -23,7 +23,6 @@ import { exportUrl, fetchOverview, fetchVisitors } from '../../analytics-api'
 import DateRangePicker from './DateRangePicker'
 import {
   DeviceBreakdown,
-  Geography,
   LiveVisitors,
   Panel,
   PanelState,
@@ -121,8 +120,6 @@ export default function Analytics() {
       </div>
 
       <TopPages range={range} />
-
-      <Geography range={range} />
     </div>
   )
 }

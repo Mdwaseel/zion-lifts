@@ -351,41 +351,6 @@ def referrers(start, end, limit: int = 8) -> list[dict]:
     ]
 
 
-# ----------------------------------------------------------------- geography
-def geography(start, end, *, level: str = "country", limit: int = 20) -> list[dict]:
-    """Visitors and page views by country, region or city.
-
-    Rows with no location are excluded rather than bucketed as "Unknown": geo is
-    only populated when a proxy resolved it (see ``geo.py``), so on a deployment
-    without one this correctly returns nothing at all and the panel says so,
-    instead of drawing a single 100% "Unknown" bar that looks like a bug.
-    """
-    field = {"country": "country", "region": "region", "city": "city"}.get(level, "country")
-    rows = (
-        sessions_in(start, end)
-        .exclude(**{field: ""})
-        .values(field)
-        .annotate(
-            visitors=Count("visitor_id", distinct=True),
-            page_views=Count("page_views"),
-        )
-        .order_by("-visitors")[:limit]
-    )
-    return [
-        {
-            "name": row[field],
-            "visitors": row["visitors"],
-            "page_views": row["page_views"],
-        }
-        for row in rows
-    ]
-
-
-def geography_available() -> bool:
-    """Whether any session has ever carried a country, for the empty state."""
-    return Session.objects.exclude(country="").exists()
-
-
 # ------------------------------------------------------------------- activity
 def recent_activity(limit: int = 25, offset: int = 0) -> list[dict]:
     """The live feed: the newest page views with their visit's dimensions.

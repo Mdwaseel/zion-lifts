@@ -49,10 +49,6 @@ export function fetchDevices(range, options) {
   return api.get(`${BASE}/devices/${query(rangeParams(range))}`, options)
 }
 
-export function fetchGeography(range, level = 'country', options) {
-  return api.get(`${BASE}/geography/${query({ ...rangeParams(range), level })}`, options)
-}
-
 /** Live visitors and the activity feed. Range-independent — "now" is not a window. */
 export function fetchRealtime({ page = 1, pageSize = 12 } = {}, options) {
   return api.get(`${BASE}/realtime/${query({ page, page_size: pageSize })}`, options)

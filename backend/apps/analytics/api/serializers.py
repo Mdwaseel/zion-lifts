@@ -227,9 +227,4 @@ def export_rows(window: Range) -> list[list]:
         rows += [[], [title, "Visitors", "Share %"]]
         rows += [[row["label"], row["visitors"], row["percentage"]] for row in data]
 
-    geo = selectors.geography(start, end)
-    if geo:
-        rows += [[], ["Countries", "Visitors", "Page views"]]
-        rows += [[row["name"], row["visitors"], row["page_views"]] for row in geo]
-
     return rows

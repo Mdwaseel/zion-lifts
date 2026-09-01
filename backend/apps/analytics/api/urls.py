@@ -17,7 +17,6 @@ urlpatterns = [
     path("pages/", views.PagesView.as_view(), name="pages"),
     path("sources/", views.SourcesView.as_view(), name="sources"),
     path("devices/", views.DevicesView.as_view(), name="devices"),
-    path("geography/", views.GeographyView.as_view(), name="geography"),
     path("realtime/", views.RealtimeView.as_view(), name="realtime"),
     path("export/", views.ExportView.as_view(), name="export"),
 ]

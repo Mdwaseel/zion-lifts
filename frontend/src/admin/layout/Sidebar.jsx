@@ -9,9 +9,13 @@ import { NavLink, useLocation } from 'react-router-dom'
  * A collection that declares a `section` is deliberately absent: it is a tab on
  * another collection's screen, not a destination. The server has already
  * filtered those out of this payload — see `AdminRegistry.grouped`.
+ *
+ * `unread` badges the two collections that fill up on their own. Everything
+ * else changes because somebody here changed it, so a count on it would be
+ * their own work reported back to them.
  */
 
-export default function Sidebar({ groups, open, onNavigate }) {
+export default function Sidebar({ groups, open, onNavigate, unread = {} }) {
   // A section's tabs live behind one sidebar entry, so the entry has to stay
   // lit while you are on any of them — otherwise opening Finishes appears to
   // navigate away from the sidebar entirely, with nothing highlighted.
@@ -51,6 +55,7 @@ export default function Sidebar({ groups, open, onNavigate }) {
           <ul>
             {group.resources.map((resource) => {
               const owns = (resource.tabs ?? []).some((tab) => tab.key === current)
+              const count = unread[resource.key] ?? 0
               return (
                 <li key={resource.key}>
                   <NavLink
@@ -60,7 +65,18 @@ export default function Sidebar({ groups, open, onNavigate }) {
                     }
                     onClick={onNavigate}
                   >
-                    {resource.label_plural}
+                    <span className="cf-nav__label">{resource.label_plural}</span>
+                    {count > 0 && (
+                      <span
+                        className="cf-nav__badge"
+                        // The number alone reads as "12" beside "Enquiries",
+                        // which a screen reader announces as a quantity of
+                        // nothing in particular.
+                        aria-label={`${count} unread`}
+                      >
+                        {count > 99 ? '99+' : count}
+                      </span>
+                    )}
                   </NavLink>
                 </li>
               )
@@ -75,9 +91,7 @@ export default function Sidebar({ groups, open, onNavigate }) {
           <li>
             {/* Django's admin is still there and still works; anything the
                 panel does not cover is reachable from here. */}
-            <a className="cf-nav__link" href="/admin/" target="_blank" rel="noreferrer">
-              Django admin ↗
-            </a>
+            
           </li>
           <li>
             <a className="cf-nav__link" href="/" target="_blank" rel="noreferrer">

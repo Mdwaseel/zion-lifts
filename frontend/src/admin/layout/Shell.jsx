@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom'
 
 import { useAuth } from '@/lib/auth'
 
+import { useNotifications } from '../hooks'
 import Sidebar from './Sidebar'
 
 /**
@@ -16,6 +17,11 @@ import Sidebar from './Sidebar'
 export default function Shell({ navigation, children }) {
   const { user, signOut } = useAuth()
   const { pathname } = useLocation()
+  // Seeded from the navigation payload so the badges are right on the first
+  // paint, then polled. `pathname` is the refresh signal: leaving an enquiry
+  // after changing its status should clear it from the badge on the way out,
+  // rather than up to a poll later.
+  const notifications = useNotifications(navigation.notifications, { signal: pathname })
   const [menuOpen, setMenuOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
 
@@ -76,6 +82,7 @@ export default function Shell({ navigation, children }) {
           groups={navigation.groups}
           open={menuOpen}
           onNavigate={() => setMenuOpen(false)}
+          unread={notifications.counts}
         />
 
         {/* Closes the drawer when the page behind it is tapped. Inert on

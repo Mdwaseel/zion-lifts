@@ -166,13 +166,44 @@
 }
 
 .cf-nav__link {
-  display: block;
+  /* Flex rather than block so a badge can sit at the far end of the row. The
+     label takes the slack, which keeps every badge on the same right edge
+     however long the collection's name is. */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.4rem 0.65rem;
   border-radius: var(--cf-radius-sm);
   color: var(--cf-dim);
   text-decoration: none;
   font-size: 0.875rem;
   transition: background var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+
+.cf-nav__label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Unread work waiting in one of the two inbox collections. Accent rather than
+   red: an enquiry nobody has opened is a lead, not an incident, and a sidebar
+   that cries alarm at ordinary business stops being read. */
+.cf-nav__badge {
+  flex: none;
+  min-width: 1.25rem;
+  padding: 0.05rem 0.35rem;
+  border-radius: 999px;
+  background: var(--cf-accent);
+  color: #fff;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.cf-nav__link.is-active .cf-nav__badge {
+  background: var(--cf-accent);
 }
 
 .cf-nav__link:hover {

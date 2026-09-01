@@ -9,7 +9,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { messageFor } from './api'
+import { fetchNotifications, messageFor } from './api'
 import { fetchDocumentStatus } from './knowledge-api'
 
 /**
@@ -199,4 +199,52 @@ export function useIngestionStatus(documentId, { enabled = true, onSettled } = {
   }, [documentId, enabled])
 
   return { status, error, isSettled: settledRef.current }
+}
+
+/**
+ * Unread counts for the sidebar badges, kept roughly current.
+ *
+ * Polled rather than pushed: two integers every half minute is a cheaper thing
+ * to operate than a websocket, and a badge that is thirty seconds stale has
+ * cost nobody anything.
+ *
+ * `initial` comes from the navigation payload, so the badges are right on the
+ * first paint instead of appearing one poll later.
+ *
+ * Two things force a refresh between polls. Returning to the tab, because a
+ * panel left open overnight should be current the moment it is looked at again
+ * — and while it is hidden, nothing polls at all. And any change to `signal`,
+ * which the shell wires to the current path: leaving an enquiry after marking
+ * it contacted should clear it from the badge on the way out, rather than up to
+ * half a minute later.
+ */
+export function useNotifications(initial, { intervalMs = 30000, signal = 0 } = {}) {
+  const [counts, setCounts] = useState(() => initial ?? { counts: {}, total: 0 })
+
+  useEffect(() => {
+    let live = true
+    const controller = new AbortController()
+
+    const refresh = () => {
+      if (document.visibilityState !== 'visible') return
+      fetchNotifications({ signal: controller.signal })
+        .then((data) => live && data && setCounts(data))
+        .catch(() => {
+          /* a stale badge is not worth an error on screen */
+        })
+    }
+
+    const id = setInterval(refresh, intervalMs)
+    document.addEventListener('visibilitychange', refresh)
+    if (signal) refresh()
+
+    return () => {
+      live = false
+      controller.abort()
+      clearInterval(id)
+      document.removeEventListener('visibilitychange', refresh)
+    }
+  }, [intervalMs, signal])
+
+  return counts
 }

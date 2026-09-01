@@ -25,6 +25,11 @@ export function fetchActivity(options) {
   return api.get(`${path('activity')}/`, options)
 }
 
+/** How much has arrived that nobody has opened. Polled by the sidebar. */
+export function fetchNotifications(options) {
+  return api.get(`${path('notifications')}/`, options)
+}
+
 // --- one collection --------------------------------------------------------
 /** The field description the table and form render themselves from. */
 export function fetchSchema(resource, options) {
