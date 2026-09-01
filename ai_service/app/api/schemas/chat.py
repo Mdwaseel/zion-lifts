@@ -51,13 +51,37 @@ class ChatRequest(BaseSchema):
 
 
 class Citation(BaseSchema):
+    """One source behind a claim in the answer.
+
+    ``type`` was added when website content became a second kind of evidence.
+    It defaults to ``document`` so a client written against the earlier shape
+    keeps working and simply ignores it; ``url`` is set only for website
+    citations, and is always a route this service has verified.
+    """
+
     marker: str = Field(description="Inline marker used in the answer, e.g. [1].")
     chunk_id: str
     document_id: str
+    type: str = Field(default="document", description="document | website")
     title: str | None = None
     source: str | None = None
+    url: str | None = Field(default=None, description="Set for website sources only.")
     snippet: str
     score: float
+
+
+class RelatedPage(BaseSchema):
+    """A page on the site worth visiting next.
+
+    Never produced by the model. Every one of these is resolved from the website
+    index and re-verified before it is serialised, so a URL here is a URL that
+    exists — see :mod:`app.orchestration.references`.
+    """
+
+    title: str
+    url: str
+    section: str | None = None
+    description: str | None = None
 
 
 class Usage(BaseSchema):
@@ -67,6 +91,13 @@ class Usage(BaseSchema):
 
 
 class ChatResponse(BaseSchema):
+    """The answer contract.
+
+    Everything below ``took_ms`` in the original shape is unchanged. The four
+    fields after it were added with the routing layer and all have defaults, so
+    an older client deserialises this response exactly as it did before.
+    """
+
     answer: str
     citations: list[Citation] = Field(default_factory=list)
     confidence: float = Field(ge=0.0, le=1.0)
@@ -78,11 +109,27 @@ class ChatResponse(BaseSchema):
     usage: Usage | None = None
     took_ms: float = 0.0
 
+    intent: str | None = Field(default=None, description="How the question was routed.")
+    related_pages: list[RelatedPage] = Field(default_factory=list)
+    suggested_questions: list[str] = Field(default_factory=list)
+
 
 class StreamChunk(BaseSchema):
-    """One server-sent event payload during streaming."""
+    """One server-sent event payload during streaming.
 
-    type: str = Field(description="delta | citations | done | error")
+    The protocol is additive. ``delta``, ``citations``, ``done`` and ``error``
+    behave exactly as before and still arrive in that order; ``metadata`` and
+    ``related_pages`` are new types that a client written against the earlier
+    protocol will not recognise and will skip, which is what the existing
+    front-end reader already does with anything it does not know.
+    """
+
+    type: str = Field(description="metadata | delta | citations | related_pages | done | error")
     content: str | None = None
     citations: list[Citation] | None = None
+    related_pages: list[RelatedPage] | None = None
+    suggested_questions: list[str] | None = None
+    intent: str | None = None
+    confidence: float | None = None
+    confidence_level: ConfidenceLevel | None = None
     error: str | None = None

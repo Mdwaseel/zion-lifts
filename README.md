@@ -89,8 +89,9 @@ because the constraints being tested (unique version numbers per document) are
 database behaviour that SQLite would let pass vacuously.
 
 ```bash
-cd backend && ../.venv/Scripts/python manage.py test apps            # 331 tests
+cd backend && ../.venv/Scripts/python manage.py test apps            # 441 tests
 cd backend && ../.venv/Scripts/python manage.py test apps.accounts   # 66 auth tests
+cd backend && ../.venv/Scripts/python manage.py test apps.analytics  # 86 analytics tests
 cd frontend && npm test                                             # 12 auth-client tests
 cd ai_service && .venv/Scripts/python -m pytest -m 'not integration'  # 248 tests
 cd ai_service && REDIS_URL=redis://localhost:6379/1 QDRANT_TEST_URL=http://localhost:6333 \n    .venv/Scripts/python -m pytest -m integration
@@ -673,6 +674,203 @@ and are each *assumed* to help; this is how that assumption becomes a number.
 **Worker concurrency is 1 by default.** Each child loads its own copy of the
 embedding model and the cross-encoder, so concurrency multiplies resident memory
 rather than throughput. Measure before raising `CELERY_WORKER_CONCURRENCY`.
+
+## Website analytics
+
+Who reads the site, and what they read. Three tables, one open endpoint, eight
+staff-only reports, and a dashboard at **/control/analytics**.
+
+```
+visitor's browser                     Django                    control room
+─────────────────                     ──────                    ────────────
+lib/analytics.js  ──sendBeacon──▶  POST /api/analytics/track/
+                                          │
+                                   services.track()
+                                          ▼
+                                   Visitor → Session → PageView
+                                          │
+                                   selectors.py (aggregates)
+                                          ▼
+                                   GET /api/admin/analytics/*  ──▶  Analytics.jsx
+```
+
+### The shape of the data
+
+`apps/analytics/models.py`
+
+| Table | One row per | Carries |
+| --- | --- | --- |
+| `Visitor` | browser, forever | random id, first/last seen, counters |
+| `Session` | visit | device, browser, OS, country, channel, entry/exit path |
+| `PageView` | page opened | path, timestamp, time on page |
+
+Every dimension the dashboard groups by — device, browser, OS, country, traffic
+source — is **constant for a whole visit**, so it lives on `Session`. That is the
+decision the performance rests on: "how many visitors were on mobile" reads one
+row per visit, not one per page, and the device chart stays cheap however large
+the page-view table gets. Only page-level questions touch `PageView`.
+
+A **session** is a run of activity with no gap longer than
+`ANALYTICS_SESSION_TIMEOUT_MINUTES` (30). The check is on `last_activity_at`,
+not on `started_at`, so someone reading for two hours without a half-hour pause
+is correctly one visit.
+
+Time on a page is filled in when the *next* view arrives, because leaving is the
+only reliable signal that reading finished — `beforeunload` fires unreliably on
+mobile and not at all when a tab is killed. The last view of every visit
+therefore keeps a null duration, which is honest: nothing tells us how long
+someone spent on the page they left from, and averaging a zero in would drag
+every "time on page" down.
+
+### What is deliberately not stored
+
+No IP address. No user-agent string. No user foreign key. No full referring URL.
+
+The narrowing happens on the way *in* — `useragent.py` reduces the header to
+(device, browser, OS), `sources.py` keeps a referring host and throws the URL
+away, and the tracker strips the query string before storing a path — so the raw
+values are never written at all rather than being written and then protected.
+The visitor id lives in a first-party `visitor_id` cookie (`SameSite=Lax`,
+two years, `Secure` over https). It is a random uuid the browser generates and
+means nothing outside these tables: it is what makes five pages from one person
+count as one visitor rather than five, and it identifies a browser across visits
+and nothing else about the person holding it. Clearing cookies is the intended
+way to opt out — the visitor simply becomes a new anonymous id.
+
+**Geography** is recorded only when a CDN or proxy has already resolved it and
+passed it down as a header (`geo.py` reads Cloudflare, Vercel, Fastly and Google
+Cloud's by default; `ANALYTICS_GEO_HEADERS` overrides the list). Nothing here
+looks up an IP address. Without such a proxy the columns stay empty and the
+panel says so, rather than inventing a location.
+
+The live feed shows a page, a device, a channel and a city — never a visitor id.
+It is a panel people read over each other's shoulders.
+
+### Keeping the public site fast
+
+The tracker is `navigator.sendBeacon`: handed to the browser, never awaited,
+survives the page being navigated away from. Nothing about it blocks a render,
+and every call is wrapped — a blocked request or disabled storage costs an
+analytics row and nothing else.
+
+Server-side, one page view is a bounded handful of indexed statements. Nothing on
+the write path counts, aggregates, or grows with how much history exists.
+Aggregation happens when somebody opens the dashboard — a few times a day —
+rather than on every page view, which is continuous. That trade is the reason
+this app is shaped the way it is.
+
+Admin aggregates are cached for 60 seconds, keyed by endpoint and window.
+Realtime is deliberately uncached.
+
+**Duplicates.** Each view carries an `event_id` the browser mints and resends
+unchanged on a retry; a unique constraint makes the endpoint idempotent. The
+client also collapses repeats of the same page within 1.5s, keyed on the path
+*without* its query string — the same rule the server stores under, so a URL
+whose query changes without the page changing does not produce a phantom view.
+
+Bots are dropped rather than stored: a crawler that says "Chrome" would
+otherwise inflate every number on the dashboard.
+
+### The reports
+
+All staff-only, all range-aware. `?range=` takes `today`, `yesterday`, `7d`,
+`30d`, `this_month`, `last_month`, `12m`, or `custom&start=&end=`.
+
+```
+GET  /api/admin/analytics/overview/     summary cards + traffic overview
+GET  /api/admin/analytics/visitors/     timeseries for the main chart
+GET  /api/admin/analytics/pages/        top pages (paginated); ?path= for one page
+GET  /api/admin/analytics/sources/      channels + referring domains
+GET  /api/admin/analytics/devices/      devices, browsers, operating systems
+GET  /api/admin/analytics/geography/    ?level=country|region|city
+GET  /api/admin/analytics/realtime/     online now + activity feed (uncached)
+GET  /api/admin/analytics/export/       the current view as CSV
+POST /api/analytics/track/              the public beacon — open, throttled
+```
+
+Chart granularity follows the span, so the client never asks: hourly up to two
+days, daily to about a quarter, monthly beyond. Timeseries are **gap-filled** —
+a quiet day returns a zero rather than being omitted, because a chart that drops
+empty buckets draws Monday next to Saturday.
+
+Percentage changes compare against the same length of time immediately before,
+and are **null** when there was no previous period. A card with nothing to
+compare against shows nothing, not "↑ 100%".
+
+Counting rules worth knowing, because two panels disagreeing is the classic
+analytics bug: **unique visitors** is `COUNT(DISTINCT visitor)`, never a count of
+visits. **New** means the visitor's first-ever view falls inside the window.
+**Bounce rate** is the share of visits that saw one page, and on Top Pages it is
+measured against the page people *landed* on — the page that failed to hold
+them, not every page it appears on.
+
+### The dashboard
+
+`src/admin/screens/analytics/`. Each panel owns its own fetch, so a slow query
+does not hold up the screen and one failure does not blank the rest; each
+carries its own loading, error and empty state. The selected range lives in the
+URL, which makes "last month's numbers" a link you can send someone.
+
+Charts are inline SVG in `src/admin/components/charts.jsx` — an area chart, a
+doughnut and a bar list. No charting library: three shapes against 50–150 kB
+gzipped plus a second way of doing layout and theming that would agree with none
+of the panel's CSS. Every chart is `role="img"` with a summary label, and the
+numbers behind it are always also present as a table or list.
+
+Layout is CSS grid with `auto-fit`/`minmax`, so it reflows at every width rather
+than at three chosen breakpoints.
+
+Tracking is mounted in `components/Layout.jsx`, which covers exactly the public
+site: `/login` and `/control` sit outside that Layout, so staff editing content
+never appear in the numbers they are reading.
+
+### Real data only
+
+There is no seeder, no demo flag, no fixture and no fallback number anywhere in
+this app. Every row in these tables was written by `services.track` answering a
+beacon from somebody's browser, and every figure on the dashboard is a count of
+those rows.
+
+That is a property of the code rather than of a filter, which is the point: no
+query needs to exclude synthetic rows because no path creates one. An empty
+table means nobody has visited, and the dashboard says so —
+
+> **No visitor data yet.** Analytics will appear when visitors visit your
+> website.
+
+— with every card reading `0`, every table empty, and every percentage change
+null rather than invented. `apps/analytics/tests/test_reports.py` has
+`RealDataOnlyTests` and `EmptyDatabaseTests` asserting exactly this, including
+that the `seed_analytics` command and the `is_demo` column do not exist.
+
+Migration `0002_drop_demo_flag` removed both. It deletes every seeded row
+**before** dropping the column that identified them, so applying it to any
+database in any state leaves only real traffic behind — dropping the column
+first would have made demo rows permanently indistinguishable from genuine ones.
+
+### Settings
+
+| Setting | Default | What it does |
+| --- | --- | --- |
+| `ANALYTICS_SESSION_TIMEOUT_MINUTES` | 30 | Silence that ends a visit |
+| `ANALYTICS_ONLINE_WINDOW_MINUTES` | 5 | What counts as "online now" |
+| `ANALYTICS_OWN_HOSTS` | `ALLOWED_HOSTS` | Domains that are *not* referrals |
+| `ANALYTICS_GEO_HEADERS` | CF/Vercel/Fastly/GCP | Trusted location headers |
+| `ANALYTICS_RATE_LIMIT` | `240/hour` | Per-IP cap on the beacon |
+
+`ANALYTICS_OWN_HOSTS` is worth setting deliberately. It comes from configuration
+rather than the request's `Host` header because any proxy that rewrites Host —
+nginx without `proxy_set_header`, Vite's `changeOrigin` in development — would
+otherwise file every internal click as a referral and put the site at the top of
+its own traffic-source report.
+
+### Growing into more traffic
+
+The indexes in `analytics/migrations/` back the specific queries in
+`selectors.py` rather than columns that looked important. If the page-view table eventually outgrows live
+aggregation, the shape to add is a nightly rollup table for closed days, with
+today still read live — the selectors are already the only place that would
+need to change. Do it when a query is measurably slow, not before.
 
 ## Architecture notes
 

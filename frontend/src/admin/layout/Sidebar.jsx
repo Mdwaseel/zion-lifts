@@ -1,13 +1,23 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 /**
  * Navigation, built from the server's registry.
  *
  * The groups and their order come from `resources.py`, so registering a model
  * puts it in the sidebar — there is no list of links to keep in step.
+ *
+ * A collection that declares a `section` is deliberately absent: it is a tab on
+ * another collection's screen, not a destination. The server has already
+ * filtered those out of this payload — see `AdminRegistry.grouped`.
  */
 
 export default function Sidebar({ groups, open, onNavigate }) {
+  // A section's tabs live behind one sidebar entry, so the entry has to stay
+  // lit while you are on any of them — otherwise opening Finishes appears to
+  // navigate away from the sidebar entirely, with nothing highlighted.
+  const { pathname } = useLocation()
+  const current = pathname.replace(/^\/control\/?/, '').split('/')[0]
+
   return (
     <nav
       id="cf-sidebar"
@@ -23,21 +33,38 @@ export default function Sidebar({ groups, open, onNavigate }) {
         Overview
       </NavLink>
 
+      {/* Written here rather than derived from the registry, like Overview
+          above it: analytics is a screen that asks questions of the visit
+          tables, not a collection anyone edits, so there is no resource for the
+          server to have listed. */}
+      <NavLink
+        to="/control/analytics"
+        className={({ isActive }) => `cf-nav__link cf-nav__link--home${isActive ? ' is-active' : ''}`}
+        onClick={onNavigate}
+      >
+        Analytics
+      </NavLink>
+
       {groups.map((group) => (
         <div key={group.group} className="cf-nav__group">
           <h2 className="cf-nav__heading">{group.group}</h2>
           <ul>
-            {group.resources.map((resource) => (
-              <li key={resource.key}>
-                <NavLink
-                  to={`/control/${resource.key}`}
-                  className={({ isActive }) => `cf-nav__link${isActive ? ' is-active' : ''}`}
-                  onClick={onNavigate}
-                >
-                  {resource.label_plural}
-                </NavLink>
-              </li>
-            ))}
+            {group.resources.map((resource) => {
+              const owns = (resource.tabs ?? []).some((tab) => tab.key === current)
+              return (
+                <li key={resource.key}>
+                  <NavLink
+                    to={`/control/${resource.key}`}
+                    className={({ isActive }) =>
+                      `cf-nav__link${isActive || owns ? ' is-active' : ''}`
+                    }
+                    onClick={onNavigate}
+                  >
+                    {resource.label_plural}
+                  </NavLink>
+                </li>
+              )
+            })}
           </ul>
         </div>
       ))}

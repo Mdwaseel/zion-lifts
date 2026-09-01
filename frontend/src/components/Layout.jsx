@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 
+import { trackPageView } from '@/lib/analytics'
 import { useReducedMotion } from '@/lib/hooks'
 
 import Footer from './Footer'
@@ -37,6 +38,27 @@ function ScrollManager() {
   return null
 }
 
+/**
+ * Records a page view on every route change.
+ *
+ * Mounted here rather than in App so it covers exactly the public site: /login
+ * and /control are outside this Layout, and the control room's own navigation
+ * is not website traffic — counting it would mean staff editing content showed
+ * up in the numbers they were reading.
+ *
+ * The search string is deliberately included in what is sent and stripped
+ * server-side, so a campaign link and a bare link are one row in Top Pages
+ * without the client having to know that rule. The hash is omitted: an in-page
+ * anchor is not a new page, and ScrollManager above already handles it.
+ */
+function useTrackPageViews() {
+  const { pathname, search } = useLocation()
+
+  useEffect(() => {
+    trackPageView(`${pathname}${search}`)
+  }, [pathname, search])
+}
+
 /** True once the browser has nothing better to do. */
 function useIdle() {
   const [idle, setIdle] = useState(false)
@@ -55,6 +77,7 @@ function useIdle() {
 
 export default function Layout() {
   const idle = useIdle()
+  useTrackPageViews()
 
   return (
     <>

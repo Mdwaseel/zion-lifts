@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { fetchOptions } from '../api'
+import MediaInput from './MediaInput'
+import MediaListInput from './MediaListInput'
 
 /**
  * One form input, chosen by the field's type from the server's schema.
@@ -71,6 +73,22 @@ function ReadOnly({ field, value }) {
   }
   if (field.type === 'json') {
     return <pre className="cf-readonly cf-readonly--json">{JSON.stringify(value, null, 2)}</pre>
+  }
+  // A read-only picture is still a picture. Showing the stored path as text
+  // would be the very thing this change exists to remove.
+  if (field.type === 'media' && field.media_kind !== 'video') {
+    return <img className="cf-readonly__media" src={String(value)} alt="" loading="lazy" />
+  }
+  if (field.type === 'media_list' && Array.isArray(value)) {
+    return (
+      <ul className="cf-readonly__strip">
+        {value.map((row, index) => (
+          <li key={index}>
+            <img src={row?.src ?? ''} alt="" loading="lazy" />
+          </li>
+        ))}
+      </ul>
+    )
   }
   return <p className="cf-readonly">{String(value)}</p>
 }
@@ -185,6 +203,19 @@ function Input({ id, field, value, onChange, resource, disabled, describedBy, in
         />
       )
 
+    // A picture or a film, uploaded from the operator's computer. The field
+    // stores the resulting URL, so nothing downstream of the form changed —
+    // only how a person puts a value there. See MediaInput.jsx.
+    case 'media':
+      return <MediaInput {...common} field={field} value={value} onChange={onChange} />
+
+    // The same, once per row of a JSON list: a project's photographs, a lift's
+    // images. It was a textarea full of braces.
+    case 'media_list':
+      return <MediaListInput {...common} field={field} value={value} onChange={onChange} />
+
+    // Django's own ImageField/FileField, which post the file with the form
+    // rather than uploading ahead of it.
     case 'image':
     case 'file':
       return <FileInput {...common} field={field} value={value} onChange={onChange} />

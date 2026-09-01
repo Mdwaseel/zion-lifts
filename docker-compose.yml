@@ -22,6 +22,8 @@ services:
       - ./ai_service/.env
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - BACKEND_URL=http://host.docker.internal:8002
+      - AI_SERVICE_INTERNAL_TOKEN=a-development-internal-token-of-32-plus-chars
     depends_on:
       redis:
         condition: service_healthy
@@ -44,6 +46,8 @@ services:
       - ./ai_service/.env
     environment:
       - REDIS_URL=redis://redis:6379/0
+      - BACKEND_URL=http://host.docker.internal:8002
+      - AI_SERVICE_INTERNAL_TOKEN=a-development-internal-token-of-32-plus-chars
     depends_on:
       redis:
         condition: service_healthy

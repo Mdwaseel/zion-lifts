@@ -114,7 +114,15 @@ class GeminiClient(LLMClient):
     ) -> AsyncIterator[str]:
         contents, config = self._prepare(messages, temperature, max_tokens)
         try:
-            stream = await self._client.aio.models.generate_content_stream(
+            # Not awaited, unlike `generate_content` above. The two are not
+            # symmetrical in the SDK: `generate_content` is a coroutine that
+            # resolves to a response, while `generate_content_stream` is an
+            # *async generator function* — calling it returns the iterator
+            # directly. Awaiting it raises "object async_generator can't be
+            # used in 'await' expression", which failed every streamed answer
+            # while the non-streaming path kept working, so the widget was
+            # broken and /chat was not.
+            stream = self._client.aio.models.generate_content_stream(
                 model=self._model, contents=contents, config=config
             )
             async for event in stream:

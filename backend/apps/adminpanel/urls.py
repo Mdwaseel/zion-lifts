@@ -26,6 +26,7 @@ from .views import (
     OperationsIngestionView,
     OperationsOverviewView,
     OperationsProvidersView,
+    UploadView,
     for_resource,
 )
 
@@ -39,6 +40,9 @@ urlpatterns = [
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("navigation/", NavigationView.as_view(), name="navigation"),
     path("activity/", ActivityView.as_view(), name="activity"),
+    # Media from an operator's own computer. One route for every collection —
+    # the panel has one form component, so it needs one upload endpoint.
+    path("uploads/", UploadView.as_view(), name="uploads"),
     # Operational health. Staff-only like everything else in this app, and
     # read-only: see the note at the top of views/operations.py.
     path(

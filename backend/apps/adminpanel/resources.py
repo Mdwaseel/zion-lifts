@@ -49,6 +49,18 @@ EDITORIAL = "Editorial"
 ORGANISATION = "Site settings"
 KNOWLEDGE = "Knowledge base"
 
+# Four models carry a legacy Django ImageField beside the URL field that
+# actually holds their picture — `Finish.texture`, `GalleryItem.image`,
+# `TeamMember.photo`, `Partner.logo`. Both are now uploaders, which would give
+# an operator two controls for one photograph and no way to know which wins.
+#
+# The URL field is the one that wins in practice: it is what the catalogue is
+# populated with, and `AssetField` in the public serializers falls back to it
+# whenever the ImageField is empty — which, across the whole site, it is. So the
+# ImageField is excluded from the form and the URL field keeps the picture. The
+# column stays in the database; nothing about the public API changes.
+LEGACY_IMAGE_FIELD = "the picture lives in the *_url field beside this one"
+
 # Publishing controls repeat on nearly every content model.
 PUBLISHING = ("Publishing", ("order", "is_published"))
 
@@ -114,8 +126,15 @@ register(
 
 
 # --- Lifts -----------------------------------------------------------------
-# One collection, not four. Images, variants and spec rows are lists on the
-# lift, edited in the same form as the copy they belong to.
+# One sidebar entry, not five. Images, variants and spec rows are lists on the
+# lift itself, edited in the same form as the copy they belong to; finishes,
+# applications, safety features and components declare `section="lifts"`, so
+# they are tabs on the catalogue screen rather than destinations of their own.
+#
+# They stay separate tables because the public site reads each of them whole —
+# the cabin configurator lists every finish, /lifts builds its filter chips from
+# every application — so folding them into a lift row would mean twenty-three
+# copies of the same swatch and no way to list them.
 register(
     key="lifts",
     model=Lift,
@@ -145,6 +164,10 @@ register(
     model=Finish,
     group=CATALOGUE,
     icon="swatch",
+    section="lifts",
+    # Django pluralises "finish" as "finishs". The tab said so for months.
+    label_plural="Finishes",
+    exclude=("texture",),
     list_display=("name", "category", "swatch_hex", "tier", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "description"),
@@ -156,6 +179,7 @@ register(
     model=Application,
     group=CATALOGUE,
     icon="grid",
+    section="lifts",
     list_display=("name", "group", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "description"),
@@ -168,6 +192,7 @@ register(
     model=SafetyFeature,
     group=CATALOGUE,
     icon="shield",
+    section="lifts",
     list_display=("name", "standard", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "headline", "description", "standard"),
@@ -180,6 +205,7 @@ register(
     model=Component,
     group=CATALOGUE,
     icon="cog",
+    section="lifts",
     list_display=("index", "name", "supplier", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "supplier"),
@@ -257,6 +283,7 @@ register(
     model=GalleryItem,
     group=EDITORIAL,
     icon="image",
+    exclude=("image",),
     list_display=("__str__", "title", "category", "meta", "is_featured", "order", "is_published"),
     list_editable=("is_featured", "order", "is_published"),
     search_fields=("title", "meta"),
@@ -268,10 +295,11 @@ register(
     model=TeamMember,
     group=EDITORIAL,
     icon="users",
-    list_display=("name", "role", "department", "is_leadership", "order", "is_published"),
-    list_editable=("is_leadership", "order", "is_published"),
+    exclude=("photo",),
+    list_display=("name", "role", "department", "order", "is_published"),
+    list_editable=("order", "is_published"),
     search_fields=("name", "role", "bio"),
-    filter_fields=("department", "is_leadership", "is_published"),
+    filter_fields=("department", "is_published"),
 )
 
 register(
@@ -325,6 +353,7 @@ register(
     model=Partner,
     group=ORGANISATION,
     icon="handshake",
+    exclude=("logo",),
     list_display=("name", "role", "component", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "component"),

@@ -21,45 +21,27 @@ function isEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value)
 }
 
-/** The drafted elevation on the left. Decorative, so it is hidden from readers. */
-function Hoistway() {
+/**
+ * The brand tile at the head of the card: the up/down pair between two guide
+ * rails — the same thing every lift landing button says. A drawn car was the
+ * first attempt and read as a padlock at 26px; the arrows do not.
+ */
+function LiftMark() {
   return (
     <svg
-      className="login-art"
-      viewBox="0 0 260 520"
+      className="login-mark"
+      viewBox="0 0 32 32"
+      width="26"
+      height="26"
       role="presentation"
       aria-hidden="true"
-      preserveAspectRatio="xMidYMid meet"
     >
-      <g className="login-art__rails">
-        <path d="M70 20V500M190 20V500" />
-        <path d="M52 20V500M208 20V500" strokeDasharray="2 8" />
+      <g className="login-mark__rails">
+        <path d="M6 5V27M26 5V27" />
       </g>
-
-      <g className="login-art__levels">
-        {[60, 148, 236, 324, 412].map((y, i) => (
-          <g key={y}>
-            <path d={`M52 ${y}H208`} />
-            <text x="18" y={y + 4}>{`0${5 - i}`}</text>
-          </g>
-        ))}
-        <path d="M52 490H208" />
-        <text x="18" y="494">
-          GF
-        </text>
-      </g>
-
-      <g className="login-art__car">
-        <rect x="84" y="270" width="92" height="128" rx="2" />
-        <path d="M130 270v128" strokeDasharray="3 7" />
-        <path d="M96 292h20M144 292h20" />
-      </g>
-
-      <g className="login-art__dims">
-        <path d="M232 270v128M228 270h8M228 398h8" />
-        <text x="238" y="338" transform="rotate(-90 238 338)">
-          1600 KG
-        </text>
+      <g className="login-mark__travel">
+        <path d="M11.5 14L16 8.5L20.5 14" />
+        <path d="M11.5 18L16 23.5L20.5 18" />
       </g>
     </svg>
   )
@@ -69,7 +51,7 @@ function Hoistway() {
 function NoAccess({ user, onSignOut, busy }) {
   return (
     <div className="login-card__panel" role="status">
-      <span className="login-card__mark" aria-hidden="true">
+      <span className="login-card__mark login-card__mark--warn" aria-hidden="true">
         <Lock size={20} />
       </span>
       <h1 className="login-card__title">Not authorised</h1>
@@ -186,26 +168,15 @@ export default function Login() {
 
   return (
     <main className="login" id="main">
-      <section className="login__visual" aria-hidden="true">
-        <div className="login__grid" />
-        <div className="login__visual-inner">
-          <p className="login__eyebrow mono">Control room</p>
-          <p className="login__wordmark">
-            {/* The break is dropped below the split, so the space has to be
-                explicit or the two words run together on a phone. */}
-            Zion{' '}
-            <br />
-            Lifts
-          </p>
-          <p className="login__lead">Precision in vertical movement.</p>
-          <Hoistway />
-          <p className="login__meta mono">
-            Hyderabad · Est. 2012 · Authorised personnel only
-          </p>
-        </div>
-      </section>
+      {/* One ground, three layers: the glow sets the light, the rails and the
+          floor lines carry the hoistway. All decorative, all behind the card. */}
+      <div className="login__field" aria-hidden="true">
+        <div className="login__glow" />
+        <div className="login__rails" />
+        <div className="login__floors" />
+      </div>
 
-      <section className="login__form-side on-paper">
+      <div className="login__stage">
         <div className="login-card">
           {isLoading || status === 'leaving' ? (
             <div className="login-card__panel login-card__panel--waiting" role="status">
@@ -218,9 +189,12 @@ export default function Login() {
             <NoAccess user={user} onSignOut={onSignOut} busy={signingOut} />
           ) : (
             <div className="login-card__panel">
-              <p className="login-card__eyebrow mono">Zion Lifts</p>
+              <span className="login-card__mark" aria-hidden="true">
+                <LiftMark />
+              </span>
+              <p className="login-card__eyebrow mono">Zion Lifts · Control room</p>
               <h1 className="login-card__title">Welcome back</h1>
-              <p className="login-card__lead">Sign in to the control room.</p>
+              <p className="login-card__lead">Sign in to continue.</p>
 
               <form className="login-form" onSubmit={onSubmit} noValidate>
                 {formError && (
@@ -332,7 +306,9 @@ export default function Login() {
             </div>
           )}
         </div>
-      </section>
+
+        <p className="login__meta mono">Hyderabad · Est. 2012 · Authorised personnel only</p>
+      </div>
     </main>
   )
 }

@@ -20,18 +20,22 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Alert, Arrow, Close } from '@/components/icons'
+import { Alert, Arrow, ArrowDown, Check, Close } from '@/components/icons'
 import { MAX_QUESTION, AssistantError, ask, resetSession } from '@/lib/assistant'
 import { useEscape, useMediaQuery, useReducedMotion, useScrollLock } from '@/lib/hooks'
 
 import Answer from './assistant/Answer'
 import Mark from './assistant/Mark'
+import RelatedPages from './assistant/RelatedPages'
 import Sources, { Confidence } from './assistant/Sources'
 import './Assistant.css'
 
 const STORE_KEY = 'zion.assistant.transcript'
 /** Enough to keep the thread readable, short enough to stay under the quota. */
 const KEEP = 30
+
+/** The counter stays out of the way until the limit is actually in sight. */
+const COUNT_FROM = MAX_QUESTION - 300
 
 const OPENERS = [
   'Which lift suits a four-storey home?',
@@ -63,6 +67,23 @@ function save(messages) {
   }
 }
 
+/**
+ * The citation numbers an answer can legitimately point at.
+ *
+ * A marker with nothing behind it is drawn as plain text rather than as a
+ * button that opens an empty drawer, so `Answer` needs the set rather than the
+ * count: the service numbers its citations, and the numbering is not always
+ * `1..n`.
+ */
+function markersOf(citations) {
+  if (!citations?.length) return undefined
+  return new Set(
+    citations.map(
+      (citation, i) => Number(String(citation.marker ?? '').replace(/\D/g, '')) || i + 1,
+    ),
+  )
+}
+
 export default function Assistant() {
   const [open, setOpen] = useState(false)
   const [messages, setMessages] = useState(load)
@@ -70,6 +91,8 @@ export default function Assistant() {
   const [busy, setBusy] = useState(false)
   const [openSources, setOpenSources] = useState(null) // message id
   const [activeCite, setActiveCite] = useState(null)
+  const [copiedId, setCopiedId] = useState(null)
+  const [atBottom, setAtBottom] = useState(true)
 
   const isSheet = useMediaQuery('(max-width: 640px)')
   const reduced = useReducedMotion()
@@ -89,6 +112,12 @@ export default function Assistant() {
   // Abandon a request in flight if the component goes away mid-answer.
   useEffect(() => () => abortRef.current?.abort(), [])
 
+  useEffect(() => {
+    if (copiedId == null) return
+    const t = setTimeout(() => setCopiedId(null), 1600)
+    return () => clearTimeout(t)
+  }, [copiedId])
+
   /* --- scrolling -------------------------------------------------------- */
 
   // Follow the stream, but only while the visitor is already at the bottom:
@@ -102,8 +131,19 @@ export default function Assistant() {
 
   const onLogScroll = useCallback((e) => {
     const el = e.currentTarget
-    pinned.current = el.scrollHeight - el.scrollTop - el.clientHeight < 64
+    const bottom = el.scrollHeight - el.scrollTop - el.clientHeight < 64
+    pinned.current = bottom
+    // Mirrored into state only for the jump button, so a scroll that does not
+    // cross the threshold costs nothing.
+    setAtBottom((was) => (was === bottom ? was : bottom))
   }, [])
+
+  const toBottom = useCallback(() => {
+    pinned.current = true
+    setAtBottom(true)
+    const log = logRef.current
+    log?.scrollTo({ top: log.scrollHeight, behavior: reduced ? 'auto' : 'smooth' })
+  }, [reduced])
 
   /* --- focus ------------------------------------------------------------ */
 
@@ -157,10 +197,19 @@ export default function Assistant() {
       const answerId = nextId()
       setMessages((prev) => [
         ...prev,
-        { id: answerId, role: 'assistant', content: '', citations: [], status: 'streaming' },
+        {
+          id: answerId,
+          role: 'assistant',
+          content: '',
+          citations: [],
+          pages: [],
+          suggestions: [],
+          status: 'streaming',
+        },
       ])
       setBusy(true)
       pinned.current = true
+      setAtBottom(true)
 
       const controller = new AbortController()
       abortRef.current = controller
@@ -172,12 +221,20 @@ export default function Assistant() {
           signal: controller.signal,
           onDelta: (delta) => patch(answerId, (m) => ({ content: m.content + delta })),
           onCitations: (citations) => patch(answerId, { citations }),
+          // Intent and confidence land before the first token, so the answer
+          // can be framed while it is still being written.
+          onMeta: ({ intent, confidence, level }) =>
+            patch(answerId, { intent, score: confidence, level }),
+          onPages: (pages) => patch(answerId, { pages }),
         })
         patch(answerId, (m) => ({
           status: 'done',
           citations: meta.citations?.length ? meta.citations : m.citations,
-          level: meta.level,
-          score: meta.confidence,
+          pages: meta.relatedPages?.length ? meta.relatedPages : m.pages,
+          suggestions: meta.suggestions ?? [],
+          intent: meta.intent ?? m.intent,
+          level: meta.level ?? m.level,
+          score: meta.confidence ?? m.score,
           // An empty answer is a failure the service did not report as one.
           content: m.content || 'I could not find anything about that in our documents.',
         }))
@@ -240,8 +297,16 @@ export default function Assistant() {
     abortRef.current?.abort()
     setMessages([])
     setOpenSources(null)
+    setActiveCite(null)
     resetSession()
     inputRef.current?.focus()
+  }, [])
+
+  const copyAnswer = useCallback((message) => {
+    navigator.clipboard?.writeText(message.content).then(
+      () => setCopiedId(message.id),
+      () => {},
+    )
   }, [])
 
   const onKeyDown = (e) => {
@@ -270,7 +335,7 @@ export default function Assistant() {
         aria-expanded={open}
         aria-controls="assistant-panel"
       >
-        <Mark size={26} className="asst-launcher__mark" />
+        <Mark size={28} className="asst-launcher__mark" />
         <span className="asst-launcher__label">Ask Zion</span>
       </button>
 
@@ -285,16 +350,21 @@ export default function Assistant() {
       >
         <header className="asst__head">
           <div className="asst__id">
-            <Mark size={30} className="asst__mark" />
+            <Mark size={32} className="asst__mark" />
             <div>
               <p className="asst__title">Ask Zion</p>
-              <p className="asst__sub">Answers from our own product and service documents</p>
+              {/* The status line carries the one fact that changes — whether it
+                  is working — rather than a description that never does. */}
+              <p className={`asst__status${busy ? ' is-busy' : ''}`}>
+                <span className="asst__dot" aria-hidden="true" />
+                {busy ? 'Searching our documents…' : 'Product assistant · online'}
+              </p>
             </div>
           </div>
           <div className="asst__head-actions">
             {!empty && (
               <button type="button" className="asst__ghost" onClick={clear}>
-                New
+                New chat
               </button>
             )}
             <button
@@ -308,92 +378,161 @@ export default function Assistant() {
           </div>
         </header>
 
-        <div className="asst__log" ref={logRef} onScroll={onLogScroll}>
-          {empty ? (
-            <div className="asst__empty">
-              <p className="asst__empty-lead">
-                Ask about lift types, capacities, shaft dimensions, installation or maintenance.
-                Every answer cites the document it came from.
-              </p>
-              <ul className="asst__openers">
-                {OPENERS.map((q) => (
-                  <li key={q}>
-                    <button type="button" onClick={() => submit(q)}>
-                      {q}
-                      <Arrow size={14} />
-                    </button>
-                  </li>
-                ))}
-              </ul>
-              <p className="asst__disclaimer">
-                For a binding specification or a quotation, please{' '}
-                <Link to="/contact" onClick={() => setOpen(false)}>
-                  speak to our engineers
-                </Link>
-                .
-              </p>
-            </div>
-          ) : (
-            <ol className="asst__thread">
-              {messages.map((m) =>
-                m.role === 'user' ? (
-                  <li key={m.id} className="asst-msg asst-msg--you">
-                    <p>{m.content}</p>
-                  </li>
-                ) : (
-                  <li key={m.id} className="asst-msg asst-msg--zion">
-                    {m.status === 'error' ? (
-                      <div className="asst-fail">
-                        <p>
-                          <Alert size={14} /> {m.error}
-                        </p>
-                        <div className="asst-fail__actions">
-                          <button type="button" onClick={() => retry(m.id)}>
-                            Try again
-                          </button>
-                          <Link to="/contact" onClick={() => setOpen(false)}>
-                            Contact us instead
-                          </Link>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {m.content ? (
-                          <Answer
-                            text={m.content}
-                            streaming={m.status === 'streaming'}
-                            onCite={(n) => {
-                              setOpenSources(m.id)
-                              setActiveCite(n)
-                            }}
-                          />
+        <div className="asst__stage">
+          <div
+            className={`asst__log${empty ? ' asst__log--empty' : ''}`}
+            ref={logRef}
+            onScroll={onLogScroll}
+          >
+            {empty ? (
+              <div className="asst__empty">
+                {/* The mascot at full size, centred: with nothing said yet, the
+                    thing that says what this is should be the thing you see. */}
+                <span className="asst__avatar">
+                  <Mark size={64} />
+                </span>
+                <p className="asst__empty-title">Ask Zion</p>
+                <p className="asst__empty-lead">
+                  Answers on lift types, capacities, shafts, installation and service — each
+                  cites its source.
+                </p>
+                <p className="asst__openers-lead">Try one of these</p>
+                <ul className="asst__openers">
+                  {OPENERS.map((q) => (
+                    <li key={q}>
+                      <button type="button" onClick={() => submit(q)}>
+                        {q}
+                        <Arrow size={14} />
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+                <p className="asst__disclaimer">
+                  For a binding specification or a quotation, please{' '}
+                  <Link to="/contact" onClick={() => setOpen(false)}>
+                    speak to our engineers
+                  </Link>
+                  .
+                </p>
+              </div>
+            ) : (
+              <ol className="asst__thread">
+                {messages.map((m) =>
+                  m.role === 'user' ? (
+                    <li key={m.id} className="asst-msg asst-msg--you">
+                      <p>{m.content}</p>
+                    </li>
+                  ) : (
+                    <li key={m.id} className="asst-msg asst-msg--zion">
+                      {/* A fixed gutter with the mascot in it: you can tell who
+                          is speaking without reading a word of the turn. */}
+                      <Mark size={30} className="asst-msg__avatar" />
+                      <div className="asst-msg__body">
+                        {m.status === 'error' ? (
+                          <div className="asst-fail">
+                            <p>
+                              <Alert size={14} /> {m.error}
+                            </p>
+                            <div className="asst-fail__actions">
+                              <button type="button" onClick={() => retry(m.id)}>
+                                Try again
+                              </button>
+                              <Link to="/contact" onClick={() => setOpen(false)}>
+                                Contact us instead
+                              </Link>
+                            </div>
+                          </div>
                         ) : (
-                          <p className="asst-thinking" aria-hidden="true">
-                            <span />
-                            <span />
-                            <span />
-                          </p>
-                        )}
-                        {m.status !== 'streaming' && (
                           <>
-                            <Confidence level={m.level} score={m.score} />
-                            <Sources
-                              citations={m.citations}
-                              open={openSources === m.id}
-                              active={openSources === m.id ? activeCite : null}
-                              onToggle={() => {
-                                setActiveCite(null)
-                                setOpenSources((id) => (id === m.id ? null : m.id))
-                              }}
-                            />
+                            {m.content ? (
+                              <Answer
+                                text={m.content}
+                                streaming={m.status === 'streaming'}
+                                markers={markersOf(m.citations)}
+                                onCite={(n) => {
+                                  setOpenSources(m.id)
+                                  setActiveCite(n)
+                                }}
+                              />
+                            ) : (
+                              <p className="asst-thinking">
+                                <span className="asst-thinking__dots" aria-hidden="true">
+                                  <span />
+                                  <span />
+                                  <span />
+                                </span>
+                                Searching our documents…
+                              </p>
+                            )}
+                            {m.status !== 'streaming' && (
+                              <>
+                                <Confidence
+                                  level={m.level}
+                                  score={m.score}
+                                  intent={m.intent}
+                                  hasCitations={Boolean(m.citations?.length)}
+                                />
+                                {/* Sources and copy share one row: they are the
+                                    two things anyone does with an answer. */}
+                                {m.content && (
+                                  <div className="asst-msg__tools">
+                                    <Sources
+                                      citations={m.citations}
+                                      open={openSources === m.id}
+                                      active={openSources === m.id ? activeCite : null}
+                                      inline
+                                      onNavigate={() => setOpen(false)}
+                                      onToggle={() => {
+                                        setActiveCite(null)
+                                        setOpenSources((id) => (id === m.id ? null : m.id))
+                                      }}
+                                    />
+                                    <button
+                                      type="button"
+                                      className="asst-tool"
+                                      onClick={() => copyAnswer(m)}
+                                    >
+                                      {copiedId === m.id ? <Check size={13} /> : null}
+                                      {copiedId === m.id ? 'Copied' : 'Copy answer'}
+                                    </button>
+                                  </div>
+                                )}
+                                <RelatedPages
+                                  pages={m.pages}
+                                  onNavigate={() => setOpen(false)}
+                                />
+                                {m.suggestions?.length ? (
+                                  <ul className="asst-followups">
+                                    {m.suggestions.slice(0, 3).map((q) => (
+                                      <li key={q}>
+                                        <button
+                                          type="button"
+                                          disabled={busy}
+                                          onClick={() => submit(q)}
+                                        >
+                                          {q}
+                                        </button>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : null}
+                              </>
+                            )}
                           </>
                         )}
-                      </>
-                    )}
-                  </li>
-                ),
-              )}
-            </ol>
+                      </div>
+                    </li>
+                  ),
+                )}
+              </ol>
+            )}
+          </div>
+
+          {!empty && !atBottom && (
+            <button type="button" className="asst__jump" onClick={toBottom}>
+              <ArrowDown size={13} />
+              Latest
+            </button>
           )}
         </div>
 
@@ -413,50 +552,61 @@ export default function Assistant() {
           <label className="sr-only" htmlFor="asst-input">
             Your question
           </label>
-          <textarea
-            id="asst-input"
-            ref={inputRef}
-            className="asst__input"
-            rows={1}
-            value={draft}
-            placeholder="Ask about a lift, a spec, or a service plan…"
-            onChange={(e) => {
-              setDraft(e.target.value)
-              // Grow with the text, up to the cap set in CSS.
-              e.target.style.height = 'auto'
-              e.target.style.height = `${e.target.scrollHeight}px`
-            }}
-            onKeyDown={onKeyDown}
-            aria-describedby={over ? 'asst-limit' : undefined}
-            aria-invalid={over || undefined}
-          />
+          {/* The field and its send control are one surface, so the focus ring
+              belongs to the dock rather than to the textarea inside it. */}
+          <div className={`asst__dock${over ? ' is-over' : ''}`}>
+            <textarea
+              id="asst-input"
+              ref={inputRef}
+              className="asst__input"
+              rows={1}
+              value={draft}
+              placeholder="Ask about a lift or a service plan…"
+              onChange={(e) => {
+                setDraft(e.target.value)
+                // Grow with the text, up to the cap set in CSS.
+                e.target.style.height = 'auto'
+                e.target.style.height = `${e.target.scrollHeight}px`
+              }}
+              onKeyDown={onKeyDown}
+              aria-describedby={draft.length > COUNT_FROM ? 'asst-count' : undefined}
+              aria-invalid={over || undefined}
+            />
 
-          {busy ? (
-            <button
-              type="button"
-              className="asst__stop"
-              onClick={() => abortRef.current?.abort()}
-              aria-label="Stop the answer"
-            >
-              <span aria-hidden="true" />
-            </button>
-          ) : (
-            <button
-              type="submit"
-              className="asst__send"
-              disabled={!draft.trim() || over}
-              aria-label="Send question"
-            >
-              <Arrow size={16} />
-            </button>
-          )}
-        </form>
+            {busy ? (
+              <button
+                type="button"
+                className="asst__stop"
+                onClick={() => abortRef.current?.abort()}
+                aria-label="Stop the answer"
+              >
+                <span aria-hidden="true" />
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="asst__send"
+                disabled={!draft.trim() || over}
+                aria-label="Send question"
+              >
+                <Arrow size={16} />
+              </button>
+            )}
+          </div>
 
-        {over && (
-          <p className="asst__limit" id="asst-limit">
-            That is longer than {MAX_QUESTION.toLocaleString()} characters — please trim it.
+          <p className="asst__foot">
+            {/* Short on purpose: the empty state already makes the longer
+                promise, and this one has to hold one line under the field. */}
+            <span>AI answers — verify critical specifications with us.</span>
+            {draft.length > COUNT_FROM && (
+              <span className={`asst__count${over ? ' is-over' : ''}`} id="asst-count">
+                {over
+                  ? `${(draft.length - MAX_QUESTION).toLocaleString()} over the limit`
+                  : `${draft.length.toLocaleString()} / ${MAX_QUESTION.toLocaleString()}`}
+              </span>
+            )}
           </p>
-        )}
+        </form>
       </div>
     </>
   )

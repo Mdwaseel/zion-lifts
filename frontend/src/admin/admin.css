@@ -343,6 +343,45 @@
 }
 
 /* --- toolbar -------------------------------------------------------------- */
+/* --- section tabs ---------------------------------------------------------
+   One sidebar entry can front several collections — the catalogue is lifts plus
+   the vocabularies they are described with. These are the tabs across the top
+   of that screen. Real links, not buttons: each collection has its own URL and
+   its own filter state, and a tab you cannot open in a new window is a worse
+   tab for no benefit.
+   -------------------------------------------------------------------------- */
+
+.cf-sectiontabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--cf-line);
+}
+
+.cf-sectiontab {
+  padding: 0.35rem 0.75rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  color: var(--cf-dim);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.cf-sectiontab:hover {
+  background: var(--cf-line-soft);
+  color: var(--cf-ink);
+}
+
+.cf-sectiontab.is-active {
+  border-color: var(--cf-accent);
+  background: var(--cf-accent-soft);
+  color: var(--cf-accent);
+}
+
 .cf-toolbar {
   display: flex;
   gap: 0.6rem;
@@ -863,6 +902,255 @@
 .cf-file__preview {
   border-radius: var(--cf-radius-sm);
   border: 1px solid var(--cf-line);
+}
+
+/* --- media fields ---------------------------------------------------------
+   A picture chosen from the operator's computer, replacing the text box that
+   used to want a path. Two shapes: one image or film (.cf-media), and a list of
+   them (.cf-medialist) for a project's photographs.
+   -------------------------------------------------------------------------- */
+
+.cf-media {
+  display: grid;
+  gap: 0.5rem;
+}
+
+/* The drop target only exists while the field is empty — once there is a
+   picture, the picture itself is the control. */
+.cf-media__drop {
+  display: grid;
+  gap: 0.4rem;
+  justify-items: start;
+  padding: 1rem;
+  border: 1px dashed var(--cf-line);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-bg);
+  transition: border-color 0.12s ease, background 0.12s ease;
+}
+
+.cf-media__drop.is-dragging {
+  border-color: var(--cf-accent);
+  border-style: solid;
+  background: var(--cf-accent-soft);
+}
+
+.cf-media__drop.is-disabled {
+  opacity: 0.55;
+}
+
+.cf-media__hint {
+  margin: 0;
+  color: var(--cf-faint);
+  font-size: 0.75rem;
+}
+
+.cf-media__current {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.5rem;
+  border: 1px solid var(--cf-line);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-surface);
+}
+
+.cf-media__preview {
+  display: block;
+  /* Contained rather than cropped: an operator checking they picked the right
+     photograph needs to see the whole of it, not a flattering slice. */
+  width: 100%;
+  max-width: 22rem;
+  max-height: 13rem;
+  object-fit: contain;
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-bg);
+}
+
+.cf-media__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.cf-media__path {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--cf-dim);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cf-media__actions {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.cf-media__progress {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.cf-media__bar {
+  flex: 1;
+  height: 0.35rem;
+  border-radius: 999px;
+  background: var(--cf-line);
+  overflow: hidden;
+}
+
+.cf-media__bar span {
+  display: block;
+  height: 100%;
+  background: var(--cf-accent);
+  transition: width 0.15s linear;
+}
+
+.cf-media__pct {
+  min-width: 2.5rem;
+  color: var(--cf-dim);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* --- a list of pictures --------------------------------------------------- */
+
+.cf-medialist {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.cf-medialist__rows {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: cf-image;
+}
+
+.cf-medialist__row {
+  display: grid;
+  /* Thumbnail, fields, controls — collapsing to one column on a narrow screen
+     via the media query at the end of this file. */
+  grid-template-columns: 7rem minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.6rem;
+  border: 1px solid var(--cf-line);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-surface);
+}
+
+.cf-medialist__thumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-bg);
+  overflow: hidden;
+}
+
+.cf-medialist__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cf-medialist__missing {
+  color: var(--cf-faint);
+  font-size: 0.7rem;
+}
+
+.cf-medialist__fields {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.cf-medialist__name {
+  margin: 0;
+  overflow: hidden;
+  color: var(--cf-dim);
+  font-size: 0.75rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cf-medialist__field {
+  display: grid;
+  grid-template-columns: 5.5rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.78125rem;
+}
+
+.cf-medialist__field > span {
+  color: var(--cf-dim);
+}
+
+.cf-medialist__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.cf-medialist__add {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+/* --- read-only media ------------------------------------------------------ */
+
+.cf-readonly__media {
+  max-width: 18rem;
+  max-height: 10rem;
+  object-fit: contain;
+  border: 1px solid var(--cf-line);
+  border-radius: var(--cf-radius-sm);
+  background: var(--cf-bg);
+}
+
+.cf-readonly__strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cf-readonly__strip img {
+  width: 5rem;
+  height: 3.75rem;
+  object-fit: cover;
+  border: 1px solid var(--cf-line);
+  border-radius: var(--cf-radius-sm);
+}
+
+@media (max-width: 640px) {
+  .cf-medialist__row {
+    grid-template-columns: 1fr;
+  }
+
+  .cf-medialist__thumb {
+    max-width: 10rem;
+  }
+
+  .cf-medialist__controls {
+    flex-direction: row;
+  }
+
+  .cf-medialist__field {
+    grid-template-columns: 1fr;
+    gap: 0.15rem;
+  }
 }
 
 .cf-form__alert {

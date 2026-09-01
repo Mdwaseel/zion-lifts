@@ -6,19 +6,31 @@
    and a panel that changed colour underneath a half-read answer would read as
    a glitch. A single dark material also states plainly what it is: a tool
    layered over the site, not a part of the page.
+
+   The panel is built as a product surface rather than a chat bubble: a titled
+   header with a live status, a transcript with a speaker gutter, an input dock
+   that holds its own controls, and a standing disclaimer under it. Each of
+   those exists because a visitor deciding whether to trust an answer about a
+   lift shaft reads the frame before they read the text.
    ========================================================================== */
 
 .asst,
 .asst-launcher {
   /* Local scope so the panel's own surfaces survive .on-paper sections. */
-  --asst-bg: rgba(14, 14, 15, 0.82);
+  --asst-bg: rgba(16, 16, 18, 0.86);
   --asst-solid: #0e0e0f;
   --asst-fg: #f5f5f7;
   --asst-dim: #a1a1a6;
-  --asst-rule: rgba(255, 255, 255, 0.12);
-  --asst-surface: rgba(255, 255, 255, 0.06);
+  --asst-faint: #86868b;
+  --asst-rule: rgba(255, 255, 255, 0.1);
+  --asst-rule-strong: rgba(255, 255, 255, 0.18);
+  --asst-surface: rgba(255, 255, 255, 0.055);
+  --asst-surface-2: rgba(255, 255, 255, 0.09);
   --asst-accent: var(--teal-bright);
+  --asst-accent-soft: rgba(46, 201, 202, 0.14);
+  --asst-accent-line: rgba(46, 201, 202, 0.38);
   --asst-edge: clamp(1rem, 2.5vw, 1.75rem);
+  --asst-gutter: 30px;
   color: var(--asst-fg);
   font-family: var(--font-sans);
 }
@@ -32,26 +44,27 @@
   z-index: var(--z-menu);
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  min-height: 48px; /* comfortably past the 44px touch target floor */
-  padding: 0 1.125rem;
-  border: 1px solid var(--asst-rule);
+  gap: 0.55rem;
+  min-height: 50px; /* comfortably past the 44px touch target floor */
+  padding: 0 1.25rem 0 0.9rem;
+  border: 1px solid var(--asst-rule-strong);
   border-radius: var(--radius-pill);
-  background: var(--asst-bg);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 60%),
+    var(--asst-bg);
   -webkit-backdrop-filter: var(--material-blur);
   backdrop-filter: var(--material-blur);
-  box-shadow: var(--shadow-lift);
+  box-shadow:
+    0 18px 44px -18px rgba(0, 0, 0, 0.65),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09);
   font-size: var(--t-small);
   font-weight: var(--w-medium);
   letter-spacing: var(--tr-body);
   transition:
     transform var(--dur-fast) var(--ease-spring),
     opacity var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out),
     border-color var(--dur-fast) var(--ease-out);
-}
-
-.asst-launcher svg {
-  color: var(--asst-accent);
 }
 
 /* The mascot sits slightly proud of the cap height so the pill reads as a
@@ -59,12 +72,11 @@
 .asst-launcher__mark {
   display: block;
   flex: none;
-  margin-left: -0.25rem;
 }
 
 .asst-launcher__mark img {
   display: block;
-  width: 26px;
+  width: 28px;
   height: auto;
   /* The artwork is already a glowing blue; a drop shadow lifts it off the
      obsidian pill without adding a second colour. */
@@ -74,7 +86,10 @@
 @media (hover: hover) {
   .asst-launcher:hover {
     transform: translateY(-2px);
-    border-color: rgba(46, 201, 202, 0.45);
+    border-color: var(--asst-accent-line);
+    box-shadow:
+      0 22px 52px -18px rgba(0, 0, 0, 0.7),
+      inset 0 1px 0 rgba(255, 255, 255, 0.12);
   }
 }
 
@@ -97,17 +112,24 @@
   right: var(--asst-edge);
   bottom: var(--asst-edge);
   z-index: var(--z-menu);
-  width: min(400px, calc(100vw - 2 * var(--asst-edge)));
-  height: min(640px, calc(100dvh - 2 * var(--asst-edge)));
+  width: min(420px, calc(100vw - 2 * var(--asst-edge)));
+  height: min(680px, calc(100dvh - 2 * var(--asst-edge)));
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border: 1px solid var(--asst-rule);
-  border-radius: var(--radius-xl);
-  background: var(--asst-bg);
+  border: 1px solid var(--asst-rule-strong);
+  border-radius: 24px;
+  /* Lit from above, like every other raised surface on the site. The gradient
+     is what keeps a 680px column of dark from reading as a flat rectangle. */
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0) 220px),
+    var(--asst-bg);
   -webkit-backdrop-filter: var(--material-blur);
   backdrop-filter: var(--material-blur);
-  box-shadow: var(--shadow-lift);
+  box-shadow:
+    0 40px 90px -30px rgba(0, 0, 0, 0.72),
+    0 8px 24px -12px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
 
   /* `hidden` is what keeps the closed panel out of the tab order and the
      accessibility tree. These two lines are what let it still animate on the
@@ -152,17 +174,18 @@
 .asst__head {
   flex: none;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
-  gap: var(--gap-s);
-  padding: 1rem 1rem 0.875rem 1.125rem;
+  gap: var(--gap-xs);
+  padding: 0.8rem 0.8rem 0.8rem 1.05rem;
   border-bottom: 1px solid var(--asst-rule);
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .asst__id {
   display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
+  align-items: center;
+  gap: 0.6rem;
   min-width: 0;
 }
 
@@ -171,13 +194,13 @@
 .asst__mark {
   display: block;
   flex: none;
-  margin-top: 0.1rem;
 }
 
 .asst__mark img {
   display: block;
-  width: 30px;
+  width: 32px;
   height: auto;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
 }
 
 .asst__title {
@@ -186,26 +209,62 @@
   letter-spacing: var(--tr-body);
 }
 
-.asst__sub {
-  margin-top: 0.15rem;
+/* A live indicator rather than a second line of prose. What the panel is gets
+   said once, in the empty state, where there is room to say it properly. */
+.asst__status {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.1rem;
   font-size: var(--t-micro);
   color: var(--asst-dim);
   letter-spacing: var(--tr-small);
+}
+
+.asst__dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--asst-accent);
+  box-shadow: 0 0 0 3px rgba(46, 201, 202, 0.16);
+}
+
+/* Answering is the one state worth animating: it is the only one the visitor
+   is waiting on. */
+.asst__status.is-busy .asst__dot {
+  animation: asst-breathe 1.4s var(--ease-in-out) infinite;
+}
+
+@keyframes asst-breathe {
+  50% {
+    opacity: 0.35;
+    box-shadow: 0 0 0 5px rgba(46, 201, 202, 0.08);
+  }
 }
 
 .asst__head-actions {
   flex: none;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .asst__ghost {
-  padding: 0.4rem 0.7rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 32px;
+  padding: 0 0.7rem;
+  border: 1px solid transparent;
   border-radius: var(--radius-pill);
   font-size: var(--t-micro);
+  font-weight: var(--w-medium);
   color: var(--asst-dim);
-  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
 }
 
 .asst__icon {
@@ -218,7 +277,12 @@
   transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
 }
 
-.asst__ghost:hover,
+.asst__ghost:hover {
+  color: var(--asst-fg);
+  border-color: var(--asst-rule);
+  background: var(--asst-surface);
+}
+
 .asst__icon:hover {
   color: var(--asst-fg);
   background: var(--asst-surface);
@@ -226,39 +290,106 @@
 
 /* --- transcript ---------------------------------------------------------- */
 
+/* The log is the scroll container; the button that jumps it back to the live
+   end has to be positioned against something that does not scroll. */
+.asst__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 .asst__log {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain; /* the page behind must not scroll with it */
-  padding: 1.125rem;
+  padding: 1.125rem 1.125rem 1.25rem;
   scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.16) transparent;
+  /* The first line of the transcript dissolves into the header instead of
+     being sliced by it. 14px is the height of the fade, not a gap: content
+     still scrolls the full way up. */
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 14px);
+  mask-image: linear-gradient(180deg, transparent 0, #000 14px);
+}
+
+.asst__log::-webkit-scrollbar {
+  width: 6px;
+}
+
+.asst__log::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.asst__log::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.asst__log::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.24);
 }
 
 .asst__thread {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.15rem;
   list-style: none;
 }
 
 .asst-msg {
   font-size: var(--t-small);
-  line-height: 1.55;
+  line-height: 1.6;
   letter-spacing: var(--tr-body);
+  animation: asst-msg-in var(--dur) var(--ease-out) both;
 }
 
+@keyframes asst-msg-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* A filled bubble rather than a tinted one: the visitor's own words are the
+   only thing in the panel that is definitely true, and they should look it. */
 .asst-msg--you {
   align-self: flex-end;
-  max-width: 85%;
-  padding: 0.6rem 0.875rem;
-  border-radius: var(--radius-l) var(--radius-l) 4px var(--radius-l);
-  background: rgba(46, 201, 202, 0.13);
-  border: 1px solid rgba(46, 201, 202, 0.22);
+  max-width: 86%;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--radius-l) var(--radius-l) 6px var(--radius-l);
+  border: 1px solid rgba(46, 201, 202, 0.28);
+  background: linear-gradient(180deg, rgba(46, 201, 202, 0.2), rgba(46, 201, 202, 0.11));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  overflow-wrap: anywhere;
 }
 
+/* The answer sits in a two-column row: the mascot in a fixed gutter, the reply
+   beside it. It costs 38px of a 420px panel and buys the one thing a
+   transcript most needs — you can tell who is speaking without reading. */
 .asst-msg--zion {
+  display: grid;
+  grid-template-columns: var(--asst-gutter) 1fr;
+  gap: 0.5rem;
   max-width: 100%;
+}
+
+.asst-msg__avatar {
+  flex: none;
+  margin-top: 0.05rem;
+}
+
+.asst-msg__avatar img {
+  display: block;
+  width: var(--asst-gutter);
+  height: auto;
+  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.4));
+}
+
+.asst-msg__body {
+  min-width: 0;
 }
 
 /* --- answer body --------------------------------------------------------- */
@@ -316,7 +447,7 @@ ol.asst-answer__list {
   margin: 0 0.02em 0 0.14em;
   padding: 0 0.25em;
   border-radius: 4px;
-  background: var(--asst-surface);
+  background: var(--asst-accent-soft);
   color: var(--asst-accent);
   font-size: 0.68em;
   font-weight: var(--w-semibold);
@@ -326,7 +457,7 @@ ol.asst-answer__list {
 }
 
 .asst-cite:hover {
-  background: rgba(46, 201, 202, 0.2);
+  background: rgba(46, 201, 202, 0.28);
 }
 
 /* The streaming caret. Not a spinner: it sits at the end of the text so the
@@ -337,6 +468,7 @@ ol.asst-answer__list {
   height: 1em;
   margin-left: 2px;
   vertical-align: -0.15em;
+  border-radius: 1px;
   background: var(--asst-accent);
   animation: asst-blink 1s steps(2, start) infinite;
 }
@@ -347,25 +479,36 @@ ol.asst-answer__list {
   }
 }
 
-/* Retrieval runs before the first token, so there is a real pause to fill. */
+/* Retrieval runs before the first token, so there is a real pause to fill. It
+   is labelled because "searching the documents" and "writing" are different
+   waits, and a visitor who knows which one they are in waits better. */
 .asst-thinking {
   display: flex;
-  gap: 5px;
-  padding: 0.35rem 0;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.2rem 0;
+  font-size: var(--t-micro);
+  color: var(--asst-dim);
+  letter-spacing: var(--tr-small);
 }
 
-.asst-thinking span {
-  width: 6px;
-  height: 6px;
+.asst-thinking__dots {
+  display: flex;
+  gap: 4px;
+}
+
+.asst-thinking__dots span {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: var(--asst-dim);
+  background: var(--asst-accent);
   animation: asst-pulse 1.2s var(--ease-in-out) infinite;
 }
 
-.asst-thinking span:nth-child(2) {
+.asst-thinking__dots span:nth-child(2) {
   animation-delay: 0.15s;
 }
-.asst-thinking span:nth-child(3) {
+.asst-thinking__dots span:nth-child(3) {
   animation-delay: 0.3s;
 }
 
@@ -380,6 +523,45 @@ ol.asst-answer__list {
     opacity: 1;
     transform: translateY(-3px);
   }
+}
+
+/* --- per-answer toolbar --------------------------------------------------- */
+
+/* Opening the sources and taking a copy of the answer are the two things
+   anyone does with a reply, so they share one row under it rather than each
+   inventing its own affordance somewhere else in the message. */
+.asst-msg__tools {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.asst-tool {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 30px;
+  padding: 0 0.65rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-pill);
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.asst-tool:hover {
+  color: var(--asst-fg);
+  border-color: var(--asst-rule-strong);
+  background: var(--asst-surface);
+}
+
+.asst-tool svg {
+  flex: none;
 }
 
 /* --- confidence ---------------------------------------------------------- */
@@ -403,28 +585,56 @@ ol.asst-answer__list {
   margin-top: 0.1rem;
 }
 
+/* Not a warning — a scope note. Brass would overstate it, so this one takes
+   the quiet neutral the rest of the panel uses for asides. */
+.asst-confidence--general {
+  border-color: var(--asst-rule);
+  background: var(--asst-surface);
+  color: var(--asst-dim);
+}
+
 /* --- sources ------------------------------------------------------------- */
 
 .asst-sources {
   margin-top: 0.7rem;
 }
 
+/* In the tool row the toggle takes the same shape as its neighbours rather
+   than announcing itself. `display: contents` dissolves the wrapper so the
+   toggle and its drawer become items of that row directly — which is what lets
+   the drawer take a line of its own at full width instead of being squeezed
+   into a column the width of the button that opened it. */
+.asst-sources--inline {
+  display: contents;
+}
+
+.asst-sources--inline .asst-sources__list {
+  /* Last on its own row, whatever it was next to in the markup. */
+  order: 9;
+  flex: 1 0 100%;
+  margin-top: 0.15rem;
+}
+
 .asst-sources__toggle {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  min-height: 32px;
-  padding: 0 0.7rem 0 0.4rem;
+  min-height: 30px;
+  padding: 0 0.65rem 0 0.35rem;
   border: 1px solid var(--asst-rule);
   border-radius: var(--radius-pill);
   color: var(--asst-dim);
   font-size: var(--t-micro);
-  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
 }
 
 .asst-sources__toggle:hover {
   color: var(--asst-fg);
-  border-color: rgba(255, 255, 255, 0.24);
+  border-color: var(--asst-rule-strong);
+  background: var(--asst-surface);
 }
 
 .asst-sources__count {
@@ -433,7 +643,7 @@ ol.asst-answer__list {
   width: 20px;
   height: 20px;
   border-radius: 50%;
-  background: var(--asst-surface);
+  background: var(--asst-accent-soft);
   color: var(--asst-accent);
   font-weight: var(--w-semibold);
   font-size: 0.6875rem;
@@ -458,6 +668,7 @@ ol.asst-answer__list {
   flex-direction: column;
   gap: 0.4rem;
   list-style: none;
+  animation: asst-msg-in var(--dur-fast) var(--ease-out) both;
 }
 
 .asst-source {
@@ -467,12 +678,19 @@ ol.asst-answer__list {
   border-radius: var(--radius);
   border: 1px solid transparent;
   background: var(--asst-surface);
-  transition: border-color var(--dur-fast) var(--ease-out);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.asst-source:hover {
+  background: var(--asst-surface-2);
 }
 
 /* The entry a marker was clicked for, so the eye lands in the right place. */
 .asst-source.is-active {
-  border-color: rgba(46, 201, 202, 0.45);
+  border-color: var(--asst-accent-line);
+  background: rgba(46, 201, 202, 0.08);
 }
 
 .asst-source__n {
@@ -483,7 +701,7 @@ ol.asst-answer__list {
   height: 18px;
   margin-top: 0.1rem;
   border-radius: 50%;
-  background: rgba(46, 201, 202, 0.16);
+  background: var(--asst-accent-soft);
   color: var(--asst-accent);
   font-size: 0.6875rem;
   font-weight: var(--w-semibold);
@@ -494,6 +712,9 @@ ol.asst-answer__list {
 }
 
 .asst-source__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
   font-size: var(--t-micro);
   font-weight: var(--w-medium);
   overflow-wrap: anywhere;
@@ -503,6 +724,22 @@ a.asst-source__title {
   color: var(--asst-accent);
   text-decoration: underline;
   text-underline-offset: 2px;
+}
+
+/* "page" against a bare filename is the difference between "our website says"
+   and "our datasheet says", which is worth one word of chrome. */
+.asst-source__kind {
+  flex: none;
+  padding: 0.05rem 0.4rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius-pill);
+  background: var(--asst-surface);
+  color: var(--asst-dim);
+  font-size: 0.625rem;
+  font-weight: var(--w-medium);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+  text-decoration: none;
 }
 
 .asst-source__snippet {
@@ -532,6 +769,134 @@ a.asst-source__title {
 
 .asst-source__copy:hover {
   color: var(--asst-fg);
+}
+
+/* --- related pages -------------------------------------------------------- */
+
+/* Ruled off from the answer: these are somewhere to go, not more of the reply,
+   and without the rule they read as a third list of citations. */
+.asst-related {
+  margin-top: 0.85rem;
+  padding-top: 0.8rem;
+  border-top: 1px solid var(--asst-rule);
+}
+
+.asst-related__lead {
+  font-size: 0.625rem;
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--asst-faint);
+}
+
+.asst-related__list {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  list-style: none;
+}
+
+.asst-related__card {
+  position: relative;
+  display: block;
+  padding: 0.55rem 2rem 0.55rem 0.7rem;
+  border: 1px solid var(--asst-rule);
+  border-radius: var(--radius);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.asst-related__card:hover {
+  border-color: var(--asst-accent-line);
+  background: var(--asst-surface);
+}
+
+.asst-related__title {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
+  color: var(--asst-fg);
+}
+
+.asst-related__section {
+  flex: none;
+  padding: 0.05rem 0.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--asst-surface);
+  color: var(--asst-faint);
+  font-size: 0.625rem;
+  font-weight: var(--w-medium);
+  letter-spacing: var(--tr-label);
+  text-transform: uppercase;
+}
+
+.asst-related__desc {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  line-height: 1.45;
+}
+
+.asst-related__arrow {
+  position: absolute;
+  top: 50%;
+  right: 0.7rem;
+  color: var(--asst-accent);
+  opacity: 0;
+  transform: translate(-4px, -50%);
+  transition: opacity var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out);
+}
+
+.asst-related__card:hover .asst-related__arrow,
+.asst-related__card:focus-visible .asst-related__arrow {
+  opacity: 1;
+  transform: translate(0, -50%);
+}
+
+/* --- follow-ups ----------------------------------------------------------- */
+
+/* Dashed chips rather than solid buttons: these are a shortcut past typing,
+   not a menu, and they must not compete with the answer they sit under. */
+.asst-followups {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  list-style: none;
+}
+
+.asst-followups button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 0.7rem;
+  border: 1px dashed var(--asst-rule-strong);
+  border-radius: var(--radius-pill);
+  color: var(--asst-dim);
+  font-size: var(--t-micro);
+  line-height: 1.35;
+  text-align: left;
+  transition:
+    color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out);
+}
+
+.asst-followups button:hover:not(:disabled) {
+  color: var(--asst-fg);
+  border-style: solid;
+  border-color: var(--asst-accent-line);
+  background: var(--asst-surface);
+}
+
+.asst-followups button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* --- failure ------------------------------------------------------------- */
@@ -565,17 +930,142 @@ a.asst-source__title {
   font-size: var(--t-micro);
 }
 
+/* --- jump to latest ------------------------------------------------------- */
+
+/* Rendered only while the visitor has scrolled away from the live end, which
+   is the only time it means anything. */
+.asst__jump {
+  position: absolute;
+  left: 50%;
+  bottom: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 30px;
+  padding: 0 0.75rem;
+  border: 1px solid var(--asst-rule-strong);
+  border-radius: var(--radius-pill);
+  background: rgba(28, 28, 32, 0.92);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow-sm);
+  color: var(--asst-fg);
+  font-size: var(--t-micro);
+  transform: translateX(-50%);
+  animation: asst-jump-in var(--dur-fast) var(--ease-out) both;
+}
+
+.asst__jump:hover {
+  border-color: var(--asst-accent-line);
+}
+
+@keyframes asst-jump-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 6px);
+  }
+}
+
 /* --- empty state --------------------------------------------------------- */
 
+/* Nothing has been said yet, so the panel leads with the mascot rather than
+   with a paragraph: it identifies the tool faster than the sentence does, and
+   the opening screen is the one place there is room to draw it properly.
+   `margin-block: auto` centres the block in the free space and resolves to 0
+   when there is none — unlike `justify-content: center`, which would push the
+   top of the block out of reach in a scroll container. */
+.asst__log--empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.asst__empty {
+  margin-block: auto;
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+.asst__avatar {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  /* A halo rather than a filled disc: the artwork already has its own glow,
+     and a solid plate behind it would read as a second, competing shape. */
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(46, 201, 202, 0.22),
+    rgba(46, 201, 202, 0.05) 58%,
+    transparent 72%
+  );
+  animation: asst-avatar-in var(--dur-slow) var(--ease-out) both;
+}
+
+.asst__avatar img {
+  display: block;
+  width: 64px;
+  height: auto;
+  filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.5));
+}
+
+@keyframes asst-avatar-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.asst__empty-title {
+  margin-top: 0.6rem;
+  font-size: var(--t-h4);
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-h4);
+}
+
 .asst__empty-lead {
+  margin-top: 0.35rem;
+  /* Centred text needs a shorter measure than ranged-left does before the
+     ragged edges start costing more than the symmetry is worth. */
+  max-width: 40ch;
   font-size: var(--t-small);
   line-height: 1.55;
   color: var(--asst-dim);
   letter-spacing: var(--tr-body);
 }
 
+/* A ruled caption, so the sample questions read as a labelled set rather than
+   as four buttons that happen to be stacked. */
+.asst__openers-lead {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  margin-top: 1.4rem;
+  font-size: 0.625rem;
+  font-weight: var(--w-semibold);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--asst-faint);
+}
+
+.asst__openers-lead::before,
+.asst__openers-lead::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--asst-rule);
+}
+
 .asst__openers {
-  margin-top: 1rem;
+  width: 100%;
+  margin-top: 0.7rem;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -593,6 +1083,7 @@ a.asst-source__title {
   text-align: left;
   border: 1px solid var(--asst-rule);
   border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.025);
   font-size: var(--t-micro);
   line-height: 1.4;
   transition:
@@ -609,7 +1100,7 @@ a.asst-source__title {
 }
 
 .asst__openers button:hover {
-  border-color: rgba(46, 201, 202, 0.4);
+  border-color: var(--asst-accent-line);
   background: var(--asst-surface);
 }
 
@@ -620,10 +1111,11 @@ a.asst-source__title {
 }
 
 .asst__disclaimer {
-  margin-top: 1.125rem;
+  max-width: 36ch;
+  margin-top: 1.25rem;
   font-size: var(--t-micro);
   line-height: 1.5;
-  color: var(--fg-faint);
+  color: var(--asst-faint);
 }
 
 .asst__disclaimer a {
@@ -636,37 +1128,63 @@ a.asst-source__title {
 
 .asst__composer {
   flex: none;
+  padding: 0.75rem 0.75rem 0.6rem;
+  border-top: 1px solid var(--asst-rule);
+  background: rgba(0, 0, 0, 0.3);
+}
+
+/* One field, not a field with a button parked beside it: the send control
+   lives inside the dock so the whole thing reads — and focuses — as a single
+   input, which is what stops a 420px panel looking like a form. */
+.asst__dock {
   display: flex;
   align-items: flex-end;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  border-top: 1px solid var(--asst-rule);
-  background: rgba(0, 0, 0, 0.28);
+  gap: 0.4rem;
+  padding: 0.3rem 0.3rem 0.3rem 0.25rem;
+  border: 1px solid var(--asst-rule-strong);
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.05);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    background var(--dur-fast) var(--ease-out),
+    box-shadow var(--dur-fast) var(--ease-out);
+}
+
+.asst__dock:focus-within {
+  border-color: var(--asst-accent-line);
+  background: rgba(255, 255, 255, 0.07);
+  box-shadow: 0 0 0 3px rgba(46, 201, 202, 0.12);
+}
+
+.asst__dock.is-over {
+  border-color: rgba(208, 171, 116, 0.6);
+  box-shadow: 0 0 0 3px rgba(208, 171, 116, 0.12);
 }
 
 .asst__input {
   flex: 1;
   min-width: 0;
   max-height: 8.5rem; /* ~5 lines, then it scrolls rather than eating the log */
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--asst-rule);
-  border-radius: var(--radius-l);
-  background: rgba(255, 255, 255, 0.06);
+  padding: 0.5rem 0.25rem 0.5rem 0.75rem;
+  border: 0;
+  background: none;
   font-size: var(--t-small);
   line-height: 1.45;
   letter-spacing: var(--tr-body);
   resize: none;
   overflow-y: auto;
-  transition: border-color var(--dur-fast) var(--ease-out);
+  scrollbar-width: thin;
 }
 
 .asst__input::placeholder {
-  color: var(--fg-faint);
+  color: var(--asst-faint);
 }
 
-.asst__input:focus {
+/* The dock carries the focus ring for the whole control, so the field inside
+   it must not draw a second one. */
+.asst__input:focus,
+.asst__input:focus-visible {
   outline: none;
-  border-color: rgba(46, 201, 202, 0.5);
 }
 
 .asst__send,
@@ -674,12 +1192,12 @@ a.asst-source__title {
   flex: none;
   display: grid;
   place-items: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   transition:
     background var(--dur-fast) var(--ease-out),
-    opacity var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out),
     transform var(--dur-fast) var(--ease-spring);
 }
 
@@ -691,22 +1209,25 @@ a.asst-source__title {
 .asst__send:hover:not(:disabled) {
   background: var(--teal-bright);
   color: var(--obsidian);
-  transform: scale(1.05);
+  transform: scale(1.06);
 }
 
+/* Greyed rather than faded: a 35%-opacity teal disc on this ground still looks
+   like a live button, and a send that looks live but is not is a small lie. */
 .asst__send:disabled {
-  opacity: 0.35;
+  background: var(--asst-surface-2);
+  color: var(--asst-faint);
   cursor: not-allowed;
 }
 
 .asst__stop {
-  border: 1px solid var(--asst-rule);
+  border: 1px solid var(--asst-rule-strong);
   background: var(--asst-surface);
 }
 
 .asst__stop span {
-  width: 11px;
-  height: 11px;
+  width: 10px;
+  height: 10px;
   border-radius: 2px;
   background: var(--asst-fg);
 }
@@ -715,11 +1236,42 @@ a.asst-source__title {
   background: rgba(255, 255, 255, 0.12);
 }
 
-.asst__limit {
+/* A standing note under the field, not a one-off warning. An assistant that
+   states its limits once, permanently, is trusted more than one that only
+   mentions them after something has already gone wrong. */
+.asst__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.45rem;
+  padding: 0 0.5rem;
+  font-size: 0.625rem;
+  line-height: 1.4;
+  letter-spacing: var(--tr-small);
+  color: var(--asst-faint);
+}
+
+.asst__foot a {
+  color: var(--asst-dim);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.asst__foot a:hover {
+  color: var(--asst-fg);
+}
+
+/* Silent until it is nearly relevant, then brass at the limit. A counter that
+   is always on is a counter nobody reads. */
+.asst__count {
   flex: none;
-  padding: 0 0.9rem 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.asst__count.is-over {
   color: var(--brass-light);
-  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
 }
 
 /* --- phones -------------------------------------------------------------- */
@@ -733,15 +1285,20 @@ a.asst-source__title {
     height: 100dvh;
     border: 0;
     border-radius: 0;
+    box-shadow: none;
   }
 
   .asst.is-sheet[hidden] {
     transform: translateY(2rem);
   }
 
+  .asst.is-sheet .asst__head {
+    padding-top: max(0.8rem, env(safe-area-inset-top));
+  }
+
   .asst.is-sheet .asst__composer {
     /* clear of the home indicator on iOS */
-    padding-bottom: max(0.75rem, env(safe-area-inset-bottom));
+    padding-bottom: max(0.6rem, env(safe-area-inset-bottom));
   }
 
   .asst.is-sheet .asst__input {
@@ -756,7 +1313,8 @@ a.asst-source__title {
   .asst,
   .asst-launcher,
   .asst__send,
-  .asst__openers button svg {
+  .asst__openers button svg,
+  .asst-related__arrow {
     transition-duration: 0.01ms;
   }
 
@@ -766,11 +1324,16 @@ a.asst-source__title {
 
   /* The caret still marks the live end of the answer; it just stops flashing. */
   .asst-caret,
-  .asst-thinking span {
+  .asst-thinking__dots span,
+  .asst__avatar,
+  .asst__dot,
+  .asst-msg,
+  .asst-sources__list,
+  .asst__jump {
     animation: none;
   }
 
-  .asst-thinking span {
+  .asst-thinking__dots span {
     opacity: 0.6;
   }
 }

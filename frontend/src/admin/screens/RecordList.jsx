@@ -137,8 +137,30 @@ export default function RecordList({ onNotify }) {
   // the id and always resolves to that row.
   if (schema.singleton) return <Navigate to={`/control/${resource}/1`} replace />
 
+  const tabs = schema.tabs ?? []
+
   return (
     <section className="cf-page">
+      {/* One sidebar entry, several collections. The catalogue is one job —
+          the lifts and the vocabularies they are described with — and five
+          sidebar rows made it read as five. They stay separate tables because
+          the site reads each of them whole; they just stop being separate
+          places to go. */}
+      {tabs.length > 1 && (
+        <nav className="cf-sectiontabs" aria-label={`${schema.group} collections`}>
+          {tabs.map((tab) => (
+            <Link
+              key={tab.key}
+              to={`/control/${tab.key}`}
+              className={`cf-sectiontab${tab.key === resource ? ' is-active' : ''}`}
+              aria-current={tab.key === resource ? 'page' : undefined}
+            >
+              {tab.label}
+            </Link>
+          ))}
+        </nav>
+      )}
+
       <PageHeader eyebrow={schema.group} title={schema.label_plural} count={list?.count}>
         {schema.permissions.create && (
           <Link className="cf-btn cf-btn--primary" to={`/control/${resource}/new`}>

@@ -144,6 +144,18 @@ class Settings(BaseSettings):
     qdrant_collection: str = constants.DEFAULT_COLLECTION
     qdrant_timeout: float = 30.0
 
+    # Which corpus a chat request that names no knowledge base should read.
+    #
+    # Unset, the service falls back to `qdrant_collection` — the pre-knowledge-
+    # base collection, which on a deployment that has only ever ingested through
+    # the Django-owned models is empty. Searching it finds nothing, and "nothing
+    # retrieved" is indistinguishable from "the corpus does not cover this": the
+    # assistant refuses every question, however well stocked its actual corpus
+    # is. Setting this points the default at a real knowledge base instead, so
+    # the public widget — which has no business knowing a UUID — keeps sending
+    # exactly what it sends today.
+    default_knowledge_base_id: str | None = None
+
     # --- Broker --------------------------------------------------------------
     # Celery's broker, shared with the Django side: both must point at the same
     # Redis or the worker consumes an empty queue while uploads pile up in
@@ -278,6 +290,33 @@ class Settings(BaseSettings):
     # model actually has. Converted at CHARS_PER_TOKEN; the default is the
     # 12,000-character budget this pipeline has always used.
     max_context_tokens: int = Field(default=3000, ge=256, le=200_000)
+
+    # --- Assistant routing ---------------------------------------------------
+    # The intelligent router in front of retrieval. Off means the pre-routing
+    # behaviour: retrieve for every question, refuse when grounding is weak.
+    # Kept as a switch because it changes what the assistant will answer, and a
+    # deployment should be able to go back within one restart rather than one
+    # release.
+    query_routing_enabled: bool = True
+    # Spend a model call to break a tie when the rule classifier is unsure.
+    # Off by default: it is a second round trip before retrieval has started,
+    # and the rules resolve an unsure classification to MIXED, which is safe.
+    intent_llm_tiebreak: bool = False
+    # How much of the MMR objective is relevance rather than novelty. See
+    # app/retrieval/diversity.py; 0.7 keeps ranking in charge.
+    context_diversity_lambda: float = Field(default=0.7, ge=0.0, le=1.0)
+
+    # --- Website index -------------------------------------------------------
+    # Where the site's own content API lives. Unset is legitimate — the index
+    # then holds the static route table only, which is navigationally correct
+    # and catalogue-blind. It falls back to BACKEND_URL, which the worker
+    # already needs, so most deployments set nothing here.
+    website_base_url: str | None = None
+    website_index_enabled: bool = True
+    # How long a built index is served before it is rebuilt. Content changes at
+    # the pace of an editor publishing a page; a request must never wait on it.
+    website_index_ttl_seconds: float = Field(default=900.0, ge=30.0)
+    website_index_timeout: float = Field(default=10.0, gt=0)
 
     # --- LLM -----------------------------------------------------------------
     llm_provider_order: CsvList = Field(default_factory=lambda: ["gemini", "groq", "openai"])
@@ -512,6 +551,19 @@ class Settings(BaseSettings):
     def configured_providers(self) -> list[str]:
         """Providers in preference order that actually hold a credential."""
         return [p for p in self.llm_provider_order if getattr(self, _PROVIDER_KEYS[p], None)]
+
+    @property
+    def website_content_url(self) -> str | None:
+        """Where the page index reads the site's content from.
+
+        Falls back to ``backend_url`` because that is the same Django instance
+        and the same host; setting it twice is a way for the two to disagree
+        after a move, and a website index pointed at a stale host is worse than
+        one that is only static.
+        """
+        if not self.website_index_enabled:
+            return None
+        return self.website_base_url or self.backend_url
 
     @property
     def embeddings_use_api(self) -> bool:

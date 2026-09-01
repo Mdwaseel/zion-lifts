@@ -228,7 +228,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         model = TeamMember
         fields = [
             "id", "name", "role", "department", "department_display",
-            "bio", "photo", "is_leadership",
+            "bio", "photo",
         ]
 
 

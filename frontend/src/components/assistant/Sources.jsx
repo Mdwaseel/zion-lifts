@@ -8,6 +8,7 @@
  */
 
 import { useEffect, useRef, useState } from 'react'
+import { Link } from 'react-router-dom'
 
 import { Alert, Check } from '@/components/icons'
 
@@ -28,14 +29,34 @@ function href(citation) {
   return /^https?:\/\//i.test(citation.source ?? '') ? citation.source : null
 }
 
+/** A website source carries a route this site owns; it is navigated, not opened. */
+function route(citation) {
+  return citation.type === 'website' && typeof citation.url === 'string' && citation.url[0] === '/'
+    ? citation.url
+    : null
+}
+
 /**
- * The service's own confidence in the retrieval behind an answer.
+ * How the answer was arrived at, said in one line or not at all.
  *
- * Shown only when it is low. A green tick on every high-confidence answer
- * trains people to ignore it, and then the one warning that matters is ignored
- * with the rest.
+ * Two cases earn a line and nothing else does. A green tick on every confident
+ * answer trains people to ignore the badge, and then the one warning that
+ * matters is ignored with the rest.
+ *
+ * The general-knowledge line is the honest half of the routing change: the
+ * assistant now answers "how does a counterweight work?" from its own knowledge
+ * of lift engineering, and saying so is what stops that reading as a claim
+ * about Zion.
  */
-export function Confidence({ level, score }) {
+export function Confidence({ level, score, intent, hasCitations }) {
+  if (intent === 'general_lift_knowledge' && !hasCitations) {
+    return (
+      <p className="asst-confidence asst-confidence--general">
+        <span>General lift engineering — not specific to Zion.</span>
+      </p>
+    )
+  }
+
   if (level !== 'low') return null
   const percent = typeof score === 'number' ? ` (${Math.round(score * 100)}% match)` : ''
 
@@ -49,7 +70,7 @@ export function Confidence({ level, score }) {
   )
 }
 
-export default function Sources({ citations, open, onToggle, active }) {
+export default function Sources({ citations, open, onToggle, active, inline, onNavigate }) {
   const listRef = useRef(null)
   const [copied, setCopied] = useState(null)
 
@@ -70,7 +91,7 @@ export default function Sources({ citations, open, onToggle, active }) {
   if (!citations?.length) return null
 
   return (
-    <div className="asst-sources">
+    <div className={`asst-sources${inline ? ' asst-sources--inline' : ''}`}>
       <button
         type="button"
         className="asst-sources__toggle"
@@ -87,6 +108,7 @@ export default function Sources({ citations, open, onToggle, active }) {
           {citations.map((citation, i) => {
             const n = Number(String(citation.marker ?? '').replace(/\D/g, '')) || i + 1
             const link = href(citation)
+            const internal = route(citation)
 
             return (
               <li
@@ -98,7 +120,15 @@ export default function Sources({ citations, open, onToggle, active }) {
                   {n}
                 </span>
                 <div className="asst-source__body">
-                  {link ? (
+                  {internal ? (
+                    // A page of this site: routed, not reloaded, and marked as
+                    // a page rather than a document so the reader can tell
+                    // "our website says" from "our datasheet says".
+                    <Link className="asst-source__title" to={internal} onClick={onNavigate}>
+                      {label(citation)}
+                      <span className="asst-source__kind">page</span>
+                    </Link>
+                  ) : link ? (
                     <a
                       className="asst-source__title"
                       href={link}
@@ -111,7 +141,7 @@ export default function Sources({ citations, open, onToggle, active }) {
                     <p className="asst-source__title">{label(citation)}</p>
                   )}
                   <p className="asst-source__snippet">{citation.snippet}</p>
-                  {!link && citation.snippet && (
+                  {!link && !internal && citation.snippet && (
                     <button
                       type="button"
                       className="asst-source__copy"

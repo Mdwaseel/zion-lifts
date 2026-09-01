@@ -11,6 +11,13 @@
  * and falls back to the unary endpoint when streaming does not survive the
  * network — a corporate proxy that buffers `text/event-stream` should cost the
  * visitor a slower answer, not no answer.
+ *
+ * The event protocol is additive and this reader is written to stay that way:
+ * `metadata` arrives before the first token, `delta` carries the answer,
+ * `citations`, `related_pages` and `suggestions` follow it, and `done` closes.
+ * Any `type` this file does not recognise is skipped rather than treated as an
+ * error, which is what lets the service add an event without shipping a new
+ * bundle first.
  */
 
 const BASE = import.meta.env?.VITE_AI_BASE ?? '/ai/api/v1'
@@ -143,6 +150,18 @@ async function* events(response) {
   }
 }
 
+/** Every field an answer can carry, before any of it has arrived. */
+function emptyMeta() {
+  return {
+    citations: [],
+    relatedPages: [],
+    suggestions: [],
+    confidence: null,
+    level: null,
+    intent: null,
+  }
+}
+
 /**
  * Asks a question, reporting progress through the callbacks.
  *
@@ -152,10 +171,22 @@ async function* events(response) {
  * @param {AbortSignal} [opts.signal]
  * @param {(delta: string) => void} [opts.onDelta]
  * @param {(citations: Array) => void} [opts.onCitations]
- * @returns {Promise<{citations: Array, confidence: number|null, level: string|null}>}
+ * @param {(meta: object) => void} [opts.onMeta]   intent and confidence, early
+ * @param {(pages: Array) => void} [opts.onPages]
+ * @returns {Promise<{citations: Array, relatedPages: Array, suggestions: Array,
+ *   confidence: number|null, level: string|null, intent: string|null}>}
  */
-export async function ask({ question, history = [], signal, onDelta, onCitations }) {
+export async function ask({
+  question,
+  history = [],
+  signal,
+  onDelta,
+  onCitations,
+  onMeta,
+  onPages,
+}) {
   const payload = payloadFor(question, history)
+  const callbacks = { signal, onDelta, onCitations, onMeta, onPages }
   let res
 
   try {
@@ -173,32 +204,56 @@ export async function ask({ question, history = [], signal, onDelta, onCitations
   if (!res.ok) throw await readError(res)
   // No readable body means something between here and the service swallowed the
   // stream. Ask again without it rather than rendering an empty answer.
-  if (!res.body) return unary(payload, { signal, onDelta, onCitations })
+  if (!res.body) return unary(payload, callbacks)
 
-  const meta = { citations: [], confidence: null, level: null }
+  const meta = emptyMeta()
   let received = false
 
   for await (const chunk of events(res)) {
-    if (chunk.type === 'delta' && chunk.content) {
-      received = true
-      onDelta?.(chunk.content)
-    } else if (chunk.type === 'citations' && chunk.citations) {
-      meta.citations = chunk.citations
-      onCitations?.(chunk.citations)
-    } else if (chunk.type === 'error') {
-      throw new AssistantError(chunk.error || describe(500), { code: 'stream_error' })
+    switch (chunk.type) {
+      case 'delta':
+        if (chunk.content) {
+          received = true
+          onDelta?.(chunk.content)
+        }
+        break
+      case 'metadata':
+        // Arrives before the first token: how the question was understood and
+        // how well it is supported, so the panel can frame the answer while it
+        // is still being written.
+        meta.intent = chunk.intent ?? null
+        meta.confidence = typeof chunk.confidence === 'number' ? chunk.confidence : null
+        meta.level = chunk.confidence_level ?? null
+        onMeta?.({ intent: meta.intent, confidence: meta.confidence, level: meta.level })
+        break
+      case 'citations':
+        meta.citations = chunk.citations ?? []
+        onCitations?.(meta.citations)
+        break
+      case 'related_pages':
+        meta.relatedPages = chunk.related_pages ?? []
+        onPages?.(meta.relatedPages)
+        break
+      case 'suggestions':
+        meta.suggestions = chunk.suggested_questions ?? []
+        break
+      case 'error':
+        throw new AssistantError(chunk.error || describe(500), { code: 'stream_error' })
+      default:
+        // An event type this bundle predates. Ignored on purpose.
+        break
     }
   }
 
   // A stream that closed without a single delta is indistinguishable from a
   // buffering proxy, and the unary endpoint is not vulnerable to that.
-  if (!received) return unary(payload, { signal, onDelta, onCitations })
+  if (!received) return unary(payload, callbacks)
 
   return meta
 }
 
 /** The non-streamed endpoint. Same answer, delivered in one piece. */
-async function unary(payload, { signal, onDelta, onCitations }) {
+async function unary(payload, { signal, onDelta, onCitations, onMeta, onPages }) {
   let res
   try {
     res = await fetch(`${BASE}/chat`, {
@@ -215,14 +270,21 @@ async function unary(payload, { signal, onDelta, onCitations }) {
   if (!res.ok) throw await readError(res)
 
   const data = await res.json()
-  if (data.answer) onDelta?.(data.answer)
-  if (data.citations?.length) onCitations?.(data.citations)
-
-  return {
+  const meta = {
     citations: data.citations ?? [],
+    relatedPages: data.related_pages ?? [],
+    suggestions: data.suggested_questions ?? [],
     confidence: typeof data.confidence === 'number' ? data.confidence : null,
     level: data.confidence_level ?? null,
+    intent: data.intent ?? null,
   }
+
+  onMeta?.({ intent: meta.intent, confidence: meta.confidence, level: meta.level })
+  if (data.answer) onDelta?.(data.answer)
+  if (meta.citations.length) onCitations?.(meta.citations)
+  if (meta.relatedPages.length) onPages?.(meta.relatedPages)
+
+  return meta
 }
 
 /** Whether the service is reachable. Keeps the launcher from promising an

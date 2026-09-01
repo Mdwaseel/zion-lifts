@@ -1,4 +1,4 @@
-"""Django settings for the Zion Lifts site."""
+"""Django settings for the Zion Lifts site.""" 
 from datetime import timedelta
 from pathlib import Path
 import os
@@ -12,7 +12,9 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-not-for-production-4f9a2c81")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,host.docker.internal").split(",")
+if DEBUG and "*" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("*")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -30,6 +32,8 @@ INSTALLED_APPS = [
     # all live in one app — see apps/adminpanel/models.py for why.
     "apps.adminpanel",
     "apps.knowledge",
+    # Website analytics: the public tracker, and the reports over what it wrote.
+    "apps.analytics",
 ]
 
 MIDDLEWARE = [
@@ -135,6 +139,12 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
     "DEFAULT_THROTTLE_RATES": {
         "enquiry": "12/hour",
+        # The analytics beacon fires once per page a visitor opens, so this is
+        # sized against a person browsing quickly rather than against a form
+        # submission: generous enough that nobody reading the site is ever
+        # dropped, tight enough that the endpoint cannot be used to fill the
+        # table faster than browsing would.
+        "analytics_track": os.getenv("ANALYTICS_RATE_LIMIT", "240/hour"),
         # Loose enough for a person mistyping a password a few times; tight
         # enough that a script cannot work through a wordlist.
         "login": os.getenv("LOGIN_RATE_LIMIT", "10/minute"),
@@ -455,3 +465,23 @@ if not DEBUG:
             "JWT_SIGNING_KEY (or DJANGO_SECRET_KEY, which it falls back to) must "
             "be a long random value when DEBUG is off."
         )
+
+
+# --- website analytics -----------------------------------------------------
+# A visit ends after this much silence; the next page view starts a new one.
+# 30 minutes is the industry convention, which matters because it is what every
+# other tool these numbers get compared against uses.
+ANALYTICS_SESSION_TIMEOUT_MINUTES = int(os.getenv("ANALYTICS_SESSION_TIMEOUT_MINUTES", "30"))
+
+# How recently a visit must have been touched to count as "online now".
+ANALYTICS_ONLINE_WINDOW_MINUTES = int(os.getenv("ANALYTICS_ONLINE_WINDOW_MINUTES", "5"))
+
+# The site's own domains, so a visitor clicking from one page to another is not
+# filed as a referral from the site to itself. Defaults to ALLOWED_HOSTS, which
+# is already the list of names this site answers on; set this only where the two
+# genuinely differ. Configuration rather than the request's Host header because
+# any proxy that rewrites Host — nginx without proxy_set_header, Vite's
+# changeOrigin in development — would otherwise break the traffic-source report.
+ANALYTICS_OWN_HOSTS = [
+    host.strip() for host in os.getenv("ANALYTICS_OWN_HOSTS", "").split(",") if host.strip()
+] or ALLOWED_HOSTS

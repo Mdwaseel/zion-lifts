@@ -38,6 +38,13 @@ IMAGE = "image"
 FILE = "file"
 JSON = "json"
 COLOR = "color"
+# A URL string that names a picture or a film. Stored as a CharField, but there
+# is no reason a person should ever type one: the panel renders an uploader,
+# stores the file, and puts the resulting URL in the field. See uploads.py.
+MEDIA = "media"
+# A JSON list of media objects — a lift's images, a project's photographs. Same
+# uploader, once per row, with the row's own text fields beside it.
+MEDIA_LIST = "media_list"
 
 _BY_FIELD_CLASS: list[tuple[type[models.Field], str]] = [
     # Order matters: the first match wins, so subclasses come before their
@@ -60,6 +67,96 @@ _BY_FIELD_CLASS: list[tuple[type[models.Field], str]] = [
 # Never editable, and never worth a form row.
 ALWAYS_READONLY = frozenset({"id", "pk", "created_at", "updated_at"})
 
+# --- media -----------------------------------------------------------------
+# Which CharFields hold a media URL rather than a link somebody should type.
+#
+# Matched by name, because that is the only thing distinguishing them: they are
+# all `CharField(max_length=300)`. The alternative — a flag on every one of the
+# fourteen — would be a second thing to keep in step with the first, and the
+# naming here is already consistent and load-bearing (the public serializers
+# pair `logo`/`logo_url`, `image`/`image_url` on exactly this convention).
+#
+# `URLField` is deliberately excluded below: a map embed and a partner's website
+# are genuinely somebody else's address, and an uploader would be nonsense there.
+_IMAGE_FIELD_NAMES = frozenset(
+    {"image_url", "hero_image_url", "photo_url", "logo_url", "poster_url", "texture_url"}
+)
+_VIDEO_FIELD_NAMES = frozenset(
+    {"video_url", "hero_video_url", "loop_video_url", "media_url"}
+)
+
+# JSON list fields whose rows carry a `src`, and the shape of one row.
+#
+# Keyed by model, not by field name, because the two `images` columns are not
+# the same shape: a lift's photographs are tagged `kind` (where on the product
+# page they belong) and a project's are tagged `stage` (how far through the
+# installation they were taken). Keying on "images" alone would put an
+# irrelevant dropdown on every row of both.
+#
+# The item schema is what lets the panel draw a real form per photograph instead
+# of handing an operator a textarea full of braces. The choices are the values
+# actually present in the catalogue — a free-text box here is how a typo becomes
+# a photograph that never appears on the site.
+_ALT = {
+    "name": "alt", "label": "Alt text", "type": STRING,
+    "help_text": "What the photograph shows, for anyone who cannot see it.",
+}
+_CAPTION = {"name": "caption", "label": "Caption", "type": STRING}
+
+
+def _choice(name, label, values):
+    return {
+        "name": name,
+        "label": label,
+        "type": CHOICE,
+        "choices": [{"value": v, "label": t} for v, t in values],
+    }
+
+
+_MEDIA_LISTS: dict[str, dict] = {
+    "adminpanel.lift.images": {
+        "src_key": "src",
+        "fields": [
+            _choice("kind", "Shown as", [
+                ("gallery", "Gallery"),
+                ("detail", "Detail"),
+                ("cabin", "Cabin"),
+            ]),
+            _ALT,
+            _CAPTION,
+        ],
+    },
+    "adminpanel.project.images": {
+        "src_key": "src",
+        "fields": [
+            _choice("stage", "Stage", [
+                ("site", "Site"),
+                ("installation", "Installation"),
+                ("interior", "Interior"),
+                ("detail", "Detail"),
+                ("completion", "Completion"),
+            ]),
+            _ALT,
+            _CAPTION,
+        ],
+    },
+}
+
+
+def _media_list_key(model_field: models.Field) -> str:
+    return f"{model_field.model._meta.label_lower}.{model_field.name}"
+
+
+def _media_kind(model_field: models.Field) -> str | None:
+    """"image", "video", or None if this field is not media."""
+    if not isinstance(model_field, models.CharField) or isinstance(model_field, models.URLField):
+        return None
+    if model_field.name in _IMAGE_FIELD_NAMES:
+        return "image"
+    if model_field.name in _VIDEO_FIELD_NAMES:
+        return "video"
+    return None
+
 
 def field_type(model_field: models.Field) -> str:
     """The front-end input a model field should be edited with."""
@@ -75,6 +172,12 @@ def field_type(model_field: models.Field) -> str:
     # "#C9B79A" by hand, and these drive the finish swatches on the site.
     if isinstance(model_field, models.CharField) and _looks_like_colour(model_field):
         return COLOR
+
+    if _media_kind(model_field):
+        return MEDIA
+
+    if isinstance(model_field, models.JSONField) and _media_list_key(model_field) in _MEDIA_LISTS:
+        return MEDIA_LIST
 
     for klass, name in _BY_FIELD_CLASS:
         if isinstance(model_field, klass):
@@ -121,6 +224,16 @@ def describe_field(model_field: models.Field, resource: Resource) -> dict[str, A
     max_length = getattr(model_field, "max_length", None)
     if max_length and kind in {STRING, SLUG, EMAIL, URL, COLOR}:
         described["max_length"] = max_length
+
+    if kind == MEDIA:
+        described["media_kind"] = _media_kind(model_field)
+        # Uploads are filed per collection, so the uploads directory stays
+        # browsable by a human rather than becoming one flat folder of uuids.
+        described["upload_folder"] = resource.key
+
+    if kind == MEDIA_LIST:
+        described.update(_MEDIA_LISTS[_media_list_key(model_field)])
+        described["upload_folder"] = resource.key
 
     if kind == CHOICE:
         described["choices"] = [
@@ -188,6 +301,18 @@ def describe_resource(resource: Resource, *, detail: bool = True) -> dict[str, A
             "edit": resource.can_edit,
             "delete": resource.can_delete and not resource.singleton,
         },
+        # The other collections reached from the same screen, owner first.
+        # Empty for a resource that stands alone, which is how the list view
+        # knows to render no tab bar rather than a bar with one tab in it.
+        #
+        # Carried on the resource's own description rather than looked up from
+        # the navigation payload so the list screen stays self-contained: it
+        # already fetches its schema, and this saves threading the sidebar's
+        # data down through every route that might need it.
+        "tabs": [
+            {"key": member.key, "label": member.label_plural}
+            for member in registry.section_members(resource.key)
+        ],
     }
     if not detail:
         return described

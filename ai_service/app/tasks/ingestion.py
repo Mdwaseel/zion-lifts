@@ -127,6 +127,7 @@ def _handle_failure(
     max_retries = context.settings.celery_task_max_retries
     attempts_left = error.retryable and (task.request.retries or 0) < max_retries
 
+    logger.exception("Ingestion failed with error: %s", error)
     logger.warning(
         events.INGESTION_RETRYING if attempts_left else events.INGESTION_FAILED,
         extra={

@@ -8,6 +8,7 @@ from .operations import (
     OperationsOverviewView,
     OperationsProvidersView,
 )
+from .uploads import UploadView
 
 __all__ = [
     "AdminResourceViewSet",
@@ -19,4 +20,5 @@ __all__ = [
     "OperationsOverviewView",
     "OperationsIngestionView",
     "OperationsProvidersView",
+    "UploadView",
 ]

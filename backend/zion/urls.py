@@ -18,7 +18,13 @@ urlpatterns = [
     # The ingestion worker's own routes. Not part of the staff API and not
     # reachable with a user credential — see apps/knowledge/api/internal.py.
     path("api/internal/knowledge/", include("apps.knowledge.api.internal_urls")),
+    # Analytics reports, before the catch-all resource router for the same
+    # reason knowledge is: these are named reports, not a registered collection.
+    path("api/admin/analytics/", include("apps.analytics.api.urls")),
     path("api/admin/", include("apps.adminpanel.urls")),
+    # The public tracking beacon. Open, throttled, and deliberately mounted
+    # above the site's content API so a future content route cannot shadow it.
+    path("api/analytics/", include("apps.analytics.api.public_urls")),
     # The website's own read-only API, over the same models.
     path("api/", include("apps.adminpanel.public.urls")),
 ]

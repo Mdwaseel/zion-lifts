@@ -21,7 +21,7 @@ const HEADING = /^\s*#{1,6}\s+/
 // citation marker | bold | italic | inline code.
 const INLINE = /(\[\d+\])|(\*\*[^*\n]+\*\*)|(\*[^*\n]+\*)|(`[^`\n]+`)/g
 
-function inline(text, key, onCite) {
+function inline(text, key, onCite, valid) {
   const out = []
   let last = 0
   let match
@@ -34,17 +34,25 @@ function inline(text, key, onCite) {
 
     if (match[1]) {
       const n = Number(token.slice(1, -1))
-      out.push(
-        <button
-          key={id}
-          type="button"
-          className="asst-cite"
-          onClick={() => onCite?.(n)}
-          aria-label={`Show source ${n}`}
-        >
-          {n}
-        </button>,
-      )
+      // Mid-stream, a marker can arrive before the citation list that resolves
+      // it — and an answer can cite a passage the service later dropped. A
+      // marker with nothing behind it is drawn as plain text rather than as a
+      // button that opens an empty drawer.
+      if (valid && !valid.has(n)) {
+        out.push(<span key={id}>{token}</span>)
+      } else {
+        out.push(
+          <button
+            key={id}
+            type="button"
+            className="asst-cite"
+            onClick={() => onCite?.(n)}
+            aria-label={`Show source ${n}`}
+          >
+            {n}
+          </button>,
+        )
+      }
     } else if (match[2]) {
       out.push(<strong key={id}>{token.slice(2, -2)}</strong>)
     } else if (match[3]) {
@@ -102,8 +110,11 @@ function blocks(source) {
   return result
 }
 
-export default function Answer({ text, streaming = false, onCite }) {
+export default function Answer({ text, streaming = false, onCite, markers }) {
   const parsed = blocks(text)
+  // While the answer is still streaming the citation list has not arrived,
+  // so every marker is provisional and none are drawn as buttons yet.
+  const valid = streaming ? new Set() : markers
 
   return (
     <div className="asst-answer">
@@ -111,7 +122,7 @@ export default function Answer({ text, streaming = false, onCite }) {
         if (block.kind === 'h') {
           return (
             <p key={i} className="asst-answer__h">
-              {inline(block.text, `h${i}`, onCite)}
+              {inline(block.text, `h${i}`, onCite, valid)}
             </p>
           )
         }
@@ -119,7 +130,7 @@ export default function Answer({ text, streaming = false, onCite }) {
           const last = streaming && i === parsed.length - 1
           return (
             <p key={i}>
-              {inline(block.text, `p${i}`, onCite)}
+              {inline(block.text, `p${i}`, onCite, valid)}
               {last && <span className="asst-caret" aria-hidden="true" />}
             </p>
           )
@@ -128,7 +139,7 @@ export default function Answer({ text, streaming = false, onCite }) {
         return (
           <List key={i} className="asst-answer__list">
             {block.items.map((item, j) => (
-              <li key={j}>{inline(item, `l${i}-${j}`, onCite)}</li>
+              <li key={j}>{inline(item, `l${i}-${j}`, onCite, valid)}</li>
             ))}
           </List>
         )

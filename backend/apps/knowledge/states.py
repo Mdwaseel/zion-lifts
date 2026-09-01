@@ -75,7 +75,7 @@ TRANSITIONS: dict[str, frozenset[str]] = {
     # Reindex sends a finished document back to the start of the same path.
     _S.READY: frozenset({_S.PROCESSING, _S.DELETING}),
     # Retry does the same for a failed one.
-    _S.FAILED: frozenset({_S.PROCESSING, _S.DELETING}),
+    _S.FAILED: frozenset({_S.PROCESSING, _S.READY, _S.DELETING}),
     # Deletion is its own short lifecycle: a document being removed from the
     # index cannot slip back into the ingestion path, only forward or back out
     # to FAILED if the removal itself breaks.

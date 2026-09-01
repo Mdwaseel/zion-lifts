@@ -18,6 +18,10 @@ from app.embeddings.provider import EmbeddingProvider
 from app.ingestion.processors.chunker import RecursiveChunker
 from app.ingestion.service import IngestionService
 from app.llm.fallback import FallbackLLM, build_llm
+from app.orchestration.assistant import AssistantPipeline
+from app.orchestration.source_orchestrator import SourceOrchestrator
+from app.query_router import QueryRouter
+from app.query_router.classifier import LLMIntentClassifier, RuleIntentClassifier
 from app.rag.answer_generator import AnswerGenerator
 from app.rag.context_builder import ContextBuilder
 from app.rag.pipeline import RagPipeline
@@ -36,6 +40,7 @@ from app.services.chat_service import ChatService
 from app.services.document_service import DocumentService
 from app.vectorstore.base import VectorStore
 from app.vectorstore.qdrant import QdrantVectorStore
+from app.website.provider import WebsiteIndexProvider
 
 logger = get_logger(__name__)
 
@@ -50,6 +55,8 @@ class Container:
     pipeline: RagPipeline
     chat_service: ChatService
     document_service: DocumentService
+    website: WebsiteIndexProvider | None = None
+    assistant: AssistantPipeline | None = None
 
     @classmethod
     async def build(cls, settings: Settings) -> Container:
@@ -114,6 +121,10 @@ class Container:
             rewriter=QueryRewriter(llm, enabled=settings.query_rewrite_enabled),
             embedding_model=settings.embedding_model,
             embedding_model_version=settings.embedding_model_version,
+            # From the loaded provider, not from configuration: it is what
+            # ingestion used to name the collection, and a settings value that
+            # nobody sets would silently build a different name.
+            embedding_dimension=embeddings.dimension,
             top_k=settings.rerank_top_k,
             min_rerank_score=settings.min_rerank_score,
             confidence_high=settings.confidence_high,
@@ -121,13 +132,67 @@ class Container:
             min_context_documents=settings.min_context_documents,
         )
 
-        # Requests that name no knowledge base read the corpus indexed before
-        # knowledge bases existed. Once documents are ingested through the
-        # Django-owned models this becomes that deployment's default knowledge
-        # base instead, and no caller has to change.
-        default_scope = RetrievalScope.legacy(settings.qdrant_collection)
+        # Requests that name no knowledge base — every request the public
+        # widget makes — read the deployment's default corpus.
+        #
+        # `DEFAULT_KNOWLEDGE_BASE_ID` is that corpus once documents are ingested
+        # through the Django-owned models, which is the case the comment here
+        # used to anticipate. Without it the default is the collection that
+        # predates knowledge bases, and on a deployment that never used it that
+        # collection is empty — so retrieval returns nothing and the assistant
+        # refuses everything. No caller has to change either way.
+        default_scope = (
+            RetrievalScope.for_knowledge_base(knowledge_base_id=settings.default_knowledge_base_id)
+            if settings.default_knowledge_base_id
+            else RetrievalScope.legacy(settings.qdrant_collection)
+        )
 
-        logger.info("container ready", extra={"collection": settings.qdrant_collection})
+        # The routing layer. Built after the pipeline because it retrieves
+        # *through* it: there is one retrieval path in this service, and the
+        # orchestrator is a caller of it rather than a second one.
+        website: WebsiteIndexProvider | None = None
+        assistant: AssistantPipeline | None = None
+        if settings.query_routing_enabled:
+            website = WebsiteIndexProvider(
+                base_url=settings.website_content_url,
+                ttl_seconds=settings.website_index_ttl_seconds,
+                timeout=settings.website_index_timeout,
+            )
+            # Failing here must not stop the service: the provider already holds
+            # the static index, so the assistant comes up navigationally correct
+            # and simply cannot name individual products until a refresh works.
+            await website.start()
+
+            classifier = (
+                LLMIntentClassifier(llm, enabled=True)
+                if settings.intent_llm_tiebreak
+                else RuleIntentClassifier()
+            )
+            assistant = AssistantPipeline(
+                router=QueryRouter(classifier, max_question_chars=None),
+                orchestrator=SourceOrchestrator(
+                    retriever=pipeline,
+                    website=website,
+                    context_size=settings.rerank_top_k,
+                    diversity_lambda=settings.context_diversity_lambda,
+                ),
+                llm=llm,
+                website=website,
+                temperature=settings.llm_temperature,
+                max_tokens=settings.llm_max_tokens,
+                max_context_chars=settings.max_context_chars,
+                confidence_high=settings.confidence_high,
+                confidence_low=settings.confidence_low,
+            )
+
+        logger.info(
+            "container ready",
+            extra={
+                "collection": settings.qdrant_collection,
+                "routing": settings.query_routing_enabled,
+                "website_pages": len(website.current) if website else 0,
+            },
+        )
         return cls(
             settings=settings,
             embeddings=embeddings,
@@ -135,8 +200,10 @@ class Container:
             llm=llm,
             ingestion=ingestion,
             pipeline=pipeline,
-            chat_service=ChatService(pipeline, default_scope=default_scope),
+            chat_service=ChatService(pipeline, default_scope=default_scope, assistant=assistant),
             document_service=DocumentService(ingestion),
+            website=website,
+            assistant=assistant,
         )
 
     async def close(self) -> None:

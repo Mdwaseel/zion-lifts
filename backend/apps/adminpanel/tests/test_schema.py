@@ -27,7 +27,7 @@ class SchemaContractTests(AdminPanelTestCase):
             schema.STRING, schema.TEXT, schema.SLUG, schema.EMAIL, schema.URL,
             schema.INTEGER, schema.FLOAT, schema.BOOLEAN, schema.DATE, schema.DATETIME,
             schema.CHOICE, schema.REFERENCE, schema.MULTI_REFERENCE, schema.IMAGE,
-            schema.FILE, schema.JSON, schema.COLOR,
+            schema.FILE, schema.JSON, schema.COLOR, schema.MEDIA, schema.MEDIA_LIST,
         }
         for resource in registry:
             for field in schema.describe_resource(resource)["fields"]:
@@ -85,10 +85,14 @@ class FieldTypeTests(AdminPanelTestCase):
         self.assertEqual(field["related_resource"], "lifts")
 
     def test_a_collapsed_child_list_is_a_json_field(self):
-        """Images, variants and specs are lists on the parent, not tables."""
+        """Variants and specs are lists on the parent, not tables.
+
+        `images` is a JSON column too, but it is described as `media_list` so
+        the form can render an uploader per photograph rather than a textarea
+        full of braces — see test_uploads.SchemaTests.
+        """
         for resource_key, name in (
-            ("lifts", "images"), ("lifts", "variants"), ("lifts", "specs"),
-            ("projects", "images"),
+            ("lifts", "variants"), ("lifts", "specs"),
         ):
             with self.subTest(field=f"{resource_key}.{name}"):
                 self.assertEqual(self.field(resource_key, name)["type"], schema.JSON)
@@ -113,7 +117,17 @@ class FieldTypeTests(AdminPanelTestCase):
         self.assertEqual(self.field("lifts", "name")["type"], schema.STRING)
 
     def test_an_image_field_is_not_mistaken_for_a_plain_file(self):
-        self.assertEqual(self.field("finishes", "texture")["type"], schema.IMAGE)
+        """Checked on the model rather than through a resource.
+
+        Every registered ImageField is now excluded from its form — the picture
+        lives in the `*_url` field beside it — so there is no resource left to
+        read one out of. The mapping still has to be right for the next one.
+        """
+        from apps.adminpanel.models import Finish
+
+        self.assertEqual(
+            schema.field_type(Finish._meta.get_field("texture")), schema.IMAGE
+        )
 
     def test_a_slug_knows_which_field_to_generate_from(self):
         field = self.field("lifts", "slug")
@@ -254,9 +268,86 @@ class NavigationTests(AdminPanelTestCase):
         self.assertIn("label_plural", entry)
         self.assertNotIn("fields", entry)
 
-    def test_navigation_lists_every_registered_resource_exactly_once(self):
+    def test_navigation_lists_every_top_level_resource_exactly_once(self):
+        """Every resource except the ones that are tabs of another.
+
+        A sectioned collection is deliberately absent from the sidebar — it is
+        reached from its section's screen — so the count is of what should be a
+        link, not of the registry. `SectionTests` checks the rest is reachable.
+        """
         body = self.get("/navigation/")
         keys = [r["key"] for g in body["groups"] for r in g["resources"]]
+        expected = [r.key for r in registry if not r.section]
 
-        self.assertEqual(len(keys), len(registry))
+        self.assertEqual(sorted(keys), sorted(expected))
         self.assertEqual(len(keys), len(set(keys)))
+
+
+class SectionTests(AdminPanelTestCase):
+    """Several collections behind one sidebar entry.
+
+    The catalogue is one job — the lifts, and the vocabularies they are
+    described with — and it had five sidebar rows. These hold the consolidation
+    together: one entry, every collection still reachable, nothing unregistered.
+    """
+
+    def test_the_catalogue_is_one_sidebar_entry(self):
+        lifts = next(g for g in registry.grouped() if g["group"] == "Lifts")
+        self.assertEqual([r.key for r in lifts["resources"]], ["lifts"])
+
+    def test_the_other_collections_are_tabs_of_it(self):
+        self.assertEqual(
+            [r.key for r in registry.section_members("lifts")],
+            ["lifts", "finishes", "applications", "safety-features", "components"],
+        )
+
+    def test_a_tab_is_still_fully_registered_and_reachable(self):
+        """Leaving the sidebar is not the same as being taken away."""
+        for key in ("finishes", "applications", "safety-features", "components"):
+            with self.subTest(resource=key):
+                self.assertIn(key, registry)
+                body = self.get(f"/{key}/")
+                self.assertIn("results", body)
+
+    def test_every_tab_reports_the_same_tab_bar(self):
+        """Whichever one you open, the bar looks identical — it is one screen."""
+        expected = None
+        for key in ("lifts", "finishes", "applications", "safety-features", "components"):
+            tabs = [t["key"] for t in self.get(f"/{key}/schema/")["tabs"]]
+            if expected is None:
+                expected = tabs
+            with self.subTest(resource=key):
+                self.assertEqual(tabs, expected)
+
+    def test_a_collection_that_stands_alone_has_no_tabs(self):
+        """An empty list is what tells the screen to render no tab bar at all."""
+        for key in ("projects", "blogs", "enquiries", "team"):
+            with self.subTest(resource=key):
+                self.assertEqual(self.get(f"/{key}/schema/")["tabs"], [])
+
+    def test_the_sidebar_payload_carries_the_tabs_it_needs_to_stay_lit(self):
+        """The entry has to highlight while you are on any of its tabs."""
+        navigation = self.get("/navigation/")
+        lifts = next(
+            resource
+            for group in navigation["groups"]
+            for resource in group["resources"]
+            if resource["key"] == "lifts"
+        )
+        self.assertIn("finishes", {tab["key"] for tab in lifts["tabs"]})
+
+    def test_no_collection_was_lost_in_the_consolidation(self):
+        """Every registered key is either a sidebar entry or a tab of one."""
+        shown = {
+            resource.key
+            for group in registry.grouped()
+            for resource in group["resources"]
+        }
+        for resource in registry:
+            with self.subTest(resource=resource.key):
+                reachable = resource.key in shown or bool(resource.section)
+                self.assertTrue(reachable)
+
+    def test_a_default_plural_that_reads_wrong_can_be_overridden(self):
+        """Django pluralises "finish" as "finishs"; the tab said so for months."""
+        self.assertEqual(registry["finishes"].label_plural, "Finishes")

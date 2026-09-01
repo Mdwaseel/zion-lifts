@@ -84,6 +84,16 @@ class Resource:
     # The FK back to an owning resource, e.g. LiftImage.lift_type. The UI uses
     # it to offer "images for this lift" from the parent's page, and to filter.
     parent_field: str = ""
+    # The key of the resource this one is a *tab* of. A resource with a section
+    # gets no sidebar link of its own; it is reached from that section's screen.
+    #
+    # This exists because a sidebar entry is a claim that something is a place
+    # you go, and five entries under "Lifts" made the catalogue look like five
+    # jobs when it is one. The collections themselves stay separate — finishes
+    # and applications are shared vocabularies the public site reads whole, so
+    # they cannot be folded into a lift row — they simply stop being separate
+    # destinations. Routes, schema and permissions are untouched.
+    section: str = ""
     # Relations worth pulling in one query for the list view.
     select_related: tuple[str, ...] = ()
     prefetch_related: tuple[str, ...] = ()
@@ -182,11 +192,35 @@ class AdminRegistry:
 
         This is what the sidebar renders, so the order resources are registered
         in ``resources.py`` is the order they appear on screen.
+
+        Resources that declare a ``section`` are left out: they are tabs on
+        another resource's screen rather than sidebar entries. They stay fully
+        registered, so a direct link to one still works.
         """
         groups: dict[str, list[Resource]] = {}
         for resource in self:
+            if resource.section:
+                continue
             groups.setdefault(resource.group, []).append(resource)
         return [{"group": name, "resources": items} for name, items in groups.items()]
+
+    def section_members(self, key: str) -> list[Resource]:
+        """A section's resources — the one that owns it first, then its tabs.
+
+        Returns ``[]`` when the resource is not part of a section at all, which
+        is what tells the front end to render no tab bar rather than a bar with
+        one tab in it.
+        """
+        resource = self.get(key)
+        if resource is None:
+            return []
+
+        owner = self.get(resource.section or key)
+        if owner is None:
+            return []
+
+        tabs = [r for r in self if r.section == owner.key]
+        return [owner, *tabs] if tabs else []
 
 
 registry = AdminRegistry()

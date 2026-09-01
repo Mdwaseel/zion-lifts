@@ -51,6 +51,13 @@ class StageTimings:
     llm_time_to_first_token_ms: float | None = None
     llm_total_ms: float | None = None
     total_ms: float = 0.0
+    # Stages that only exist on the routed path. Optional for the same reason
+    # the LLM ones are: a request that skipped document retrieval did not spend
+    # zero milliseconds on it, it did not run it, and the two must not average
+    # together.
+    routing_ms: float | None = None
+    website_search_ms: float | None = None
+    diversity_ms: float | None = None
 
     def as_log_fields(self) -> dict[str, float]:
         """Rounded, and with the stages that did not run left out."""
@@ -64,10 +71,16 @@ class StageTimings:
             "grounding_ms": round(self.grounding_ms, 1),
             "total_ms": round(self.total_ms, 1),
         }
-        if self.llm_time_to_first_token_ms is not None:
-            fields["llm_time_to_first_token_ms"] = round(self.llm_time_to_first_token_ms, 1)
-        if self.llm_total_ms is not None:
-            fields["llm_total_ms"] = round(self.llm_total_ms, 1)
+        for name in (
+            "llm_time_to_first_token_ms",
+            "llm_total_ms",
+            "routing_ms",
+            "website_search_ms",
+            "diversity_ms",
+        ):
+            value = getattr(self, name)
+            if value is not None:
+                fields[name] = round(value, 1)
         return fields
 
 
@@ -98,6 +111,7 @@ class RagPipeline:
         rewriter: QueryRewriter,
         embedding_model: str,
         embedding_model_version: str,
+        embedding_dimension: int | None = None,
         top_k: int = 5,
         min_rerank_score: float = 0.0,
         confidence_high: float = CONFIDENCE_HIGH,
@@ -110,6 +124,13 @@ class RagPipeline:
         self._rewriter = rewriter
         self._embedding_model = embedding_model
         self._embedding_model_version = embedding_model_version
+        # Part of the collection name, so it has to be the dimension of the
+        # provider actually in use — the same rule ingestion follows when it
+        # names the collection it writes to. Omitting it here built
+        # "..._v1" while ingestion had built "..._v1_d384", and every
+        # knowledge-base-scoped search 404'd against a collection that had
+        # never existed.
+        self._embedding_dimension = embedding_dimension
         self._top_k = top_k
         self._min_rerank_score = min_rerank_score
         self._confidence_high = confidence_high
@@ -137,7 +158,11 @@ class RagPipeline:
         k = top_k or self._top_k
 
         mark = time.perf_counter()
-        collection = scope.collection_for(self._embedding_model, self._embedding_model_version)
+        collection = scope.collection_for(
+            self._embedding_model,
+            self._embedding_model_version,
+            self._embedding_dimension,
+        )
         timings.scope_resolution_ms = (time.perf_counter() - mark) * 1000
 
         mark = time.perf_counter()

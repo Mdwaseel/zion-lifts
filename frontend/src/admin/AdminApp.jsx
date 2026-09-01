@@ -6,6 +6,8 @@ import { fetchNavigation } from './api'
 import { ErrorState, Spinner, Toasts } from './components/ui'
 import { useAsync, useToasts } from './hooks'
 import Shell from './layout/Shell'
+import Analytics from './screens/analytics/Analytics'
+import PageAnalytics from './screens/analytics/PageDetail'
 import Dashboard from './screens/Dashboard'
 import DocumentDetail from './screens/knowledge/DocumentDetail'
 import KnowledgeBase from './screens/knowledge/KnowledgeBase'
@@ -64,6 +66,13 @@ function Panel() {
             the generic list. */}
         <Route path="knowledge-bases" element={<KnowledgeBase onNotify={push} />} />
         <Route path="knowledge-documents/:id" element={<DocumentDetail onNotify={push} />} />
+
+        {/* Website analytics. Also a static segment, and also not a registered
+            collection: these are reports over the visit tables, not rows to
+            edit. The page drill-in takes its path as a query parameter — a page
+            path contains slashes, which no route segment survives cleanly. */}
+        <Route path="analytics" element={<Analytics />} />
+        <Route path="analytics/page" element={<PageAnalytics />} />
 
         <Route path=":resource" element={<RecordList onNotify={push} />} />
         <Route path=":resource/:id" element={<RecordForm onNotify={push} />} />

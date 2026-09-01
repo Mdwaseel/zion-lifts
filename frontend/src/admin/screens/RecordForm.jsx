@@ -304,6 +304,9 @@ function blankRecord(schema) {
     if (field.readonly) continue
     if (field.type === 'boolean') blank[field.name] = false
     else if (field.type === 'multi_reference') blank[field.name] = []
+    // A list of photographs starts empty, not as "" — the list editor maps over
+    // it on the first render, before anything has been saved.
+    else if (field.type === 'media_list') blank[field.name] = []
     else if (field.type === 'reference') blank[field.name] = null
     else if (field.type === 'integer' || field.type === 'float') blank[field.name] = ''
     else blank[field.name] = ''
