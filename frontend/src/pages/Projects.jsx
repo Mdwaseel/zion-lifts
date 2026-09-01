@@ -5,6 +5,7 @@ import { Img, VideoLoop } from '@/components/Media'
 import Reveal, { RevealGroup } from '@/components/Reveal'
 import { CtaBand, PageHero, ProjectCard, SectionHead, StatRow } from '@/components/sections'
 import { Arrow } from '@/components/icons'
+import { statsFor } from '@/data/stats'
 import { useApi } from '@/lib/hooks'
 
 import './projects.css'
@@ -13,7 +14,6 @@ export default function Projects() {
   const { data: projects } = useApi('projects/')
   const { data: categories } = useApi('project-categories/')
   const { data: lifts } = useApi('lifts/')
-  const { data: stats } = useApi('stats/', { group: 'projects' })
 
   const [category, setCategory] = useState('all')
   const [liftType, setLiftType] = useState('all')
@@ -51,7 +51,7 @@ export default function Projects() {
 
       <section className="section section--tight">
         <div className="shell">
-          <StatRow stats={stats ?? []} />
+          <StatRow stats={statsFor('projects')} />
         </div>
       </section>
 

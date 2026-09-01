@@ -88,10 +88,5 @@ export async function post(path, body, { files } = {}) {
 
 /** Warm the collections the first paint depends on, in parallel. */
 export function prefetchCore() {
-  return Promise.allSettled([
-    get('site/'),
-    get('lifts/'),
-    get('projects/'),
-    get('service-pillars/'),
-  ])
+  return Promise.allSettled([get('site/'), get('lifts/'), get('projects/')])
 }

@@ -54,35 +54,28 @@ class Command(BaseCommand):
 
         Order matters only where a foreign key does: testimonials and gallery
         items point at projects, and projects point at lifts. Everything else
-        that used to need ordering — images, variants, specs, clauses — is a
-        JSON column now and goes with its parent.
+        that used to need ordering — images, variants, specs — is a JSON column
+        now and goes with its parent.
         """
         from apps.adminpanel.models import (
-            FAQ,
             Application,
             Award,
             BlogPost,
-            Certification,
             Component,
             Finish,
             GalleryItem,
-            LegalPage,
             Lift,
-            Milestone,
             Office,
             Partner,
             Project,
             SafetyFeature,
-            ServicePillar,
-            Stat,
             TeamMember,
             Testimonial,
         )
 
         for model in (
             Testimonial, GalleryItem, Project, Lift, Application, SafetyFeature,
-            Finish, Component, FAQ, BlogPost, Milestone, TeamMember, Award,
-            ServicePillar, LegalPage, Office, Stat, Partner, Certification,
+            Finish, Component, BlogPost, TeamMember, Award, Office, Partner,
         ):
             model.objects.all().delete()
         self.stdout.write(self.style.WARNING("Flushed existing content."))

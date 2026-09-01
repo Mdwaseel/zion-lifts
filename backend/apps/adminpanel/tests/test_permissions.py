@@ -29,7 +29,7 @@ class AccessTests(AdminPanelTestCase):
 
     def test_a_non_staff_user_cannot_write(self):
         client = self.as_non_staff()
-        res = client.post(f"{API}/milestones/", {"year": "2026", "title": "Nope"}, format="json")
+        res = client.post(f"{API}/awards/", {"year": "2026", "name": "Nope"}, format="json")
         self.assertEqual(res.status_code, 403)
 
     def test_staff_may_read(self):
@@ -67,7 +67,7 @@ class ResourceRuleTests(AdminPanelTestCase):
 
     def test_an_editable_collection_still_accepts_writes(self):
         res = self.client.post(
-            f"{API}/milestones/", {"year": "2026", "title": "A milestone"}, format="json"
+            f"{API}/awards/", {"year": "2026", "name": "An award"}, format="json"
         )
         self.assertEqual(res.status_code, 201)
 

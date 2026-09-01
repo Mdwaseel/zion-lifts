@@ -88,14 +88,14 @@ class FieldTypeTests(AdminPanelTestCase):
         """Images, variants and specs are lists on the parent, not tables."""
         for resource_key, name in (
             ("lifts", "images"), ("lifts", "variants"), ("lifts", "specs"),
-            ("projects", "images"), ("legal-pages", "clauses"),
+            ("projects", "images"),
         ):
             with self.subTest(field=f"{resource_key}.{name}"):
                 self.assertEqual(self.field(resource_key, name)["type"], schema.JSON)
 
     def test_a_collapsed_category_is_a_choice_not_a_reference(self):
         """The category tables are gone; what is left is a choice on the row."""
-        for resource_key in ("projects", "blogs", "faqs"):
+        for resource_key in ("projects", "blogs", "gallery"):
             with self.subTest(resource=resource_key):
                 self.assertEqual(
                     self.field(resource_key, "category")["type"], schema.CHOICE
@@ -197,7 +197,7 @@ class ResourceViewSchemaTests(AdminPanelTestCase):
             {"create": False, "edit": True, "delete": False},
         )
         self.assertEqual(
-            self.get("/milestones/schema/")["permissions"],
+            self.get("/awards/schema/")["permissions"],
             {"create": True, "edit": True, "delete": True},
         )
 
@@ -205,11 +205,12 @@ class ResourceViewSchemaTests(AdminPanelTestCase):
 class LabelTests(AdminPanelTestCase):
     """Labels keep the capitalisation their author chose."""
 
-    def test_an_acronym_survives(self):
-        self.assertEqual(registry["faqs"].label_plural, "FAQs")
+    def test_a_declared_plural_overrides_the_derived_one(self):
+        """The sidebar heading already says "Knowledge base"; the link need not."""
+        self.assertEqual(registry["knowledge-bases"].label_plural, "Knowledge base")
 
     def test_a_default_verbose_name_is_sentence_cased(self):
-        self.assertEqual(registry["milestones"].label_plural, "Milestones")
+        self.assertEqual(registry["awards"].label_plural, "Awards")
         self.assertEqual(registry["testimonials"].label_plural, "Testimonials")
 
     def test_a_declared_label_is_used_verbatim(self):

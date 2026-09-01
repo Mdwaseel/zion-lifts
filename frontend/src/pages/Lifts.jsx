@@ -5,6 +5,7 @@ import { Img } from '@/components/Media'
 import Reveal, { RevealGroup } from '@/components/Reveal'
 import { Accordion, CtaBand, LiftCard, PageHero, SectionHead } from '@/components/sections'
 import { Arrow, Shield } from '@/components/icons'
+import { faqCategory } from '@/data/faqs'
 import { useApi } from '@/lib/hooks'
 
 import { Configurator } from './home/Machine'
@@ -155,7 +156,6 @@ export default function Lifts() {
   const { data: safety } = useApi('safety-features/')
   const { data: projects } = useApi('projects/')
   const { data: finishes } = useApi('finishes/')
-  const { data: faqCats } = useApi('faq-categories/')
 
   const [filter, setFilter] = useState({ property: 'any', floors: 'any', load: 'any' })
 
@@ -187,7 +187,7 @@ export default function Lifts() {
     })
   }, [all, filter])
 
-  const chooseFaq = (faqCats ?? []).find((c) => c.slug === 'choosing-a-lift')
+  const chooseFaq = faqCategory('choosing-a-lift')
 
   return (
     <>

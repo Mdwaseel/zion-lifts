@@ -10,9 +10,13 @@ Two shapes are worth naming, because they are where the old tables went:
 * ``category`` still serialises as ``{"slug", "name"}``. It is built from the
   model's choices now instead of a joined row, so nothing on the site changes
   and there is no second table to keep in step.
-* ``images``/``variants``/``specs``/``clauses`` still serialise as lists of
-  objects. They are read straight off the JSON column, so the detail endpoints
-  no longer fan out into one query per child table.
+* ``images``/``variants``/``specs`` still serialise as lists of objects. They
+  are read straight off the JSON column, so the detail endpoints no longer fan
+  out into one query per child table.
+
+Absent here on purpose: FAQs, milestones, certifications, service pillars, stats
+and legal pages. They were serialised text that never changed, and they are now
+static modules under ``frontend/src/data/``.
 """
 
 from __future__ import annotations
@@ -20,24 +24,18 @@ from __future__ import annotations
 from rest_framework import serializers
 
 from ..models import (
-    FAQ,
     Application,
     Award,
     BlogPost,
-    Certification,
     Component,
     Finish,
     GalleryItem,
-    LegalPage,
     Lift,
-    Milestone,
     Office,
     Partner,
     Project,
     SafetyFeature,
-    ServicePillar,
     SiteSettings,
-    Stat,
     TeamMember,
     Testimonial,
 )
@@ -211,12 +209,6 @@ class BlogPostDetailSerializer(BlogPostSerializer):
 
 
 # --------------------------------------------------------------------- editorial
-class FAQSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = FAQ
-        fields = ["id", "question", "answer", "link_label", "link_url", "scope"]
-
-
 class TestimonialSerializer(serializers.ModelSerializer):
     project_slug = serializers.CharField(source="project.slug", default="", read_only=True)
 
@@ -226,12 +218,6 @@ class TestimonialSerializer(serializers.ModelSerializer):
             "id", "name", "role", "organisation", "location", "quote",
             "video_url", "poster_url", "project_slug", "is_featured",
         ]
-
-
-class MilestoneSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Milestone
-        fields = ["id", "year", "title", "description", "image_url"]
 
 
 class TeamMemberSerializer(serializers.ModelSerializer):
@@ -252,12 +238,6 @@ class AwardSerializer(serializers.ModelSerializer):
         fields = ["id", "name", "organisation", "year", "description", "image_url"]
 
 
-class ServicePillarSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ServicePillar
-        fields = ["id", "slug", "name", "description", "detail", "icon"]
-
-
 class GalleryItemSerializer(serializers.ModelSerializer):
     src = AssetField("image", "image_url")
     aspect = serializers.FloatField(read_only=True)
@@ -269,12 +249,6 @@ class GalleryItemSerializer(serializers.ModelSerializer):
             "id", "category", "title", "meta", "src", "width", "height",
             "aspect", "project_slug", "is_featured",
         ]
-
-
-class LegalPageSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = LegalPage
-        fields = ["id", "slug", "title", "intro", "effective_date", "clauses"]
 
 
 # ------------------------------------------------------------------ organisation
@@ -290,12 +264,6 @@ class OfficeSerializer(serializers.ModelSerializer):
         ]
 
 
-class StatSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Stat
-        fields = ["id", "group", "value", "label", "caption", "count_from"]
-
-
 class PartnerSerializer(serializers.ModelSerializer):
     logo = AssetField("logo", "logo_url")
     role_display = serializers.CharField(source="get_role_display", read_only=True)
@@ -303,14 +271,6 @@ class PartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
         fields = ["id", "name", "role", "role_display", "component", "logo", "website"]
-
-
-class CertificationSerializer(serializers.ModelSerializer):
-    certificate = AssetField("certificate", "certificate_url")
-
-    class Meta:
-        model = Certification
-        fields = ["id", "name", "issuer", "reference", "description", "certificate"]
 
 
 class SiteSettingsSerializer(serializers.ModelSerializer):

@@ -17,16 +17,26 @@ list — with live counts — from the rows themselves. A category can no longer
 orphaned, misspelt in two places, or exist with nothing in it.
 
 **A child row that is only ever read with its parent is JSON on the parent.**
-A project's photographs, a lift's images, variants and spec rows, a legal
-page's clauses and an enquiry's attachments are never queried on their own,
-never sorted independently, and never joined to anything else — they are lists
-that belong to one record and are fetched with it. They are ``JSONField`` lists
-now, so editing a project is one form and one save rather than a parent form
-plus a table of children.
+A project's photographs, a lift's images, variants and spec rows and an
+enquiry's attachments are never queried on their own, never sorted
+independently, and never joined to anything else — they are lists that belong to
+one record and are fetched with it. They are ``JSONField`` lists now, so editing
+a project is one form and one save rather than a parent form plus a table of
+children.
+
+A third rule arrived later, and it removed six models rather than merging them:
+**content that never changes between deploys does not need a database.** The
+FAQ, the company timeline, the certifications, the service pillars, the stat
+rows and the three policy pages were each a table, a migration, a serializer, an
+endpoint and an admin form rendering text that nobody had edited since it was
+seeded. They are now plain modules in ``frontend/src/data/``, versioned with the
+markup that renders them and present on the first paint. Migration 0004 drops
+what is left.
 
 What did *not* collapse: ``Application``, ``SafetyFeature``, ``Finish`` and the
 organisation models are genuinely shared or independently listed by the public
-API, so they stay addressable rows.
+API, so they stay addressable rows. Everything still here is something an
+operator is expected to change without a deploy.
 """
 
 from __future__ import annotations
@@ -363,51 +373,6 @@ class BlogPost(Ordered, TimeStamped):
 # ===================================================================
 # Editorial
 # ===================================================================
-class FAQ(Ordered):
-    """One question. Its section is a choice, and /api/faq-categories/ groups on it."""
-
-    CATEGORIES = [
-        ("choosing-a-lift", "Choosing a lift"),
-        ("products-technology", "Products & technology"),
-        ("installation", "Installation"),
-        ("safety", "Safety"),
-        ("maintenance", "Maintenance & service"),
-        ("pricing-enquiry", "Pricing & enquiry"),
-    ]
-    CATEGORY_DESCRIPTIONS = {
-        "choosing-a-lift": "Sizing, type and where to start.",
-        "products-technology": "Drives, controls and how the machine works.",
-        "installation": "Survey, programme and what happens on site.",
-        "safety": "What protects you, and how it is proven.",
-        "maintenance": "After the doors open.",
-        "pricing-enquiry": "Cost, quotes and what happens next.",
-    }
-    SCOPES = [("general", "General"), ("contact", "Contact page")]
-
-    category = models.CharField(
-        max_length=40, choices=CATEGORIES, default="choosing-a-lift", db_index=True
-    )
-    question = models.CharField(max_length=240)
-    answer = models.TextField()
-    link_label = models.CharField(
-        max_length=120, blank=True, help_text='e.g. "Explore Home Elevators"'
-    )
-    link_url = models.CharField(max_length=200, blank=True)
-    scope = models.CharField(
-        max_length=30,
-        choices=SCOPES,
-        default="general",
-        help_text="Contact-scoped questions only show on /contact.",
-    )
-
-    class Meta(Ordered.Meta):
-        verbose_name = "FAQ"
-        verbose_name_plural = "FAQs"
-
-    def __str__(self) -> str:
-        return self.question
-
-
 class Testimonial(Ordered):
     name = models.CharField(max_length=120)
     role = models.CharField(max_length=120, blank=True)
@@ -461,19 +426,6 @@ class GalleryItem(Ordered):
         return round(self.width / self.height, 4) if self.height else 1.0
 
 
-class Milestone(Ordered):
-    year = models.CharField(max_length=12)
-    title = models.CharField(max_length=140)
-    description = models.TextField(blank=True)
-    image_url = models.CharField(max_length=300, blank=True)
-
-    class Meta(Ordered.Meta):
-        ordering = ["order", "year"]
-
-    def __str__(self) -> str:
-        return f"{self.year} - {self.title}"
-
-
 class TeamMember(Ordered):
     DEPARTMENTS = [
         ("leadership", "Leadership"),
@@ -504,36 +456,6 @@ class Award(Ordered):
 
     def __str__(self) -> str:
         return self.name
-
-
-class ServicePillar(Ordered):
-    """One of the things Zion does after the doors open. Drives /services on the site."""
-
-    slug = models.SlugField(unique=True)
-    name = models.CharField(max_length=120)
-    description = models.TextField(blank=True)
-    detail = models.CharField(max_length=200, blank=True)
-    icon = models.CharField(
-        max_length=30, default="wrench", help_text="Key into the front-end icon set."
-    )
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class LegalPage(Ordered, TimeStamped):
-    """A policy page. Its clauses are a list, not a second table."""
-
-    slug = models.SlugField(unique=True)
-    title = models.CharField(max_length=140)
-    intro = models.TextField(blank=True)
-    effective_date = models.DateField(default=timezone.localdate)
-    clauses = models.JSONField(
-        default=list, blank=True, help_text='[{"heading": "…", "body": "…"}]'
-    )
-
-    def __str__(self) -> str:
-        return self.title
 
 
 # ===================================================================
@@ -607,23 +529,6 @@ class Office(Ordered, TimeStamped):
         return f"{self.name} ({self.get_kind_display()})"
 
 
-class Stat(Ordered):
-    """A small numeric proof point — About header, Projects header."""
-
-    GROUPS = [("about", "About"), ("projects", "Projects"), ("home", "Home")]
-
-    group = models.CharField(max_length=20, choices=GROUPS, default="about")
-    value = models.CharField(max_length=20)
-    label = models.CharField(max_length=80)
-    caption = models.CharField(max_length=140, blank=True)
-    count_from = models.CharField(
-        max_length=20, blank=True, help_text="Set to animate a count-up, e.g. 0"
-    )
-
-    def __str__(self) -> str:
-        return f"{self.value} {self.label}"
-
-
 class Partner(Ordered):
     ROLES = [
         ("drive", "Drive"),
@@ -640,18 +545,6 @@ class Partner(Ordered):
     logo = models.ImageField(upload_to="partners/", blank=True)
     logo_url = models.CharField(max_length=300, blank=True)
     website = models.URLField(blank=True)
-
-    def __str__(self) -> str:
-        return self.name
-
-
-class Certification(Ordered):
-    name = models.CharField(max_length=140)
-    issuer = models.CharField(max_length=140, blank=True)
-    reference = models.CharField(max_length=80, blank=True)
-    description = models.TextField(blank=True)
-    certificate = models.FileField(upload_to="certificates/", blank=True)
-    certificate_url = models.CharField(max_length=300, blank=True)
 
     def __str__(self) -> str:
         return self.name

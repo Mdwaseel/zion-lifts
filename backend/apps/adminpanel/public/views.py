@@ -4,9 +4,14 @@ Reads are unauthenticated, unpaginated and hide unpublished rows — the site
 renders whole collections at once, so paging them would only make the front end
 reassemble what it asked for.
 
-The three ``*-categories/`` endpoints have no table behind them any more. They
+The two ``*-categories/`` endpoints have no table behind them any more. They
 count the rows in each choice and return the ones that exist, which is what the
 site actually wanted from those tables: a filter chip with a number on it.
+
+There is no ``faq-categories/`` here any more either, and no stats, milestones,
+certifications, service pillars or legal pages. That content never changed
+between deploys, so it moved to ``frontend/src/data/`` where the site can render
+it without asking.
 """
 
 from __future__ import annotations
@@ -22,26 +27,20 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models import (
-    FAQ,
     Application,
     Award,
     BlogPost,
-    Certification,
     Component,
     Enquiry,
     Finish,
     GalleryItem,
-    LegalPage,
     Lift,
-    Milestone,
     Office,
     Partner,
     Project,
     SafetyFeature,
-    ServicePillar,
     ServiceRequest,
     SiteSettings,
-    Stat,
     TeamMember,
     Testimonial,
 )
@@ -51,23 +50,17 @@ from .serializers import (
     AwardSerializer,
     BlogPostDetailSerializer,
     BlogPostSerializer,
-    CertificationSerializer,
     ComponentSerializer,
-    FAQSerializer,
     FinishSerializer,
     GalleryItemSerializer,
-    LegalPageSerializer,
     LiftDetailSerializer,
     LiftListSerializer,
-    MilestoneSerializer,
     OfficeSerializer,
     PartnerSerializer,
     ProjectDetailSerializer,
     ProjectListSerializer,
     SafetyFeatureSerializer,
-    ServicePillarSerializer,
     SiteSettingsSerializer,
-    StatSerializer,
     TeamMemberSerializer,
     TestimonialSerializer,
 )
@@ -151,11 +144,6 @@ class TestimonialViewSet(PublishedViewSet):
     filterset_fields = ["is_featured"]
 
 
-class MilestoneViewSet(PublishedViewSet):
-    queryset = Milestone.objects.all()
-    serializer_class = MilestoneSerializer
-
-
 class TeamMemberViewSet(PublishedViewSet):
     queryset = TeamMember.objects.all()
     serializer_class = TeamMemberSerializer
@@ -167,22 +155,10 @@ class AwardViewSet(PublishedViewSet):
     serializer_class = AwardSerializer
 
 
-class ServicePillarViewSet(PublishedViewSet):
-    queryset = ServicePillar.objects.all()
-    serializer_class = ServicePillarSerializer
-    lookup_field = "slug"
-
-
 class GalleryItemViewSet(PublishedViewSet):
     queryset = GalleryItem.objects.select_related("project")
     serializer_class = GalleryItemSerializer
     filterset_fields = ["category", "is_featured"]
-
-
-class LegalPageViewSet(PublishedViewSet):
-    queryset = LegalPage.objects.all()
-    serializer_class = LegalPageSerializer
-    lookup_field = "slug"
 
 
 # ------------------------------------------------------ categories, derived
@@ -226,38 +202,6 @@ class BlogCategoryView(APIView):
         return Response(_counted(BlogPost, "category", BlogPost.CATEGORIES))
 
 
-class FAQCategoryView(APIView):
-    """Categories with their questions nested, the way /faq renders them.
-
-    ``?scope=contact`` narrows to the questions the contact page asks, and the
-    counts narrow with it — a chip saying 9 above a list of 2 would be a bug.
-    """
-
-    def get(self, request):
-        questions = FAQ.objects.filter(is_published=True)
-        scope = request.query_params.get("scope")
-        if scope:
-            questions = questions.filter(scope=scope)
-
-        grouped: dict[str, list] = {}
-        for question in questions:
-            grouped.setdefault(question.category, []).append(question)
-
-        return Response(
-            [
-                {
-                    "id": slug,
-                    "slug": slug,
-                    "name": name,
-                    "description": FAQ.CATEGORY_DESCRIPTIONS.get(slug, ""),
-                    "count": len(grouped.get(slug, [])),
-                    "questions": FAQSerializer(grouped.get(slug, []), many=True).data,
-                }
-                for slug, name in FAQ.CATEGORIES
-            ]
-        )
-
-
 # ------------------------------------------------------------------ organisation
 class OfficeViewSet(PublishedViewSet):
     queryset = Office.objects.all()
@@ -265,21 +209,10 @@ class OfficeViewSet(PublishedViewSet):
     filterset_fields = ["kind"]
 
 
-class StatViewSet(PublishedViewSet):
-    queryset = Stat.objects.all()
-    serializer_class = StatSerializer
-    filterset_fields = ["group"]
-
-
 class PartnerViewSet(PublishedViewSet):
     queryset = Partner.objects.all()
     serializer_class = PartnerSerializer
     filterset_fields = ["role"]
-
-
-class CertificationViewSet(PublishedViewSet):
-    queryset = Certification.objects.all()
-    serializer_class = CertificationSerializer
 
 
 class SiteSettingsView(APIView):

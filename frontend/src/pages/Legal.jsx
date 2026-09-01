@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Arrow } from '@/components/icons'
-import { useApi } from '@/lib/hooks'
+import { legalPage } from '@/data/legal'
 
 import './legal.css'
 
@@ -12,9 +12,15 @@ const SIBLINGS = [
   { slug: 'cookies', label: 'Cookie Policy', to: '/cookies' },
 ]
 
-/** Deliberately plain: sticky contents left, clauses right, no motion. */
+/**
+ * Deliberately plain: sticky contents left, clauses right, no motion.
+ *
+ * The document is static (see src/data/legal.js), so there is no loading state
+ * to render — the whole policy is present on the first paint. A slug we do not
+ * publish still has to be handled, because the route can be typed.
+ */
 export default function Legal({ slug }) {
-  const { data: doc, loading, error } = useApi(`legal/${slug}/`)
+  const doc = legalPage(slug)
   const [active, setActive] = useState(null)
 
   useEffect(() => {
@@ -39,17 +45,7 @@ export default function Legal({ slug }) {
     return () => io.disconnect()
   }, [doc])
 
-  if (loading) {
-    return (
-      <div className="section" style={{ paddingTop: 'calc(var(--nav-h) + 4rem)' }}>
-        <div className="shell">
-          <div className="skeleton" style={{ height: '50vh' }} />
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !doc) {
+  if (!doc) {
     return (
       <section className="section" style={{ paddingTop: 'calc(var(--nav-h) + 4rem)' }}>
         <div className="shell state">
@@ -62,13 +58,7 @@ export default function Legal({ slug }) {
     )
   }
 
-  const effective = doc.effective_date
-    ? new Date(doc.effective_date).toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : ''
+  const effective = formatEffective(doc.effective_date)
 
   return (
     <div className="legal">
@@ -139,4 +129,23 @@ export default function Legal({ slug }) {
       </div>
     </div>
   )
+}
+
+/**
+ * "1 January 2026" from an ISO day.
+ *
+ * Built from the parts rather than `new Date(iso)`: a bare `YYYY-MM-DD` is
+ * parsed as UTC midnight, which formats as the *previous* day for any reader
+ * west of Greenwich. An effective date that is off by one is the kind of
+ * detail a policy page cannot afford.
+ */
+function formatEffective(iso) {
+  if (!iso) return ''
+  const [year, month, day] = iso.split('-').map(Number)
+  if (!year || !month || !day) return ''
+  return new Date(year, month - 1, day).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  })
 }

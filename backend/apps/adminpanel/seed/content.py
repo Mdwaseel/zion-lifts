@@ -1,222 +1,17 @@
-"""Editorial seed: FAQ, journal, testimonials, timeline, service, gallery, legal."""
+"""Editorial seed: journal, testimonials, team, awards and gallery.
 
-from datetime import date, timedelta
+The FAQ, the timeline, the service pillars and the legal pages used to be seeded
+here too. They are static content in ``frontend/src/data/`` now — there is no
+table to fill.
+"""
+
+from datetime import timedelta
 
 from django.utils import timezone
 
-from ..models import (
-    FAQ,
-    Award,
-    BlogPost,
-    GalleryItem,
-    LegalPage,
-    Milestone,
-    Project,
-    ServicePillar,
-    TeamMember,
-    Testimonial,
-)
+from ..models import Award, BlogPost, GalleryItem, Project, TeamMember, Testimonial
 
 from . import media as M
-
-# ------------------------------------------------------------------------- FAQ
-FAQ_DATA = [
-    ("choosing-a-lift", "Choosing a lift", "Sizing, type and where to start.", [
-        ("Which type of lift do I need for a private house?",
-         "For most villas of two to five levels, a machine-room-less home elevator is the right "
-         "answer: it needs no plant room, fits a shaft from about 1,100 × 1,000 mm, and runs quietly "
-         "enough to sit next to bedrooms. If the lift is going into an atrium or a double-height "
-         "hall where it will be seen, a glazed capsule lift is worth the extra shaft.",
-         "Explore Home Elevators", "/lifts/home-elevator", "general"),
-        ("How much space does a lift actually need?",
-         "Less than most people assume. A compact four-passenger home lift needs an internal shaft "
-         "from roughly 1,100 × 1,000 mm, a pit from 350 mm and about 2,600 mm of headroom above the "
-         "top floor. A commercial eight-passenger car needs about 1,900 × 2,000 mm. Send us a floor "
-         "plan and we will mark up what fits.",
-         "See dimensions by lift type", "/lifts", "general"),
-        ("What if my building has no lift shaft at all?",
-         "A self-supporting steel structure can be erected inside a stairwell void or against an "
-         "external wall, carrying its own loads to a new pad at the base. We did exactly this at "
-         "Kashi Yadhav's Residence — a four-storey occupied house that never had a shaft.",
-         "See that project", "/projects/kashi-yadhav-residence", "general"),
-        ("How many people should the lift carry?",
-         "Size by the worst case, not the average. For a home, count the largest group that will "
-         "realistically travel together — and if anyone may need a wheelchair, specify a car deep "
-         "enough to turn in. For a commercial building, size against expected peak five-minute "
-         "traffic rather than headcount.", "", "", "general"),
-        ("Traction or hydraulic — which is better?",
-         "Traction for almost everything: quieter, more efficient, better ride, more travel. "
-         "Hydraulic earns its place on short travels where the structure cannot carry suspended "
-         "load at the top of the shaft, or where a very heavy load moves a short distance.",
-         "Compare the systems", "/lifts", "general"),
-        ("Can the lift match my interior?",
-         "Yes — that is usually the point. Wall material, flooring, ceiling, lighting, handrail and "
-         "control panel are all specified separately. At Lacheta Nivas the car was detailed with the "
-         "joinery, in antique brass with a marble floor.",
-         "Build a configuration", "/lifts/home-elevator", "general"),
-        ("Do you work outside Hyderabad?",
-         "Yes. Hyderabad and the wider Telangana region are our core service area, and we take "
-         "projects across South India where we can commit to the same installation and maintenance "
-         "response. Tell us the location and we will say honestly whether we can support it.",
-         "", "", "general"),
-        ("How long does a lift last?",
-         "A well-maintained passenger lift runs for 20 to 25 years before it needs modernisation, "
-         "and modernisation usually means new drive, controller and interior on the existing shaft "
-         "and rails rather than a full replacement.",
-         "Ask about modernisation", "/contact", "general"),
-    ]),
-    ("products-technology", "Products & technology", "Drives, controls and how the machine works.", [
-        ("What does machine-room-less actually mean?",
-         "The traction machine mounts on the guide rails at the head of the shaft instead of in a "
-         "room above it. The building gets that room back, and because the motor is gearless there "
-         "is no gearbox, no gear oil and much less noise.",
-         "See the MRL system", "/lifts/mrl-traction", "general"),
-        ("Why is a gearless motor better than a geared one?",
-         "A gearless permanent-magnet motor drives the sheave directly. Removing the gearbox removes "
-         "the main source of mechanical noise, the main heat load, and the oil changes. It is also "
-         "more efficient, and with a regenerative drive it returns braking energy to the building.",
-         "", "", "general"),
-        ("What is a VVVF drive?",
-         "Variable-voltage variable-frequency control. It shapes the motor's speed continuously, so "
-         "starting and stopping follow a curve rather than a step. That is what makes a modern lift "
-         "feel smooth, and it is what holds floor levelling within a few millimetres whether the car "
-         "is full or empty.", "", "", "general"),
-        ("How accurate is floor levelling?",
-         "Within ±3 mm on our traction systems and ±5 mm on hydraulic, loaded or empty. That "
-         "matters most in hospitals, where a trolley wheel will find any lip at the sill.",
-         "See hospital lifts", "/lifts/hospital-elevator", "general"),
-        ("How noisy is a lift inside the house?",
-         "A gearless MRL home lift runs under about 55 dB(A) inside the car at rated speed — "
-         "conversation level. Most of what people remember as lift noise came from geared machines "
-         "and relay controllers, neither of which we fit.", "", "", "general"),
-        ("Can I get a lift with a glass shaft?",
-         "Yes. Both the structural shaft and the car can be glazed, in toughened laminated glass so "
-         "any failure stays in place. This is how the capsule lifts at Chilkuru Residence and Lekha "
-         "Nilayam are built.",
-         "Explore Capsule Elevators", "/lifts/capsule-elevator", "general"),
-    ]),
-    ("installation", "Installation", "Survey, programme and what happens on site.", [
-        ("How long does an installation take?",
-         "For a home lift with a ready shaft, typically three to five weeks on site after delivery. "
-         "A retrofit that needs its own structure runs longer, and a commercial group of several "
-         "cars is programmed floor by floor. We give you a dated programme before we start.",
-         "", "", "general"),
-        ("What do you need from me before you can quote?",
-         "A floor plan and a section if you have them, the number of levels, the floor-to-floor "
-         "heights, and what the lift is for. If there is an existing shaft, its internal dimensions "
-         "and pit depth. Drawings can be uploaded with your enquiry.",
-         "Start an enquiry", "/contact", "general"),
-        ("Do you do a site survey?",
-         "Always, before anything is manufactured. Shafts are rarely plumb and rarely the dimension "
-         "on the drawing. The survey is where we find that out, not the installation.", "", "", "general"),
-        ("Who prepares the shaft?",
-         "Civil work — the shaft walls, the pit, waterproofing and the power supply to the "
-         "controller position — is usually by the builder, to a drawing we issue. We can take on the "
-         "structural shaft itself where there is none.", "", "", "general"),
-        ("Can a lift be installed in an occupied building?",
-         "Yes, and most of our retrofits are. Work is sequenced to keep the stair usable, and the "
-         "noisy operations are programmed rather than sprung on the household.",
-         "See a retrofit", "/projects/kashi-yadhav-residence", "general"),
-        ("What power supply does a lift need?",
-         "Usually a three-phase 415 V supply to the controller position, sized to the drive. Some "
-         "compact home lifts run on single-phase 230 V. We confirm the requirement at survey so the "
-         "electrician can allow for it.", "", "", "general"),
-        ("What happens at handover?",
-         "Load testing to 125% of rated capacity, an overspeed and safety-gear trip test, levelling "
-         "and door timing adjustment, statutory inspection paperwork, and a walkthrough with whoever "
-         "will operate the building.", "", "", "general"),
-    ]),
-    ("safety", "Safety", "What protects you, and how it is proven.", [
-        ("What happens in a power cut?",
-         "The automatic rescue device takes over on battery, drives the car at reduced speed to the "
-         "nearest landing, opens the doors and keeps the cabin light and fan running. You are not "
-         "waiting in the dark for the mains to return.", "", "", "general"),
-        ("What stops the lift falling?",
-         "Nothing about a lift depends on one component. The car hangs on multiple independent steel "
-         "ropes, each rated well beyond the whole load. Above that, an overspeed governor watches "
-         "the descent, and if the car ever exceeds the trip speed, progressive safety gear grips the "
-         "guide rails mechanically and stops it.", "", "", "general"),
-        ("Can the doors close on someone?",
-         "A full-height infrared curtain across the entrance reopens the doors on any obstruction, "
-         "with no contact needed. It sees a hand, a bag strap or a walking stick.", "", "", "general"),
-        ("What happens if there is a fire?",
-         "On a fire signal the car cancels all calls, returns to the designated evacuation landing, "
-         "parks with its doors open and locks out normal operation until it is reset by the "
-         "fire service.", "", "", "general"),
-        ("Is the lift tested before I get it?",
-         "Every car is load-tested to 125% of rated capacity and the overspeed governor and safety "
-         "gear are tripped and verified before dispatch. The tests are then repeated on site after "
-         "installation.", "", "", "general"),
-        ("What if someone is trapped?",
-         "Press the alarm. It connects to a battery-backed two-way intercom that reaches our service "
-         "desk directly, independent of the building's power, 24 hours a day.",
-         "Request service", "/contact", "general"),
-    ]),
-    ("maintenance", "Maintenance & service", "After the doors open.", [
-        ("What does an AMC cover?",
-         "Scheduled preventive visits, adjustment, lubrication, rope and brake inspection, safety "
-         "testing, and priority breakdown response. Comprehensive contracts include parts; "
-         "non-comprehensive ones bill parts separately.",
-         "Talk about an AMC", "/contact", "general"),
-        ("How often should a lift be serviced?",
-         "Monthly for commercial and healthcare installations, quarterly at minimum for a home lift. "
-         "Frequency is set by usage, not by the calendar alone.", "", "", "general"),
-        ("How fast do you respond to a breakdown?",
-         "Our service desk is staffed 24/7 and we prioritise entrapments above everything else. "
-         "Response times to site are set out in your maintenance contract.",
-         "Get service support", "/contact", "general"),
-        ("Do you service lifts you did not install?",
-         "Yes, subject to a survey. We need to see the equipment and its history before we can take "
-         "responsibility for it, and we will tell you honestly if something needs putting right "
-         "before a contract starts.", "", "", "general"),
-        ("Can an old lift be modernised instead of replaced?",
-         "Usually. Drive, controller, doors and interior can be replaced on the existing shaft, "
-         "rails and structure — better ride and efficiency for a fraction of the disruption of a "
-         "full replacement.",
-         "Discuss modernisation", "/contact", "general"),
-        ("Are spare parts available years later?",
-         "We hold parts for the systems we install and support them through their service life. "
-         "This is one of the reasons we keep the range deliberately narrow.", "", "", "general"),
-    ]),
-    ("pricing-enquiry", "Pricing & enquiry", "Cost, quotes and what happens next.", [
-        ("How much does a lift cost?",
-         "Honestly, it depends on travel, capacity, drive type and finish, and the range is wide "
-         "enough that any single number quoted here would mislead you. Send the floors and the "
-         "building type and we will come back with a real figure rather than a bracket.",
-         "Get a quote", "/contact", "general"),
-        ("What drives the cost most?",
-         "Number of stops first, then capacity, then finish. Going from a standard stainless car to "
-         "a brass or stone interior changes the price meaningfully; adding a floor changes it more.",
-         "", "", "general"),
-        ("Is installation included in the quote?",
-         "Yes. Our quotes cover supply, installation and commissioning, and state clearly what is "
-         "excluded — usually civil work, the power supply to the controller and any statutory fees.",
-         "", "", "general"),
-        ("How long is a quote valid?",
-         "Typically 30 days, because steel and component pricing moves. The validity is stated on "
-         "the quotation itself.", "", "", "general"),
-        ("What happens after I submit an enquiry?",
-         "We review the drawings and the brief, call you to fill in what the form could not, "
-         "recommend a system with reasons, and then quote against that recommendation.",
-         "", "", "general"),
-        # contact-scoped
-        ("How quickly will someone get back to me?",
-         "Within one working day for project enquiries. Service and breakdown calls are answered "
-         "24/7 on the service line.", "", "", "contact"),
-        ("Can I upload drawings with my enquiry?",
-         "Yes — PDF, JPG, PNG, WEBP, DWG and DXF, up to six files of 10 MB each. Plans and sections "
-         "are the two most useful things you can send.", "", "", "contact"),
-        ("I have an existing lift, not a new project.",
-         "Use the service route rather than the project enquiry form. It reaches our service desk "
-         "directly instead of the sales pipeline.", "", "", "contact"),
-        ("Can I visit the factory?",
-         "Yes, by appointment. Seeing cars being fabricated and load-tested tells you more about a "
-         "lift company than any brochure.", "", "", "contact"),
-        ("Do you do site visits before quoting?",
-         "For anything beyond a straightforward new-build shaft, yes. It is the only reliable way "
-         "to quote a retrofit.", "", "", "contact"),
-    ]),
-]
 
 # --------------------------------------------------------------------- Journal
 
@@ -489,31 +284,6 @@ TESTIMONIALS = [
          )),
 ]
 
-# -------------------------------------------------------------------- The story
-MILESTONES = [
-    ("2012", "Zion Lifts is founded",
-     "Started in Hyderabad with a small workshop, a handful of engineers and a straightforward "
-     "purpose: to help people move better, safer and more comfortably.", M.frame("kashi-floor")),
-    ("2014", "First manufacturing unit",
-     "Fabrication is brought in-house so car frames, cabins and structural shafts are built to "
-     "Zion's own tolerances rather than bought in.", M.frame("owaisi-doors")),
-    ("2016", "Commercial and institutional work",
-     "The range widens beyond homes into offices, hotels and healthcare, which brings group "
-     "control, stretcher cars and heavier duty cycles with it.", M.frame("owaisi-lobby")),
-    ("2018", "24/7 service desk",
-     "A dedicated after-sales operation is established, with an out-of-hours line and an "
-     "entrapment-first response policy.", M.frame("chilkuru-panel")),
-    ("2020", "Gearless MRL becomes the standard",
-     "Machine-room-less gearless traction is adopted as the default across the passenger range, "
-     "for quieter, more efficient and lower-maintenance installations.", M.frame("kashi-drive")),
-    ("2022", "Glass and capsule programme",
-     "Structural glazed shafts and panoramic cars become a distinct line of work as architects "
-     "start treating the lift as part of the room.", M.frame("chilkuru-atrium")),
-    ("2024", "1,750+ installations",
-     "Zion passes 1,750 installations across residential, commercial, hospitality, healthcare and "
-     "industrial buildings, with a team of 95–100 people.", M.frame("lekha-cabin")),
-]
-
 TEAM = [
     ("Engineering", "Design & engineering", "engineering", False,
      "Shaft surveys, general arrangement drawings, traffic analysis and system selection.",
@@ -539,26 +309,6 @@ AWARDS = [
     ("ISO 9001 certification", "Independent certification body", "2019",
      "Quality management system certified across design, manufacture, installation and service.",
      M.frame("owaisi-cop")),
-]
-
-SERVICE_PILLARS = [
-    ("service-24-7", "24/7 breakdown support", "wrench",
-     "A staffed service desk every hour of the year, with entrapments prioritised above all other calls.",
-     "Answered by a person, not a queue."),
-    ("amc", "Annual maintenance contracts", "calendar",
-     "Scheduled preventive visits covering ropes, brakes, doors, levelling, the pit and the intercom, "
-     "with safety testing recorded.",
-     "Comprehensive and non-comprehensive options."),
-    ("breakdown", "Breakdown response", "bolt",
-     "Priority attendance under contracted response times, with the parts we hold for the systems we install.",
-     "Response times stated in the contract."),
-    ("modernisation", "Modernisation", "refresh",
-     "New drive, controller, doors and interior on the existing shaft and rails — better ride and "
-     "efficiency without a full replacement.",
-     "Typically at 20–25 years."),
-    ("spares", "Spare parts", "box",
-     "Parts held and supported through the service life of every system we install.",
-     "Deliberately narrow range, deeply supported."),
 ]
 
 # --------------------------------------------------------------------- Gallery
@@ -602,140 +352,12 @@ GALLERY = [
     ("installation", "Looking up the glazed shaft", "Retrofit · Kashi Yadhav's Residence", M.frame("kashi-shaft"), 2160, 3840, False),
 ]
 
-# ----------------------------------------------------------------------- Legal
-LEGAL = [
-    dict(slug="privacy", title="Privacy Policy",
-         intro="How Zion Lifts collects, uses and protects the information you give us.",
-         clauses=[
-             ("Who we are",
-              "Zion Lifts Pvt. Ltd. is a lift manufacturer and installer based in Hyderabad, "
-              "Telangana, India. In this policy, 'we' and 'us' mean Zion Lifts Pvt. Ltd. If you "
-              "have any question about this policy, write to info@zionlifts.com."),
-             ("What we collect",
-              "When you submit a project enquiry or service request we collect your name, phone "
-              "number, email address, organisation if given, the details of your building and "
-              "requirement, any message you write, and any drawings you upload. Our website also "
-              "records ordinary technical information such as the pages requested and the browser "
-              "used, for security and to understand which pages are useful."),
-             ("Why we use it",
-              "To respond to your enquiry, prepare a quotation, arrange a site survey, deliver and "
-              "maintain equipment, and keep records of the work we have done. We use your contact "
-              "details to contact you about the enquiry you made. We do not sell your information, "
-              "and we do not use it for unrelated marketing without asking you first."),
-             ("Drawings and attachments",
-              "Files you upload with an enquiry are stored so our engineers can review them. They "
-              "are treated as confidential to your project, shared only with the Zion staff working "
-              "on it, and retained with the enquiry record."),
-             ("Who we share it with",
-              "Only where necessary: our own staff, and service providers who host our systems or "
-              "carry our email, under obligations of confidentiality. We also disclose information "
-              "where the law requires it. We do not share your details with third parties for their "
-              "own marketing."),
-             ("How long we keep it",
-              "Enquiries that do not proceed are retained for up to three years so we can pick up a "
-              "conversation you resume. Records relating to equipment we have supplied are kept for "
-              "the service life of that equipment and as long afterwards as our legal and warranty "
-              "obligations require."),
-             ("How we protect it",
-              "Access to enquiry records is restricted to staff who need it. Data is transmitted "
-              "over encrypted connections and held on access-controlled systems. No system is "
-              "perfectly secure, but we take the protection of your information seriously."),
-             ("Your choices",
-              "You may ask us for a copy of the information we hold about you, ask us to correct "
-              "anything inaccurate, or ask us to delete information we no longer need to keep. "
-              "Write to info@zionlifts.com and we will respond within a reasonable period."),
-         ]),
-    dict(slug="terms", title="Terms of Use",
-         intro="The terms on which this website is made available.",
-         clauses=[
-             ("Acceptance", "By using this website you accept these terms. If you do not accept "
-              "them, please do not use the site."),
-             ("About the information here",
-              "This website describes the products and services Zion Lifts offers. It is provided "
-              "for general information and does not by itself constitute a contractual offer."),
-             ("Specifications are indicative",
-              "Dimensions, capacities, speeds, drive types and other technical figures shown on "
-              "this site are typical values for the configurations described. The specification "
-              "for any particular installation is established by survey and confirmed in writing in "
-              "the quotation and order documents, which take precedence over anything on this site."),
-             ("Quotations and orders",
-              "Prices are given only in a written quotation, are valid for the period stated on it, "
-              "and are subject to survey. A contract is formed only when an order is accepted by "
-              "us in writing."),
-             ("Enquiries you submit",
-              "You confirm that the information you submit is accurate and that you are entitled to "
-              "share any drawings you upload. Do not upload material you do not have the right to "
-              "share with us."),
-             ("Intellectual property",
-              "The content of this site, including text, photographs, films, drawings, the Zion "
-              "Lifts name and the Zion Lifts mark, belongs to Zion Lifts or its licensors. You may "
-              "view and print pages for your own reference. You may not reproduce or republish them "
-              "commercially without our written permission. Third-party images used on this site "
-              "are credited separately and remain subject to their own licences."),
-             ("Third-party links",
-              "Where we link to another website, we do so for convenience. We are not responsible "
-              "for the content of sites we do not operate."),
-             ("Availability",
-              "We try to keep this site available and correct, but we do not guarantee that it will "
-              "be uninterrupted or free of error, and we may change or withdraw content at any time."),
-             ("Liability",
-              "Nothing in these terms excludes liability that cannot lawfully be excluded, "
-              "including for death or personal injury caused by negligence, or for fraud. Subject "
-              "to that, we are not liable for indirect or consequential loss arising from use of "
-              "this website."),
-             ("Governing law",
-              "These terms are governed by the laws of India, and the courts at Hyderabad, "
-              "Telangana have exclusive jurisdiction."),
-         ]),
-    dict(slug="cookies", title="Cookie Policy",
-         intro="What this site stores in your browser, and why.",
-         clauses=[
-             ("What cookies are",
-              "Cookies are small files a website asks your browser to store. Related technologies "
-              "such as local storage work in a similar way. This policy covers both."),
-             ("What we use",
-              "This site is deliberately light on tracking. We use strictly necessary storage to "
-              "keep the site working — for example remembering a form step you have reached or a "
-              "preference such as reduced motion — and, where enabled, aggregate analytics to "
-              "understand which pages are used."),
-             ("Strictly necessary storage",
-              "Needed for the site to function, including security protection on the enquiry forms. "
-              "These cannot be switched off through the site because the site would not work "
-              "correctly without them."),
-             ("Analytics",
-              "Where analytics is enabled, it tells us which pages are visited and how people move "
-              "through the site, in aggregate. We use it to decide what to improve, not to identify "
-              "individual visitors."),
-             ("Third-party content",
-              "Pages that embed a map from Google Maps will load content from Google, which may set "
-              "its own cookies under Google's policies. We do not control those cookies."),
-             ("Managing cookies",
-              "Every major browser lets you see the cookies a site has set, delete them, and block "
-              "future ones. Blocking strictly necessary cookies may stop parts of this site, "
-              "particularly the enquiry forms, from working."),
-             ("Changes",
-              "If we add anything that stores more than is described here, we will update this "
-              "policy and the effective date shown above it."),
-         ]),
-]
-
-
 def run():
     """Write the editorial content.
 
-    The FAQ and journal category tables are gone, so the seed no longer creates
-    them: the slug in each row is the value stored on the question or the post,
-    and ``FAQ_DATA``'s per-category name and blurb now live on the model as
-    ``CATEGORY_DESCRIPTIONS``.
+    The journal category table is gone, so the seed no longer creates it: the
+    slug in each row is the value stored on the post itself.
     """
-    FAQ.objects.all().delete()
-    for category_slug, _name, _desc, questions in FAQ_DATA:
-        for i, (question, answer, label, url, scope) in enumerate(questions, 1):
-            FAQ.objects.create(
-                category=category_slug, question=question, answer=answer,
-                link_label=label, link_url=url, scope=scope, order=i,
-            )
-
     now = timezone.now()
     for i, row in enumerate(JOURNAL, 1):
         row = dict(row)
@@ -753,12 +375,6 @@ def run():
         row["poster_url"] = row.pop("poster", "")
         Testimonial.objects.update_or_create(name=row["name"], defaults=row)
 
-    for i, (year, title, desc, image) in enumerate(MILESTONES, 1):
-        Milestone.objects.update_or_create(
-            year=year, title=title,
-            defaults=dict(description=desc, image_url=image, order=i),
-        )
-
     for i, (name, role, dept, lead, bio, photo) in enumerate(TEAM, 1):
         TeamMember.objects.update_or_create(
             name=name, role=role,
@@ -773,39 +389,15 @@ def run():
                           image_url=image, order=i),
         )
 
-    for i, (slug, name, icon, desc, detail) in enumerate(SERVICE_PILLARS, 1):
-        ServicePillar.objects.update_or_create(
-            slug=slug,
-            defaults=dict(name=name, icon=icon, description=desc, detail=detail, order=i),
-        )
-
     GalleryItem.objects.all().delete()
     for i, (cat, title, meta, src, w, h, feat) in enumerate(GALLERY, 1):
         GalleryItem.objects.create(category=cat, title=title, meta=meta, image_url=src,
                                    width=w, height=h, is_featured=feat, order=i)
 
-    for doc in LEGAL:
-        LegalPage.objects.update_or_create(
-            slug=doc["slug"],
-            defaults=dict(
-                title=doc["title"],
-                intro=doc["intro"],
-                effective_date=date(2026, 1, 1),
-                clauses=[
-                    {"heading": heading, "body": body}
-                    for heading, body in doc["clauses"]
-                ],
-            ),
-        )
-
     return {
-        "faqs": FAQ.objects.count(),
         "blog_posts": BlogPost.objects.count(),
         "testimonials": Testimonial.objects.count(),
-        "milestones": Milestone.objects.count(),
         "team": TeamMember.objects.count(),
         "awards": Award.objects.count(),
-        "service_pillars": ServicePillar.objects.count(),
         "gallery_items": GalleryItem.objects.count(),
-        "legal_pages": LegalPage.objects.count(),
     }

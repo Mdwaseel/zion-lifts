@@ -7,35 +7,35 @@ read it top to bottom and you have read the navigation.
 
 The consolidation shows up here as absences. There is no lift-images,
 lift-variants or lift-specs collection, because those are lists inside the lift
-form. There is no project-images and no project-categories, no journal-categories
-and no faq-categories, and no legal-clauses. Editing a project is one screen.
+form. There is no project-images and no project-categories, and no
+journal-categories. Editing a project is one screen.
+
+Six collections are absent for a different reason: FAQs, milestones,
+certifications, service pillars, stat rows and legal pages were content that
+never changed between deploys, so they are static modules in
+``frontend/src/data/`` and have no table, no endpoint and no screen. Giving an
+operator a form for text nobody edits is not a feature.
 
 A model absent from this file cannot be reached through the admin API at all.
 """
 
-from apps.knowledge.models import Document, DocumentVersion, IngestionJob, KnowledgeBase
+from apps.knowledge.models import KnowledgeBase
 
 from .models import (
-    FAQ,
     Application,
     Award,
     BlogPost,
-    Certification,
     Component,
     Enquiry,
     Finish,
     GalleryItem,
-    LegalPage,
     Lift,
-    Milestone,
     Office,
     Partner,
     Project,
     SafetyFeature,
-    ServicePillar,
     ServiceRequest,
     SiteSettings,
-    Stat,
     TeamMember,
     Testimonial,
 )
@@ -241,17 +241,6 @@ register(
 
 # --- Editorial -------------------------------------------------------------
 register(
-    key="faqs",
-    model=FAQ,
-    group=EDITORIAL,
-    icon="help",
-    list_display=("question", "category", "scope", "order", "is_published"),
-    list_editable=("order", "is_published"),
-    search_fields=("question", "answer"),
-    filter_fields=("category", "scope", "is_published"),
-)
-
-register(
     key="testimonials",
     model=Testimonial,
     group=EDITORIAL,
@@ -286,16 +275,6 @@ register(
 )
 
 register(
-    key="milestones",
-    model=Milestone,
-    group=EDITORIAL,
-    icon="calendar",
-    list_display=("year", "title", "order", "is_published"),
-    list_editable=("order", "is_published"),
-    search_fields=("title", "description"),
-)
-
-register(
     key="awards",
     model=Award,
     group=EDITORIAL,
@@ -303,34 +282,6 @@ register(
     list_display=("name", "organisation", "year", "order", "is_published"),
     list_editable=("order", "is_published"),
     search_fields=("name", "organisation"),
-)
-
-register(
-    key="service-pillars",
-    model=ServicePillar,
-    group=EDITORIAL,
-    icon="wrench",
-    list_display=("name", "icon", "order", "is_published"),
-    list_editable=("order", "is_published"),
-    slug_source=("slug", "name"),
-)
-
-# One row per policy page, clauses included. The clause table is gone.
-register(
-    key="legal-pages",
-    model=LegalPage,
-    group=EDITORIAL,
-    icon="document",
-    label="Legal page",
-    list_display=("title", "slug", "effective_date", "is_published"),
-    list_editable=("is_published",),
-    search_fields=("title", "intro"),
-    slug_source=("slug", "title"),
-    fieldsets=(
-        ("Identity", ("title", "slug", "effective_date")),
-        ("Copy", ("intro", "clauses")),
-        PUBLISHING,
-    ),
 )
 
 
@@ -370,16 +321,6 @@ register(
 )
 
 register(
-    key="stats",
-    model=Stat,
-    group=ORGANISATION,
-    icon="gauge",
-    list_display=("value", "label", "group", "order", "is_published"),
-    list_editable=("order", "is_published"),
-    filter_fields=("group", "is_published"),
-)
-
-register(
     key="partners",
     model=Partner,
     group=ORGANISATION,
@@ -390,31 +331,27 @@ register(
     filter_fields=("role", "is_published"),
 )
 
-register(
-    key="certifications",
-    model=Certification,
-    group=ORGANISATION,
-    icon="shield",
-    list_display=("name", "issuer", "reference", "order", "is_published"),
-    list_editable=("order", "is_published"),
-    search_fields=("name", "issuer", "reference"),
-)
-
 
 # --- Knowledge base --------------------------------------------------------
-# The assistant's corpus, and the one part of the panel that is not this app's
-# own models. It stays in ``apps.knowledge`` because it is not content: a
-# document crosses a service boundary to a worker and a vector index, and those
-# records answer questions ("which edition is live?") that no amount of CRUD
-# would. What the registry adds is the part that genuinely is CRUD — browsing,
-# filtering by status, renaming. Uploading and deleting live at
-# /api/admin/knowledge/, where they can queue a job and clear the index.
+# One entry, and it is here only to put "Knowledge base" in the sidebar and give
+# the dashboard something to count. The screen behind it is not a generic list:
+# adding data to the assistant's corpus means uploading a file and watching it
+# be extracted, chunked, embedded and indexed, and none of that is a row write.
+# That screen talks to /api/admin/knowledge/ instead — see apps/knowledge/api.
+#
+# Documents, versions and ingestion jobs used to be three more entries beside
+# this one. They were three ways of looking at the same upload, and an operator
+# whose job is "add this PDF" had to know which of the four to open. They are
+# now sections of the one screen, reached by clicking the document they concern.
 register(
     key="knowledge-bases",
     model=KnowledgeBase,
     group=KNOWLEDGE,
     icon="library",
     label="Knowledge base",
+    # Singular in the sidebar: the heading above it already says "Knowledge
+    # base", and "Knowledge base / Knowledge bases" reads like two things.
+    label_plural="Knowledge base",
     list_display=("name", "slug", "is_active", "created_at"),
     list_editable=("is_active",),
     search_fields=("name", "slug", "description"),
@@ -424,72 +361,4 @@ register(
         ("Identity", ("name", "slug", "description")),
         ("Availability", ("is_active",)),
     ),
-)
-
-register(
-    key="knowledge-documents",
-    model=Document,
-    group=KNOWLEDGE,
-    icon="file-text",
-    label="Document",
-    can_create=False,
-    can_delete=False,
-    list_display=(
-        "name", "knowledge_base", "status", "active_version", "file_size", "updated_at",
-    ),
-    search_fields=("name", "original_filename"),
-    filter_fields=("knowledge_base", "status"),
-    select_related=("knowledge_base", "active_version"),
-    readonly_fields=(
-        "original_filename", "mime_type", "file_size", "status",
-        "active_version", "created_by",
-    ),
-    fieldsets=(
-        ("Document", ("name", "knowledge_base")),
-        ("File", ("original_filename", "mime_type", "file_size")),
-        ("Processing", ("status", "active_version", "created_by")),
-    ),
-)
-
-# A version is one immutable edition of a document's bytes. Nothing about it is
-# editable by hand: changing any of these would describe an index that was
-# built from something else.
-register(
-    key="knowledge-versions",
-    model=DocumentVersion,
-    group=KNOWLEDGE,
-    icon="layers",
-    label="Document version",
-    can_create=False,
-    can_edit=False,
-    can_delete=False,
-    parent_field="document",
-    list_display=(
-        "version_number", "document", "status", "page_count", "chunk_count",
-        "embedding_model", "embedding_dimension", "created_at",
-    ),
-    filter_fields=("status", "document", "embedding_model"),
-    search_fields=("content_hash",),
-    select_related=("document",),
-)
-
-# The record of one attempt. Kept rather than overwritten: three failures and
-# one failure are different problems.
-register(
-    key="knowledge-jobs",
-    model=IngestionJob,
-    group=KNOWLEDGE,
-    icon="activity",
-    label="Ingestion job",
-    can_create=False,
-    can_edit=False,
-    can_delete=False,
-    parent_field="document",
-    list_display=(
-        "job_type", "document", "status", "progress", "current_stage",
-        "attempt_count", "error_code", "created_at", "started_at", "finished_at",
-    ),
-    filter_fields=("job_type", "status", "document"),
-    search_fields=("celery_task_id", "error_code"),
-    select_related=("document", "document_version"),
 )

@@ -3,7 +3,7 @@
 from django.contrib.admin.models import ADDITION, LogEntry
 from django.contrib.contenttypes.models import ContentType
 
-from apps.adminpanel.models import Enquiry, Milestone, ServiceRequest
+from apps.adminpanel.models import Award, Enquiry, ServiceRequest
 
 from .base import AdminPanelTestCase
 
@@ -22,8 +22,8 @@ class DashboardTests(AdminPanelTestCase):
         ServiceRequest.objects.create(
             name="Facilities", phone="900", kind="maintenance", urgency="routine", status="new"
         )
-        Milestone.objects.create(year="2012", title="Founded", is_published=True)
-        Milestone.objects.create(year="2013", title="Draft", is_published=False)
+        Award.objects.create(year="2012", name="Founded", is_published=True)
+        Award.objects.create(year="2013", name="Draft", is_published=False)
 
     def test_the_pipeline_counts_every_status_in_the_model_order(self):
         body = self.get("/dashboard/")
@@ -62,8 +62,8 @@ class DashboardTests(AdminPanelTestCase):
     def test_collection_counts_flag_unpublished_work(self):
         collections = {c["key"]: c for c in self.get("/dashboard/")["collections"]}
 
-        self.assertEqual(collections["milestones"]["count"], 2)
-        self.assertEqual(collections["milestones"]["unpublished"], 1)
+        self.assertEqual(collections["awards"]["count"], 2)
+        self.assertEqual(collections["awards"]["unpublished"], 1)
 
     def test_a_collection_without_publishing_reports_none_rather_than_zero(self):
         """None means "not applicable"; zero would read as "nothing to do"."""
@@ -85,20 +85,20 @@ class DashboardTests(AdminPanelTestCase):
 
 class ActivityTests(AdminPanelTestCase):
     def test_a_change_made_through_the_panel_appears_in_the_trail(self):
-        self.post("/milestones/", {"year": "2012", "title": "Founded"})
+        self.post("/awards/", {"year": "2012", "name": "Founded"})
 
         rows = self.get("/activity/")["results"]
         self.assertEqual(rows[0]["action"], "created")
-        self.assertEqual(rows[0]["object_repr"], "2012 - Founded")
-        self.assertEqual(rows[0]["resource"], "milestones")
+        self.assertEqual(rows[0]["object_repr"], "Founded")
+        self.assertEqual(rows[0]["resource"], "awards")
         self.assertEqual(rows[0]["user"], "Control Room")
 
     def test_the_trail_is_newest_first(self):
-        self.post("/milestones/", {"year": "2012", "title": "First"})
-        self.post("/milestones/", {"year": "2013", "title": "Second"})
+        self.post("/awards/", {"year": "2012", "name": "First"})
+        self.post("/awards/", {"year": "2013", "name": "Second"})
 
         rows = self.get("/activity/")["results"]
-        self.assertEqual(rows[0]["object_repr"], "2013 - Second")
+        self.assertEqual(rows[0]["object_repr"], "Second")
 
     def test_an_entry_for_an_unregistered_model_still_renders(self):
         """Django's own admin logs user edits; those must not break the trail."""
@@ -116,8 +116,8 @@ class ActivityTests(AdminPanelTestCase):
         self.assertIsNone(rows[0]["resource"])  # nothing in the panel to link to
 
     def test_a_deleted_record_has_no_link_target(self):
-        created = self.post("/milestones/", {"year": "2012", "title": "Founded"})
-        self.client.delete(f"/api/admin/milestones/{created['id']}/")
+        created = self.post("/awards/", {"year": "2012", "name": "Founded"})
+        self.client.delete(f"/api/admin/awards/{created['id']}/")
 
         rows = self.get("/activity/")["results"]
         self.assertEqual(rows[0]["action"], "deleted")
@@ -132,8 +132,8 @@ class ActivityTests(AdminPanelTestCase):
             side_effect=RuntimeError("log table is gone"),
         ):
             res = self.client.post(
-                "/api/admin/milestones/", {"year": "2012", "title": "Founded"}, format="json"
+                "/api/admin/awards/", {"year": "2012", "name": "Founded"}, format="json"
             )
 
         self.assertEqual(res.status_code, 201)
-        self.assertTrue(Milestone.objects.filter(title="Founded").exists())
+        self.assertTrue(Award.objects.filter(name="Founded").exists())

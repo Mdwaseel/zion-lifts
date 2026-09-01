@@ -2,12 +2,11 @@ import { useEffect, useMemo, useState } from 'react'
 
 import Reveal from '@/components/Reveal'
 import { Accordion, CtaBand, PageHero } from '@/components/sections'
-import { useApi } from '@/lib/hooks'
+import { faqCategories } from '@/data/faqs'
 
 import './faq.css'
 
 export default function Faq() {
-  const { data: categories } = useApi('faq-categories/')
   const [active, setActive] = useState('all')
   const [query, setQuery] = useState('')
 
@@ -15,10 +14,9 @@ export default function Faq() {
     document.title = 'Questions, answered — Zion Lifts'
   }, [])
 
-  const cats = useMemo(
-    () => (categories ?? []).filter((c) => (c.questions ?? []).length > 0),
-    [categories],
-  )
+  // Static — see src/data/faqs.js. An empty section would render a chip
+  // reading 0 above nothing, so sections with no questions are dropped.
+  const cats = useMemo(() => faqCategories().filter((c) => c.questions.length > 0), [])
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()

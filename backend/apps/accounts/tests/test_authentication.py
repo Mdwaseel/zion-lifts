@@ -356,19 +356,20 @@ class AdminAccessTests(AuthTestCase):
 class ExistingApiTests(AuthTestCase):
     """The public API must behave exactly as it did before authentication existed."""
 
+    # Stats, certifications, FAQ categories and service pillars used to be on
+    # this list. They are static content in the front end now and have no
+    # endpoint at all — see adminpanel migration 0004.
     PUBLIC = [
         "/api/site/",
         "/api/offices/",
-        "/api/stats/",
         "/api/partners/",
-        "/api/certifications/",
         "/api/lifts/",
         "/api/projects/",
-        "/api/faq-categories/",
         "/api/journal/",
         "/api/testimonials/",
-        "/api/service-pillars/",
         "/api/gallery/",
+        "/api/team/",
+        "/api/awards/",
     ]
 
     def test_public_endpoints_are_still_open_to_anonymous_callers(self):

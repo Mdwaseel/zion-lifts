@@ -421,6 +421,13 @@
   font-weight: 500;
 }
 
+/* An inactive base still appears in the picker — its documents are kept — so
+   the chip says so rather than looking identical to a live one. */
+.cf-chip__note {
+  opacity: 0.65;
+  font-weight: 400;
+}
+
 .cf-filters__select .cf-input {
   min-width: 12rem;
 }

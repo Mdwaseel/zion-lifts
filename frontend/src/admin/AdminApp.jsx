@@ -8,9 +8,7 @@ import { useAsync, useToasts } from './hooks'
 import Shell from './layout/Shell'
 import Dashboard from './screens/Dashboard'
 import DocumentDetail from './screens/knowledge/DocumentDetail'
-import Documents from './screens/knowledge/Documents'
-import KnowledgeBaseDetail from './screens/knowledge/KnowledgeBaseDetail'
-import KnowledgeBases from './screens/knowledge/KnowledgeBases'
+import KnowledgeBase from './screens/knowledge/KnowledgeBase'
 import RecordForm from './screens/RecordForm'
 import RecordList from './screens/RecordList'
 
@@ -59,12 +57,12 @@ function Panel() {
 
         {/* The knowledge base is not a collection of rows to edit — it is a
             pipeline to operate. Uploading, retrying and reindexing have no
-            expression in the generic form, so these four keys get screens of
-            their own. Static segments match before `:resource`, so the sidebar
-            links the registry already produces land here. */}
-        <Route path="knowledge-bases" element={<KnowledgeBases onNotify={push} />} />
-        <Route path="knowledge-bases/:id" element={<KnowledgeBaseDetail onNotify={push} />} />
-        <Route path="knowledge-documents" element={<Documents onNotify={push} />} />
+            expression in the generic form, so it gets a screen of its own, and
+            one document gets a second for its versions and ingestion jobs.
+            Static segments match before `:resource`, so the sidebar link the
+            registry produces for `knowledge-bases` lands here rather than on
+            the generic list. */}
+        <Route path="knowledge-bases" element={<KnowledgeBase onNotify={push} />} />
         <Route path="knowledge-documents/:id" element={<DocumentDetail onNotify={push} />} />
 
         <Route path=":resource" element={<RecordList onNotify={push} />} />

@@ -1,6 +1,8 @@
 import { useEffect } from 'react'
 
 import { TestimonialRow } from '@/components/sections'
+import CERTIFICATIONS from '@/data/certifications'
+import SERVICE_PILLARS from '@/data/servicePillars'
 import { useApi } from '@/lib/hooks'
 
 import { Hero, WorldBelow } from './home/Ascent'
@@ -14,9 +16,7 @@ export default function Home() {
   const { data: projects } = useApi('projects/')
   const { data: safety } = useApi('safety-features/')
   const { data: finishes } = useApi('finishes/')
-  const { data: pillars } = useApi('service-pillars/')
   const { data: team } = useApi('team/')
-  const { data: certifications } = useApi('certifications/')
   const { data: partners } = useApi('partners/')
   const { data: testimonials } = useApi('testimonials/')
 
@@ -37,10 +37,10 @@ export default function Home() {
       <MakingOf />
       <ProjectsReel projects={projects ?? []} />
       <Details />
-      <AfterInstall pillars={pillars ?? []} />
+      <AfterInstall pillars={SERVICE_PILLARS} />
       <People team={team ?? []} />
       <TestimonialRow testimonials={(testimonials ?? []).slice(0, 3)} />
-      <Trust certifications={certifications ?? []} partners={partners ?? []} />
+      <Trust certifications={CERTIFICATIONS} partners={partners ?? []} />
       <FinalAscent />
     </>
   )

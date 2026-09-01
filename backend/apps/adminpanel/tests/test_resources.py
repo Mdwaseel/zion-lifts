@@ -2,7 +2,7 @@
 
 from django.contrib.admin.models import ADDITION, CHANGE, DELETION, LogEntry
 
-from apps.adminpanel.models import Application, Enquiry, Lift, Milestone, SiteSettings
+from apps.adminpanel.models import Application, Award, Enquiry, Lift, SiteSettings
 
 from .base import API, AdminPanelTestCase
 
@@ -12,12 +12,12 @@ class ListTests(AdminPanelTestCase):
     def setUpTestData(cls):
         super().setUpTestData()
         for n in range(30):
-            Milestone.objects.create(
-                year=f"20{n:02d}", title=f"Milestone {n}", order=n, is_published=n % 2 == 0
+            Award.objects.create(
+                year=f"20{n:02d}", name=f"Award {n}", order=n, is_published=n % 2 == 0
             )
 
     def test_a_list_is_paginated_with_the_counts_a_pager_needs(self):
-        body = self.get("/milestones/")
+        body = self.get("/awards/")
 
         self.assertEqual(body["count"], 30)
         self.assertEqual(body["page"], 1)
@@ -25,23 +25,23 @@ class ListTests(AdminPanelTestCase):
         self.assertEqual(len(body["results"]), 25)
 
     def test_page_size_can_be_raised_but_not_without_limit(self):
-        self.assertEqual(len(self.get("/milestones/", page_size=5)["results"]), 5)
+        self.assertEqual(len(self.get("/awards/", page_size=5)["results"]), 5)
         # max_page_size caps it; asking for everything must not be a way to
         # dump a table in one request.
-        self.assertEqual(len(self.get("/milestones/", page_size=10_000)["results"]), 30)
+        self.assertEqual(len(self.get("/awards/", page_size=10_000)["results"]), 30)
 
     def test_rows_carry_a_display_string_for_the_table(self):
-        row = self.get("/milestones/")["results"][0]
+        row = self.get("/awards/")["results"][0]
         self.assertIn("_str", row)
         self.assertTrue(row["_str"])
 
     def test_search_matches_the_declared_fields(self):
-        body = self.get("/milestones/", search="Milestone 7")
+        body = self.get("/awards/", search="Award 7")
         self.assertTrue(body["count"] >= 1)
-        self.assertIn("Milestone 7", [r["title"] for r in body["results"]])
+        self.assertIn("Award 7", [r["name"] for r in body["results"]])
 
     def test_results_can_be_filtered(self):
-        body = self.get("/milestones/", is_published="false")
+        body = self.get("/awards/", is_published="false")
         self.assertEqual(body["count"], 15)
         self.assertTrue(all(r["is_published"] is False for r in body["results"]))
 
@@ -49,40 +49,40 @@ class ListTests(AdminPanelTestCase):
         """The registry adds it wherever the model has it; see Resource.__post_init__."""
         from apps.adminpanel.registry import registry
 
-        for key in ("milestones", "awards", "testimonials", "lifts"):
+        for key in ("awards", "team", "testimonials", "lifts"):
             with self.subTest(resource=key):
                 self.assertIn("is_published", registry[key].filter_fields)
 
     def test_results_can_be_ordered(self):
-        first = self.get("/milestones/", ordering="-order")["results"][0]
+        first = self.get("/awards/", ordering="-order")["results"][0]
         self.assertEqual(first["order"], 29)
 
     def test_ordering_by_a_non_column_is_ignored_rather_than_a_500(self):
         # __str__ is a list column but not a database column; DRF drops any
         # ordering value not in ordering_fields.
-        self.assertEqual(self.client.get(f"{API}/milestones/", {"ordering": "__str__"}).status_code, 200)
+        self.assertEqual(self.client.get(f"{API}/awards/", {"ordering": "__str__"}).status_code, 200)
 
 
 class WriteTests(AdminPanelTestCase):
     def test_a_record_can_be_created_and_is_logged(self):
-        body = self.post("/milestones/", {"year": "2012", "title": "Founded"})
+        body = self.post("/awards/", {"year": "2012", "name": "Founded"})
 
-        self.assertEqual(body["title"], "Founded")
+        self.assertEqual(body["name"], "Founded")
         entry = LogEntry.objects.latest("id")
         self.assertEqual(entry.action_flag, ADDITION)
         self.assertEqual(entry.user, self.staff)
-        self.assertEqual(entry.object_repr, str(Milestone.objects.get(pk=body["id"])))
+        self.assertEqual(entry.object_repr, str(Award.objects.get(pk=body["id"])))
 
     def test_an_update_is_logged_with_the_field_names_that_changed(self):
-        milestone = Milestone.objects.create(year="2012", title="Founded")
-        self.patch(f"/milestones/{milestone.pk}/", {"title": "Founded in Hyderabad"})
+        award = Award.objects.create(year="2012", name="Founded")
+        self.patch(f"/awards/{award.pk}/", {"name": "Founded in Hyderabad"})
 
-        milestone.refresh_from_db()
-        self.assertEqual(milestone.title, "Founded in Hyderabad")
+        award.refresh_from_db()
+        self.assertEqual(award.name, "Founded in Hyderabad")
 
         entry = LogEntry.objects.latest("id")
         self.assertEqual(entry.action_flag, CHANGE)
-        self.assertIn("title", entry.change_message)
+        self.assertIn("name", entry.change_message)
 
     def test_the_audit_message_names_fields_but_never_their_values(self):
         """An audit log that copies enquiry values becomes a second copy of it."""
@@ -96,12 +96,12 @@ class WriteTests(AdminPanelTestCase):
         self.assertNotIn("Called back", entry.change_message)
 
     def test_a_delete_is_logged_before_the_row_disappears(self):
-        milestone = Milestone.objects.create(year="2012", title="Founded")
-        repr_before = str(milestone)
+        award = Award.objects.create(year="2012", name="Founded")
+        repr_before = str(award)
 
-        res = self.client.delete(f"{API}/milestones/{milestone.pk}/")
+        res = self.client.delete(f"{API}/awards/{award.pk}/")
         self.assertEqual(res.status_code, 204)
-        self.assertFalse(Milestone.objects.filter(pk=milestone.pk).exists())
+        self.assertFalse(Award.objects.filter(pk=award.pk).exists())
 
         entry = LogEntry.objects.latest("id")
         self.assertEqual(entry.action_flag, DELETION)
@@ -116,9 +116,9 @@ class WriteTests(AdminPanelTestCase):
         self.assertEqual(enquiry.status, "contacted")  # what staff may change
 
     def test_validation_errors_come_back_per_field(self):
-        res = self.client.post(f"{API}/milestones/", {"title": ""}, format="json")
+        res = self.client.post(f"{API}/awards/", {"name": ""}, format="json")
         self.assertEqual(res.status_code, 400)
-        self.assertIn("title", res.json())
+        self.assertIn("name", res.json())
 
     def test_a_relation_is_written_by_id(self):
         lift = Lift.objects.create(slug="home", name="Home", tagline="t", summary="s")
@@ -144,7 +144,7 @@ class BulkActionTests(AdminPanelTestCase):
     def setUp(self):
         super().setUp()
         self.rows = [
-            Milestone.objects.create(year=f"200{n}", title=f"M{n}", is_published=False)
+            Award.objects.create(year=f"200{n}", name=f"A{n}", is_published=False)
             for n in range(4)
         ]
 
@@ -153,26 +153,26 @@ class BulkActionTests(AdminPanelTestCase):
 
     def test_publishing_the_selected_rows(self):
         body = self.post(
-            "/milestones/bulk/", {"action": "publish", "ids": self.ids(0, 1)}, expect=200
+            "/awards/bulk/", {"action": "publish", "ids": self.ids(0, 1)}, expect=200
         )
 
         self.assertEqual(body["affected"], 2)
-        self.assertTrue(Milestone.objects.get(pk=self.rows[0].pk).is_published)
-        self.assertFalse(Milestone.objects.get(pk=self.rows[2].pk).is_published)
+        self.assertTrue(Award.objects.get(pk=self.rows[0].pk).is_published)
+        self.assertFalse(Award.objects.get(pk=self.rows[2].pk).is_published)
 
     def test_unpublishing_the_selected_rows(self):
-        Milestone.objects.update(is_published=True)
-        self.post("/milestones/bulk/", {"action": "unpublish", "ids": self.ids(0)}, expect=200)
-        self.assertFalse(Milestone.objects.get(pk=self.rows[0].pk).is_published)
+        Award.objects.update(is_published=True)
+        self.post("/awards/bulk/", {"action": "unpublish", "ids": self.ids(0)}, expect=200)
+        self.assertFalse(Award.objects.get(pk=self.rows[0].pk).is_published)
 
     def test_deleting_the_selected_rows_logs_each_one(self):
         before = LogEntry.objects.count()
         body = self.post(
-            "/milestones/bulk/", {"action": "delete", "ids": self.ids(0, 1)}, expect=200
+            "/awards/bulk/", {"action": "delete", "ids": self.ids(0, 1)}, expect=200
         )
 
         self.assertEqual(body["affected"], 2)
-        self.assertEqual(Milestone.objects.count(), 2)
+        self.assertEqual(Award.objects.count(), 2)
         self.assertEqual(LogEntry.objects.count(), before + 2)
 
     def test_bulk_delete_is_refused_on_a_collection_that_forbids_deletes(self):
@@ -185,19 +185,19 @@ class BulkActionTests(AdminPanelTestCase):
 
     def test_an_unknown_action_is_rejected(self):
         res = self.client.post(
-            f"{API}/milestones/bulk/", {"action": "drop-table", "ids": self.ids(0)}, format="json"
+            f"{API}/awards/bulk/", {"action": "drop-table", "ids": self.ids(0)}, format="json"
         )
         self.assertEqual(res.status_code, 400)
 
     def test_an_empty_selection_is_rejected(self):
         res = self.client.post(
-            f"{API}/milestones/bulk/", {"action": "publish", "ids": []}, format="json"
+            f"{API}/awards/bulk/", {"action": "publish", "ids": []}, format="json"
         )
         self.assertEqual(res.status_code, 400)
 
     def test_ids_outside_the_collection_are_simply_not_matched(self):
         body = self.post(
-            "/milestones/bulk/", {"action": "publish", "ids": [999_999]}, expect=200
+            "/awards/bulk/", {"action": "publish", "ids": [999_999]}, expect=200
         )
         self.assertEqual(body["affected"], 0)
 

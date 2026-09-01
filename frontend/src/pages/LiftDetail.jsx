@@ -5,6 +5,7 @@ import { Img } from '@/components/Media'
 import Reveal, { RevealGroup } from '@/components/Reveal'
 import { Accordion, CtaBand, LiftCard, SectionHead, TestimonialRow } from '@/components/sections'
 import { Arrow, Check, Shield } from '@/components/icons'
+import { faqCategory } from '@/data/faqs'
 import { useApi } from '@/lib/hooks'
 
 import { Configurator } from './home/Machine'
@@ -195,7 +196,6 @@ export default function LiftDetail() {
   const { data: finishes } = useApi('finishes/')
   const { data: projects } = useApi('projects/', { lift_type__slug: slug })
   const { data: testimonials } = useApi('testimonials/')
-  const { data: faqCats } = useApi('faq-categories/')
   const { data: partners } = useApi('partners/')
 
   useEffect(() => {
@@ -227,8 +227,7 @@ export default function LiftDetail() {
 
   const gallery = (lift.images ?? []).filter((i) => i.kind === 'gallery')
   const details = (lift.images ?? []).filter((i) => i.kind === 'detail' || i.kind === 'cabin')
-  const productFaq =
-    (faqCats ?? []).find((c) => c.slug === 'products-technology')?.questions?.slice(0, 5) ?? []
+  const productFaq = faqCategory('products-technology')?.questions.slice(0, 5) ?? []
 
   return (
     <>

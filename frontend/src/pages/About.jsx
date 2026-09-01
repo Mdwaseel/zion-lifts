@@ -5,6 +5,10 @@ import { Img } from '@/components/Media'
 import Reveal, { RevealGroup, SplitLines } from '@/components/Reveal'
 import { CtaBand, SectionHead, StatRow } from '@/components/sections'
 import { Arrow, PILLAR_ICONS, Shield } from '@/components/icons'
+import CERTIFICATIONS from '@/data/certifications'
+import MILESTONES from '@/data/milestones'
+import SERVICE_PILLARS from '@/data/servicePillars'
+import { statsFor } from '@/data/stats'
 import { useApi, useCountUp, useScrollProgress } from '@/lib/hooks'
 import { useSite } from '@/lib/site'
 
@@ -141,13 +145,13 @@ const FACTORY = [
 
 export default function About() {
   const site = useSite()
-  const { data: stats } = useApi('stats/', { group: 'about' })
-  const { data: milestones } = useApi('milestones/')
   const { data: team } = useApi('team/')
   const { data: awards } = useApi('awards/')
-  const { data: certifications } = useApi('certifications/')
   const { data: partners } = useApi('partners/')
-  const { data: pillars } = useApi('service-pillars/')
+
+  // Static — see src/data. None of it changes between deploys, so it renders
+  // with the first paint instead of arriving a round trip later.
+  const stats = statsFor('about')
 
   const [award, setAward] = useState(0)
 
@@ -186,7 +190,7 @@ export default function About() {
       {/* --- 02 · BY THE NUMBERS --- */}
       <section className="section section--tight">
         <div className="shell">
-          <StatRow stats={stats ?? []} />
+          <StatRow stats={stats} />
         </div>
       </section>
 
@@ -227,7 +231,7 @@ export default function About() {
         </div>
       </section>
 
-      <Journey milestones={milestones ?? []} />
+      <Journey milestones={MILESTONES} />
 
       {/* --- 05 · BUILT TO FIT --- */}
       <section className="section">
@@ -311,7 +315,7 @@ export default function About() {
             lead="Certification only means anything if the tests behind it actually happen. These are the ones that do."
           />
           <RevealGroup className="certs" step={80}>
-            {(certifications ?? []).map((c) => (
+            {CERTIFICATIONS.map((c) => (
               <div className="certs__cell" key={c.id}>
                 <Shield className="certs__icon" />
                 <h3 className="certs__name">{c.name}</h3>
@@ -436,7 +440,7 @@ export default function About() {
             }
           />
           <RevealGroup className="pillars" step={70}>
-            {(pillars ?? []).map((p) => {
+            {SERVICE_PILLARS.map((p) => {
               const Icon = PILLAR_ICONS[p.icon] ?? Shield
               return (
                 <div className="pillar" key={p.slug}>
