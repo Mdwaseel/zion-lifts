@@ -140,45 +140,10 @@ export function Pin({ size = 22, ...rest }) {
   )
 }
 
-/* --- lift-system marks ---------------------------------------------------- */
-/* One per system in the collection, drawn on the same 24px grid and stroke as
-   everything else so the set reads as one family rather than nine borrowings. */
-
-export function HomeMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <path d="M4 10.5L12 4l8 6.5V20H4z" />
-      <path d="M9.6 20v-5.2h4.8V20" />
-    </svg>
-  )
-}
-
-export function CapsuleMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <path d="M7.5 9a4.5 4.5 0 019 0v11h-9z" />
-      <path d="M12 9.5v10" />
-    </svg>
-  )
-}
-
-export function MrlMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <rect x="4.5" y="4.5" width="15" height="15" rx="1" />
-      <path d="M12 4.5v15" />
-      <path d="M8.2 10.4L9.9 8.6l1.7 1.8M12.4 13.6l1.7 1.8 1.7-1.8" />
-    </svg>
-  )
-}
-
-export function DropletMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <path d="M12 3.5s5.5 6 5.5 9.6a5.5 5.5 0 11-11 0C6.5 9.5 12 3.5 12 3.5z" />
-    </svg>
-  )
-}
+/* --- spec and proof marks -------------------------------------------------- */
+/* Drawn on the same 24px grid and stroke as everything else. The nine
+   collection marks live in `lift-marks.jsx`, which is loaded only where the
+   collection is. */
 
 export function UsersMark({ size = 22, ...rest }) {
   return (
@@ -187,44 +152,6 @@ export function UsersMark({ size = 22, ...rest }) {
       <circle cx="16" cy="9.2" r="2.1" />
       <path d="M4 19.5c0-2.6 2-4.4 4.6-4.4s4.6 1.8 4.6 4.4" />
       <path d="M15 15.4c2.4 0 4 1.6 4 4.1" />
-    </svg>
-  )
-}
-
-export function CrossMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <rect x="4.5" y="4.5" width="15" height="15" rx="1.5" />
-      <path d="M12 8.6v6.8M8.6 12h6.8" />
-    </svg>
-  )
-}
-
-export function PackageMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <path d="M12 3.6l7.5 4.1v8.6L12 20.4 4.5 16.3V7.7z" />
-      <path d="M4.7 7.8L12 11.8l7.3-4M12 11.8v8.5" />
-    </svg>
-  )
-}
-
-export function DumbwaiterMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <rect x="4.5" y="4.5" width="15" height="15" rx="1" />
-      <rect x="8.4" y="8.4" width="7.2" height="7.2" rx="0.6" />
-    </svg>
-  )
-}
-
-export function CarMark({ size = 22, ...rest }) {
-  return (
-    <svg {...base} width={size} height={size} {...rest}>
-      <path d="M4 15.4v-2l1.7-4.2A2 2 0 017.6 8h8.8a2 2 0 011.9 1.2L20 13.4v2" />
-      <path d="M4 15.4h16v2.4h-2.6M4 15.4v2.4h2.6" />
-      <circle cx="8" cy="17.8" r="1.4" />
-      <circle cx="16" cy="17.8" r="1.4" />
     </svg>
   )
 }
@@ -283,19 +210,6 @@ export function WaveMark({ size = 22, ...rest }) {
       <path d="M2.6 12h1.6M7 8.4v7.2M10.2 5.6v12.8M13.4 9.6v4.8M16.6 7.2v9.6M19.8 10.4v3.2M22.4 12h-0.8" />
     </svg>
   )
-}
-
-/** slug -> mark, for the collection selector */
-export const LIFT_ICONS = {
-  'home-elevator': HomeMark,
-  'capsule-elevator': CapsuleMark,
-  'mrl-traction': MrlMark,
-  'hydraulic-elevator': DropletMark,
-  'passenger-elevator': UsersMark,
-  'hospital-elevator': CrossMark,
-  'goods-elevator': PackageMark,
-  dumbwaiter: DumbwaiterMark,
-  'car-stacker': CarMark,
 }
 
 export const PILLAR_ICONS = {

@@ -7,7 +7,12 @@
 
 const WIDTHS_BY_DIR = {
   interiors: [480, 960, 1600],
+  contexts: [480, 960, 1600, 2400],
+  cabin: [480, 960, 1600],
+  engineering: [480, 960, 1600],
+  finishes: [480, 960, 1600],
   frames: [480, 960, 1600],
+  process: [480, 960, 1600],
   products: [480, 960, 1600, 2400],
   projects: [480, 960, 1600, 2400],
   sourced: [640, 1280, 1920],

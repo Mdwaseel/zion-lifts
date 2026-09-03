@@ -194,7 +194,7 @@ export default function Lifts() {
       <PageHero
         eyebrow="The range"
         title="Nine ways to move vertically."
-        lead="One engineering approach underneath — a gearless machine, rail-guided car and a controller that shapes every start and stop. Nine shells around it, for nine kinds of building."
+        lead="One engineering approach underneath — a gearless machine, rail-guided cabin and a controller that shapes every start and stop. Nine shells around it, for nine kinds of building."
         crumbs={[
           { label: 'Home', to: '/' },
           { label: 'Lifts' },
@@ -287,7 +287,7 @@ export default function Lifts() {
             <Reveal delay={130}>
               <p className="body">
                 A permanent-magnet gearless motor at the head of the shaft. Machined steel rails
-                holding the car on one vertical plane. A closed-loop drive shaping every start and
+                holding the lift on one vertical plane. A closed-loop drive shaping every start and
                 stop into a curve. Progressive safety gear that works without electricity.
               </p>
             </Reveal>

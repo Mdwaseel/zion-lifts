@@ -162,7 +162,7 @@ export default function Contact() {
             index="06"
             eyebrow="Come see us"
             title="Two addresses."
-            lead="The head office for design conversations; the factory if you want to watch a car being built and load-tested."
+            lead="The head office for design conversations; the factory if you want to watch a lift being built and load-tested."
           />
           <div className="visit">
             <div className="visit__toggle" role="tablist" aria-label="Locations">
@@ -272,7 +272,7 @@ export default function Contact() {
             <Reveal delay={130}>
               <p className="body">
                 Fabrication, assembly and load testing all happen at our own unit in Jeedimetla.
-                Watching a car get loaded to 125% of its rating tells you more about a lift company
+                Watching a lift get loaded to 125% of its rating tells you more about a manufacturer
                 than any brochure. Visits are by appointment.
               </p>
             </Reveal>
@@ -299,7 +299,7 @@ export default function Contact() {
             <aside className="servicenote">
               <p className="servicenote__title">If someone is trapped</p>
               <p className="servicenote__body">
-                Press the alarm in the car — it connects to a battery-backed intercom that reaches
+                Press the alarm in the lift — it connects to a battery-backed intercom that reaches
                 us directly, independent of the building&rsquo;s power. Then call the number below.
                 Entrapments are prioritised above every other call.
               </p>

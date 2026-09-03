@@ -24,6 +24,21 @@
   transform: scale(0.97);
 }
 
+/* arrives out of focus — for rows of marks, where a plain rise reads as a jump */
+.reveal--blur {
+  opacity: 0;
+  transform: translateY(20px);
+  filter: blur(12px);
+  transition:
+    opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 1.2s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.reveal--blur.is-in {
+  filter: blur(0);
+}
+
 /* Image frames that wipe open from the bottom.
    The clip sits on the children, never on the observed element itself: a node
    with `clip-path: inset(100%)` has zero intersection area, so an
@@ -76,6 +91,7 @@
   .split__line {
     opacity: 1 !important;
     transform: none !important;
+    filter: none !important;
   }
   .reveal--wipe > * {
     clip-path: none !important;

@@ -43,6 +43,30 @@ cd frontend && npm run dev
 - API — <http://localhost:8000/api/>
 - Admin — <http://localhost:8000/admin/>
 
+## Hosting on Vercel (static preview)
+
+The site can be hosted as plain files, with no Django behind it: the API is
+frozen into `frontend/public/api` as JSON and the front end reads that
+instead. `vercel.json` at the root builds it (`npm run build:static`), serves
+`frontend/dist`, and rewrites every route to `index.html`.
+
+```bash
+# 1. with the API running, freeze its content
+cd frontend && npm run snapshot          # writes frontend/public/api
+
+# 2. commit the snapshot and the media, push
+git add frontend/public/api frontend/public/media vercel.json
+git commit -m "Static snapshot for hosting" && git push
+
+# 3. vercel.com → Add New → Project → import this repository → Deploy
+#    (no settings to change; vercel.json carries them)
+```
+
+What the preview cannot do: send the enquiry and service forms — they show
+a note with the phone number and email instead — and reflect admin edits
+until the snapshot is re-run and pushed. Preview it locally with
+`npm run build:static && npm run preview`.
+
 ## Tests
 
 ```bash

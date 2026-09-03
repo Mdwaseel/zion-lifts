@@ -34,7 +34,7 @@ FAQ_DATA = [
         ("How much space does a lift actually need?",
          "Less than most people assume. A compact four-passenger home lift needs an internal shaft "
          "from roughly 1,100 × 1,000 mm, a pit from 350 mm and about 2,600 mm of headroom above the "
-         "top floor. A commercial eight-passenger car needs about 1,900 × 2,000 mm. Send us a floor "
+         "top floor. A commercial eight-passenger lift needs about 1,900 × 2,000 mm. Send us a floor "
          "plan and we will mark up what fits.",
          "See dimensions by lift type", "/lifts", "general"),
         ("What if my building has no lift shaft at all?",
@@ -44,7 +44,7 @@ FAQ_DATA = [
          "See that project", "/projects/kashi-yadhav-residence", "general"),
         ("How many people should the lift carry?",
          "Size by the worst case, not the average. For a home, count the largest group that will "
-         "realistically travel together — and if anyone may need a wheelchair, specify a car deep "
+         "realistically travel together — and if anyone may need a wheelchair, specify a lift deep "
          "enough to turn in. For a commercial building, size against expected peak five-minute "
          "traffic rather than headcount.", "", "", "general"),
         ("Traction or hydraulic — which is better?",
@@ -54,7 +54,7 @@ FAQ_DATA = [
          "Compare the systems", "/lifts", "general"),
         ("Can the lift match my interior?",
          "Yes — that is usually the point. Wall material, flooring, ceiling, lighting, handrail and "
-         "control panel are all specified separately. At Lacheta Nivas the car was detailed with the "
+         "control panel are all specified separately. At Lacheta Nivas the lift was detailed with the "
          "joinery, in antique brass with a marble floor.",
          "Build a configuration", "/lifts/home-elevator", "general"),
         ("Do you work outside Hyderabad?",
@@ -82,18 +82,18 @@ FAQ_DATA = [
         ("What is a VVVF drive?",
          "Variable-voltage variable-frequency control. It shapes the motor's speed continuously, so "
          "starting and stopping follow a curve rather than a step. That is what makes a modern lift "
-         "feel smooth, and it is what holds floor levelling within a few millimetres whether the car "
+         "feel smooth, and it is what holds floor levelling within a few millimetres whether the lift "
          "is full or empty.", "", "", "general"),
         ("How accurate is floor levelling?",
          "Within ±3 mm on our traction systems and ±5 mm on hydraulic, loaded or empty. That "
          "matters most in hospitals, where a trolley wheel will find any lip at the sill.",
          "See hospital lifts", "/lifts/hospital-elevator", "general"),
         ("How noisy is a lift inside the house?",
-         "A gearless MRL home lift runs under about 55 dB(A) inside the car at rated speed — "
+         "A gearless MRL home lift runs under about 55 dB(A) inside the cabin at rated speed — "
          "conversation level. Most of what people remember as lift noise came from geared machines "
          "and relay controllers, neither of which we fit.", "", "", "general"),
         ("Can I get a lift with a glass shaft?",
-         "Yes. Both the structural shaft and the car can be glazed, in toughened laminated glass so "
+         "Yes. Both the structural shaft and the cabin can be glazed, in toughened laminated glass so "
          "any failure stays in place. This is how the capsule lifts at Chilkuru Residence and Lekha "
          "Nilayam are built.",
          "Explore Capsule Elevators", "/lifts/capsule-elevator", "general"),
@@ -102,7 +102,7 @@ FAQ_DATA = [
         ("How long does an installation take?",
          "For a home lift with a ready shaft, typically three to five weeks on site after delivery. "
          "A retrofit that needs its own structure runs longer, and a commercial group of several "
-         "cars is programmed floor by floor. We give you a dated programme before we start.",
+         "lifts is programmed floor by floor. We give you a dated programme before we start.",
          "", "", "general"),
         ("What do you need from me before you can quote?",
          "A floor plan and a section if you have them, the number of levels, the floor-to-floor "
@@ -131,23 +131,23 @@ FAQ_DATA = [
     ]),
     ("safety", "Safety", "What protects you, and how it is proven.", [
         ("What happens in a power cut?",
-         "The automatic rescue device takes over on battery, drives the car at reduced speed to the "
+         "The automatic rescue device takes over on battery, drives the lift at reduced speed to the "
          "nearest landing, opens the doors and keeps the cabin light and fan running. You are not "
          "waiting in the dark for the mains to return.", "", "", "general"),
         ("What stops the lift falling?",
-         "Nothing about a lift depends on one component. The car hangs on multiple independent steel "
+         "Nothing about a lift depends on one component. The cabin hangs on multiple independent steel "
          "ropes, each rated well beyond the whole load. Above that, an overspeed governor watches "
-         "the descent, and if the car ever exceeds the trip speed, progressive safety gear grips the "
+         "the descent, and if the lift ever exceeds the trip speed, progressive safety gear grips the "
          "guide rails mechanically and stops it.", "", "", "general"),
         ("Can the doors close on someone?",
          "A full-height infrared curtain across the entrance reopens the doors on any obstruction, "
          "with no contact needed. It sees a hand, a bag strap or a walking stick.", "", "", "general"),
         ("What happens if there is a fire?",
-         "On a fire signal the car cancels all calls, returns to the designated evacuation landing, "
+         "On a fire signal the lift cancels all calls, returns to the designated evacuation landing, "
          "parks with its doors open and locks out normal operation until it is reset by the "
          "fire service.", "", "", "general"),
         ("Is the lift tested before I get it?",
-         "Every car is load-tested to 125% of rated capacity and the overspeed governor and safety "
+         "Every lift is load-tested to 125% of rated capacity and the overspeed governor and safety "
          "gear are tripped and verified before dispatch. The tests are then repeated on site after "
          "installation.", "", "", "general"),
         ("What if someone is trapped?",
@@ -188,7 +188,7 @@ FAQ_DATA = [
          "building type and we will come back with a real figure rather than a bracket.",
          "Get a quote", "/contact", "general"),
         ("What drives the cost most?",
-         "Number of stops first, then capacity, then finish. Going from a standard stainless car to "
+         "Number of stops first, then capacity, then finish. Going from a standard stainless lift to "
          "a brass or stone interior changes the price meaningfully; adding a floor changes it more.",
          "", "", "general"),
         ("Is installation included in the quote?",
@@ -213,7 +213,7 @@ FAQ_DATA = [
          "Use the service route rather than the project enquiry form. It reaches our service desk "
          "directly instead of the sales pipeline.", "", "", "contact"),
         ("Can I visit the factory?",
-         "Yes, by appointment. Seeing cars being fabricated and load-tested tells you more about a "
+         "Yes, by appointment. Seeing lifts being fabricated and load-tested tells you more about a "
          "lift company than any brochure.", "", "", "contact"),
         ("Do you do site visits before quoting?",
          "For anything beyond a straightforward new-build shaft, yes. It is the only reliable way "
@@ -244,16 +244,16 @@ JOURNAL = [
             "the worst lift the house could have had.\n\n"
             "## Start with the person, not the shaft\n\n"
             "The first question is not how much space you can spare. It is who has to fit inside. "
-            "A four-passenger car at roughly 900 × 1,000 mm internal is fine for people walking in "
+            "A four-passenger lift at roughly 900 × 1,000 mm internal is fine for people walking in "
             "unaided. If anyone in the household may use a wheelchair — now or in twenty years — you "
             "need enough depth to enter, turn and face the doors, which pushes you to a six-"
-            "passenger car nearer 1,100 × 1,400 mm internal.\n\n"
+            "passenger lift nearer 1,100 × 1,400 mm internal.\n\n"
             "That single decision changes the shaft by about 300 mm in each direction. It is far "
             "cheaper to make now than after the slab is poured.\n\n"
             "## Then the shaft around it\n\n"
-            "Add the running clearances, the car frame, the rails and the counterweight, and a "
-            "four-passenger car needs an internal shaft from about 1,100 × 1,000 mm. A six-passenger "
-            "car needs about 1,400 × 1,200 mm. Those are internal dimensions, plumb over the whole "
+            "Add the running clearances, the lift frame, the rails and the counterweight, and a "
+            "four-passenger lift needs an internal shaft from about 1,100 × 1,000 mm. A six-passenger "
+            "lift needs about 1,400 × 1,200 mm. Those are internal dimensions, plumb over the whole "
             "travel — not the dimension between the blocks before plaster.\n\n"
             "> Shafts are rarely plumb and rarely the dimension on the drawing. That is what the "
             "site survey is for.\n\n"
@@ -284,32 +284,32 @@ JOURNAL = [
         ),
         body=(
             "Ask people what worries them about lifts and almost all of them describe the same "
-            "thing: the rope breaks and the car falls. It is worth explaining why that is not how "
+            "thing: the rope breaks and the lift falls. It is worth explaining why that is not how "
             "a lift is built, because the real answer is more reassuring than any amount of "
             "reassurance.\n\n"
             "## There is never one rope\n\n"
             "A traction lift hangs on multiple independent steel ropes. Each one on its own is rated "
-            "well beyond the weight of the car and everything in it. They are inspected at every "
+            "well beyond the weight of the lift and everything in it. They are inspected at every "
             "service and replaced on wear, long before strength becomes a question. For all of them "
             "to fail simultaneously is not a scenario the design treats as credible.\n\n"
-            "## The car is mostly balanced anyway\n\n"
-            "A counterweight carries the weight of the empty car plus about half its rated load. "
+            "## The lift is mostly balanced anyway\n\n"
+            "A counterweight carries the weight of the empty cabin plus about half its rated load. "
             "The motor only ever moves the difference between the two sides. This is why a lift "
             "motor is far smaller than people expect, and it means the load on the ropes is a "
             "fraction of what the raw numbers suggest.\n\n"
             "## Then the part that does the real work\n\n"
             "Underneath all of that sits the safety gear, and it does not care about ropes at all.\n\n"
-            "A governor rope runs alongside the car, turning a sheave as it travels. If the car ever "
+            "A governor rope runs alongside the cabin, turning a sheave as it travels. If the cabin ever "
             "descends faster than the trip speed, the governor grips that rope. The rope pulls a "
-            "linkage on the car frame. The linkage drives steel wedges against the guide rails, and "
-            "friction brings the car to a controlled stop.\n\n"
+            "linkage on the lift frame. The linkage drives steel wedges against the guide rails, and "
+            "friction brings the lift to a controlled stop.\n\n"
             "> No electricity. No control system. No software. A speed, a linkage and two steel "
             "wedges. It works during a power cut because it never needed power.\n\n"
             "## And below that, buffers\n\n"
             "At the base of the shaft, buffers absorb the energy of an over-travel. They are the "
             "last item in the chain, and in normal service they are never touched.\n\n"
             "## Why it is tested rather than asserted\n\n"
-            "None of this is worth anything unproven, which is why every car is load-tested to 125% "
+            "None of this is worth anything unproven, which is why every lift is load-tested to 125% "
             "of rated capacity and has its governor and safety gear physically tripped before "
             "dispatch, and again after installation. The test is the point."
         ),
@@ -337,7 +337,7 @@ JOURNAL = [
             "The space saving is what sells MRL. The gearbox removal is what improves it.\n\n"
             "A worm gearbox is the noisiest component in a traditional lift, the main heat source, "
             "and the reason for oil changes. Take it out and a passenger lift runs under about "
-            "52 dB(A) in the car — quiet enough to sit beside a bedroom, which is exactly where home "
+            "52 dB(A) in the lift — quiet enough to sit beside a bedroom, which is exactly where home "
             "lifts end up.\n\n"
             "> The gearless motor is why a modern lift is quiet. The missing room is just the part "
             "you can point at on a drawing.\n\n"
@@ -446,13 +446,13 @@ JOURNAL = [
             "outside of them. This is the single biggest difference between a capsule lift that "
             "looks considered and one that looks like a machine in a glass box.\n\n"
             "## Glass that fails safely\n\n"
-            "Both the car and the shaft glazing are toughened and laminated. Toughened so it breaks "
+            "Both the cabin and the shaft glazing are toughened and laminated. Toughened so it breaks "
             "into blunt fragments, laminated so an interlayer holds those fragments in place rather "
             "than dropping them into an atrium.\n\n"
-            "> At Chilkuru Residence the car runs through the atrium rather than beside it. The ride "
+            "> At Chilkuru Residence the lift runs through the atrium rather than beside it. The ride "
             "is part of the experience of the house.\n\n"
             "## Where the light comes from\n\n"
-            "A glazed car cannot rely on wall-mounted fittings — there are no walls. Lighting moves "
+            "A glazed lift cannot rely on wall-mounted fittings — there are no walls. Lighting moves "
             "to the ceiling and the floor perimeter, and at night the shaft itself becomes a lit "
             "element in the room, which needs deciding early rather than discovered later.\n\n"
             "## The trade you are making\n\n"
@@ -503,11 +503,11 @@ MILESTONES = [
      "Started in Hyderabad with a small workshop, a handful of engineers and a straightforward "
      "purpose: to help people move better, safer and more comfortably.", M.frame("kashi-floor")),
     ("2014", "First manufacturing unit",
-     "Fabrication is brought in-house so car frames, cabins and structural shafts are built to "
+     "Fabrication is brought in-house so lift frames, cabins and structural shafts are built to "
      "Zion's own tolerances rather than bought in.", M.frame("owaisi-doors")),
     ("2016", "Commercial and institutional work",
      "The range widens beyond homes into offices, hotels and healthcare, which brings group "
-     "control, stretcher cars and heavier duty cycles with it.", M.frame("owaisi-lobby")),
+     "control, stretcher lifts and heavier duty cycles with it.", M.frame("owaisi-lobby")),
     ("2018", "24/7 service desk",
      "A dedicated after-sales operation is established, with an out-of-hours line and an "
      "entrapment-first response policy.", M.frame("chilkuru-panel")),
@@ -515,7 +515,7 @@ MILESTONES = [
      "Machine-room-less gearless traction is adopted as the default across the passenger range, "
      "for quieter, more efficient and lower-maintenance installations.", M.frame("kashi-drive")),
     ("2022", "Glass and capsule programme",
-     "Structural glazed shafts and panoramic cars become a distinct line of work as architects "
+     "Structural glazed shafts and panoramic lifts become a distinct line of work as architects "
      "start treating the lift as part of the room.", M.frame("chilkuru-atrium")),
     ("2024", "1,750+ installations",
      "Zion passes 1,750 installations across residential, commercial, hospitality, healthcare and "
@@ -527,7 +527,7 @@ TEAM = [
      "Shaft surveys, general arrangement drawings, traffic analysis and system selection.",
      M.frame("kashi-shaft")),
     ("Manufacturing", "Fabrication & assembly", "manufacturing", False,
-     "Car frames, cabins, structural shafts and finishing, built and load-tested in-house.",
+     "Lift frames, cabins, structural shafts and finishing, built and load-tested in-house.",
      M.frame("kashi-structure")),
     ("Installation", "Site installation", "installation", False,
      "Rail alignment, machine setting, door adjustment and commissioning on site.",
@@ -585,10 +585,10 @@ GALLERY = [
 
     ("residential", "Lekha Nilayam from above", "Home Elevator · Private residence · Hyderabad", M.frame("lekha-aerial"), 3840, 2160, True),
     ("residential", "Glazed shaft in the hall", "Home Elevator · Lekha Nilayam", M.frame("lekha-hall"), 3840, 2160, False),
-    ("residential", "Bronze car, Lekha Nilayam", "Home Elevator · Lekha Nilayam", M.frame("lekha-cabin"), 3840, 2160, False),
+    ("residential", "Bronze lift, Lekha Nilayam", "Home Elevator · Lekha Nilayam", M.frame("lekha-cabin"), 3840, 2160, False),
     ("residential", "Starlight ceiling", "Detail · Lekha Nilayam", M.frame("lekha-ceiling"), 3840, 2160, False),
     ("residential", "Antique brass lobby", "Home Elevator · Lacheta Nivas", M.frame("lacheta-lobby"), 2160, 3840, False),
-    ("residential", "Cove-lit car ceiling", "Detail · Lacheta Nivas", M.frame("lacheta-ceiling"), 2160, 3840, False),
+    ("residential", "Cove-lit lift ceiling", "Detail · Lacheta Nivas", M.frame("lacheta-ceiling"), 2160, 3840, False),
     ("residential", "Floor indicator", "Detail · Lacheta Nivas", M.frame("lacheta-indicator"), 2160, 3840, False),
     ("residential", "Capsule lift in the atrium", "Capsule Elevator · Chilkuru Residence", M.frame("chilkuru-atrium"), 2160, 3840, True),
     ("residential", "Rooftop pavilion", "Capsule Elevator · Chilkuru Residence", M.frame("chilkuru-pavilion"), 2160, 3840, False),
@@ -600,7 +600,7 @@ GALLERY = [
     ("commercial", "Restaurant at night, from above", "Passenger Elevator · Chath Restaurant", M.frame("chath-aerial"), 3840, 1900, False),
 
     ("institutional", "Owaisi Hospitals lift lobby", "Hospital Elevator · Healthcare · Hyderabad", M.frame("owaisi-lobby"), 2160, 3379, True),
-    ("institutional", "Stretcher-capable car", "Hospital Elevator · Owaisi Hospitals", M.frame("owaisi-cabin"), 2160, 3379, False),
+    ("institutional", "Stretcher-capable lift", "Hospital Elevator · Owaisi Hospitals", M.frame("owaisi-cabin"), 2160, 3379, False),
     ("institutional", "Lift bank", "Hospital Elevator · Owaisi Hospitals", M.frame("owaisi-doors"), 2160, 3379, False),
     ("institutional", "Ward corridor", "Hospital Elevator · Owaisi Hospitals", M.frame("owaisi-corridor"), 2160, 3379, False),
 

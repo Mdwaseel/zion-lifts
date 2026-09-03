@@ -36,6 +36,7 @@ export default function ServiceForm() {
   })
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle')
+  const [note, setNote] = useState('')
   const [result, setResult] = useState(null)
 
   const set = (k, v) => {
@@ -63,6 +64,7 @@ export default function ServiceForm() {
         fieldErrors[k] = Array.isArray(v) ? v.join(' ') : String(v)
       }
       setErrors(fieldErrors)
+      setNote(err.static ? err.message : '')
       setStatus('error')
     }
   }
@@ -154,7 +156,7 @@ export default function ServiceForm() {
             type="text"
             value={form.lift_reference}
             onChange={(e) => set('lift_reference', e.target.value)}
-            placeholder="From the car operating panel"
+            placeholder="From the lift operating panel"
           />
         </label>
       </div>
@@ -183,7 +185,7 @@ export default function ServiceForm() {
 
       {status === 'error' && (
         <p className="field__error">
-          That did not send. Please call the service line instead.
+          {note || 'That did not send. Please call the service line instead.'}
         </p>
       )}
 

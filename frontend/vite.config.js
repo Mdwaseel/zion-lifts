@@ -15,6 +15,10 @@ export default defineConfig({
       '/uploads': { target: 'http://127.0.0.1:8000', changeOrigin: true },
     },
   },
+  // `vite preview` would otherwise inherit the dev proxy and send /api to
+  // Django — the built site must answer those from public/api itself, as it
+  // does on Vercel.
+  preview: { proxy: {} },
   build: {
     outDir: 'dist',
     assetsInlineLimit: 2048,

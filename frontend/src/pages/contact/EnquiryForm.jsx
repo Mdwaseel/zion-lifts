@@ -107,6 +107,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
   const [files, setFiles] = useState([])
   const [errors, setErrors] = useState({})
   const [status, setStatus] = useState('idle') // idle | sending | done | error
+  const [note, setNote] = useState('') // why the last send failed, when the API says
   const [result, setResult] = useState(null)
   const fileInput = useRef(null)
 
@@ -183,6 +184,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
         fieldErrors[k] = Array.isArray(v) ? v.join(' ') : String(v)
       }
       setErrors(fieldErrors)
+      setNote(err.static ? err.message : '')
       setStatus('error')
       // send the user back to the step that holds the first bad field
       if (fieldErrors.name || fieldErrors.email || fieldErrors.phone || fieldErrors.consent) {
@@ -499,7 +501,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
       {errors.non_field_errors && <p className="field__error">{errors.non_field_errors}</p>}
       {status === 'error' && !Object.keys(errors).length && (
         <p className="field__error">
-          Something went wrong sending that. Please call us instead — we would rather not lose it.
+          {note || 'Something went wrong sending that. Please call us instead — we would rather not lose it.'}
         </p>
       )}
 

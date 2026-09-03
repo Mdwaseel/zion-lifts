@@ -328,6 +328,80 @@ export function TestimonialRow({ testimonials = [], title = 'In their words' }) 
 }
 
 /* ==========================================================================
+   Client logos
+   Two rows of marks travelling in opposite directions, each on its own white
+   card so the wordmarks that arrive with a white box baked in look no
+   different from the ones that do not. Every row holds two copies of its list,
+   so a half-track translation loops without a seam. The rows blur in once,
+   pause under the pointer, and lie flat as a wrapped grid when motion is
+   reduced.
+   ========================================================================== */
+
+const CLIENT_COUNT = 65
+
+export function ClientLogos({
+  eyebrow = 'Our clients',
+  title = 'Trusted by the names Hyderabad knows.',
+  lead = 'Government, healthcare, hospitality, retail and homes — the organisations behind 1,750 installations since 2012.',
+}) {
+  const ids = Array.from({ length: CLIENT_COUNT }, (_, i) => i + 1)
+  const half = Math.ceil(ids.length / 2)
+  const rows = [ids.slice(0, half), ids.slice(half)]
+
+  return (
+    <section className="section on-paper logos" aria-labelledby="logos-title">
+      <div className="shell logos__head">
+        <Reveal variant="fade">
+          <p className="eyebrow">{eyebrow}</p>
+        </Reveal>
+        <Reveal delay={60}>
+          <h2 className="h2 logos__title" id="logos-title">
+            {title}
+          </h2>
+        </Reveal>
+        {lead && (
+          <Reveal delay={130}>
+            <p className="body logos__lead">{lead}</p>
+          </Reveal>
+        )}
+      </div>
+
+      <div className="logos__rows" aria-label="Client logos" role="group">
+        {rows.map((row, r) => (
+          <Reveal
+            key={r}
+            variant="blur"
+            delay={180 + r * 120}
+            className={`logos__row ${r % 2 ? 'logos__row--back' : ''}`}
+            style={{ '--n': row.length }}
+          >
+            <ul className="logos__track">
+              {[0, 1].map((copy) =>
+                row.map((id) => (
+                  <li
+                    key={`${copy}-${id}`}
+                    className="logos__card"
+                    aria-hidden={copy === 1 || undefined}
+                  >
+                    <img
+                      src={`/media/clients/${id}.png`}
+                      alt=""
+                      loading="lazy"
+                      decoding="async"
+                      draggable="false"
+                    />
+                  </li>
+                )),
+              )}
+            </ul>
+          </Reveal>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+/* ==========================================================================
    Closing CTA used mid-page (the footer carries the site-wide one)
    ========================================================================== */
 

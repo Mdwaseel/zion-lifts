@@ -736,3 +736,116 @@
   gap: 0.75rem;
   margin-top: 0.5rem;
 }
+
+/* ==========================================================================
+   Client logos — two counter-running rows of cards
+   ========================================================================== */
+
+.logos {
+  overflow: hidden;
+}
+
+.logos__head {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 0.5rem;
+  margin-bottom: clamp(2.25rem, 1.5rem + 3vw, 4rem);
+}
+
+.logos__title {
+  margin-top: 0.6rem;
+  max-width: 18ch;
+}
+
+.logos__lead {
+  max-width: 52ch;
+  margin-top: 0.4rem;
+}
+
+.logos__rows {
+  display: grid;
+  gap: clamp(0.9rem, 1.6vw, 1.25rem);
+}
+
+/* the ends dissolve into the page rather than cutting at the viewport */
+.logos__row {
+  --card-w: clamp(8.5rem, 7rem + 4vw, 11.5rem);
+  --gap: clamp(0.9rem, 1.6vw, 1.25rem);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+}
+
+.logos__track {
+  display: flex;
+  gap: var(--gap);
+  width: max-content;
+  margin: 0;
+  padding: 0.35rem 0; /* room for the card shadow */
+  list-style: none;
+  /* one card plus one gap per item, two copies: -50% is exactly one copy */
+  animation: logosDrift calc(var(--n) * 2.6s) linear infinite;
+  will-change: transform;
+}
+
+.logos__row--back .logos__track {
+  animation-direction: reverse;
+}
+
+.logos__row:hover .logos__track,
+.logos__row:focus-within .logos__track {
+  animation-play-state: paused;
+}
+
+@keyframes logosDrift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - var(--gap) / 2));
+  }
+}
+
+.logos__card {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--card-w);
+  height: clamp(4.5rem, 4rem + 1.5vw, 5.5rem);
+  padding: 0.9rem 1.25rem;
+  background: var(--light-card);
+  border: 1px solid var(--light-border);
+  border-radius: 12px;
+  box-shadow: var(--light-shadow);
+}
+
+/* a definite height, so a tall seal and a wide wordmark both sit inside the
+   card's padding box; contain letterboxes whichever one the max-width catches */
+.logos__card img {
+  height: 100%;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+  user-select: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logos__row {
+    overflow: visible;
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding-inline: var(--page-x);
+  }
+  .logos__track {
+    width: auto;
+    flex-wrap: wrap;
+    justify-content: center;
+    animation: none;
+  }
+  /* the second copy only exists for the loop */
+  .logos__card[aria-hidden='true'] {
+    display: none;
+  }
+}

@@ -17,8 +17,36 @@
   --obsidian-3: #1d1d1f;
   --ink: #1d1d1f;
 
-  --paper: #f5f4f2; /* warm neutral, a half-step off Apple's #f5f5f7 */
-  --paper-2: #ebe9e6;
+  /* --- the two grounds --------------------------------------------------- */
+  /* The page runs on two systems and moves from one to the other once: dark
+     for the technical half, light for the architectural half. Every light
+     section is built from these, so the warm-white never drifts. */
+  --dark-bg: #08090b;
+  --dark-surface: #0d0f12;
+  --dark-card: #101317;
+  --dark-text: #f5f5f2;
+  --dark-muted: #a5a7aa;
+  --dark-border: rgba(255, 255, 255, 0.1);
+
+  --light-bg: #f8f8f6; /* the page */
+  --light-surface: #f1eee8; /* the warm ivory — the bridge section and alternate bands */
+  --light-card: #ffffff;
+  --light-text: #151515;
+  --light-muted: #686868; /* 5.2:1 on the page, 4.8:1 on ivory */
+  --light-border: rgba(0, 0, 0, 0.1);
+  /* The cyan is 1.9:1 on the light ground, so it cannot be read there. Marks
+     (rules, dots, outlines, ticks) take a deeper cut of the same hue; anything
+     set as text takes the teal. */
+  --light-mark: #0c9192;
+  --light-shadow:
+    0 1px 2px rgba(21, 21, 21, 0.04),
+    0 14px 34px -20px rgba(21, 21, 21, 0.18);
+  --light-shadow-lift:
+    0 1px 2px rgba(21, 21, 21, 0.05),
+    0 22px 44px -22px rgba(21, 21, 21, 0.24);
+
+  --paper: var(--light-bg); /* warm neutral, a half-step off Apple's #f5f5f7 */
+  --paper-2: var(--light-surface);
   --paper-3: #dedbd6;
 
   --stone: #c7c2b8;
@@ -152,10 +180,10 @@
 /* Sections that invert to the warm-white ground opt in with .on-paper. */
 .on-paper {
   --bg: var(--paper);
-  --fg: var(--ink);
-  --fg-dim: #6e6e73; /* Apple's secondary-on-light */
-  --fg-faint: #86868b;
-  --rule: rgba(0, 0, 0, 0.16);
+  --fg: var(--light-text);
+  --fg-dim: var(--light-muted);
+  --fg-faint: #6e6e6e;
+  --rule: var(--light-border);
   --rule-soft: rgba(0, 0, 0, 0.08);
   --surface: rgba(0, 0, 0, 0.035);
   --field-bg: #fff;
@@ -168,10 +196,10 @@
 
 .on-stone {
   --bg: var(--paper-2);
-  --fg: var(--ink);
-  --fg-dim: #6e6e73;
-  --fg-faint: #86868b;
-  --rule: rgba(0, 0, 0, 0.17);
+  --fg: var(--light-text);
+  --fg-dim: var(--light-muted);
+  --fg-faint: #6b6a66;
+  --rule: var(--light-border);
   --rule-soft: rgba(0, 0, 0, 0.09);
   --surface: rgba(0, 0, 0, 0.04);
   --field-bg: #fff;

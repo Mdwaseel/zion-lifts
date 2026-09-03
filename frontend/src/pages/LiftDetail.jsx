@@ -84,7 +84,7 @@ function ShaftDiagram() {
       {/* headroom */}
       <rect x="61" y="21" width="198" height="70" fill="url(#hatch)" />
       <line x1="60" y1="91" x2="260" y2="91" stroke="currentColor" strokeWidth="1" strokeDasharray="4 3" opacity="0.5" />
-      {/* car */}
+      {/* lift */}
       <rect x="88" y="150" width="144" height="150" fill="none" stroke="var(--accent)" strokeWidth="1.5" />
       <line x1="160" y1="150" x2="160" y2="300" stroke="var(--accent)" strokeWidth="1" opacity="0.35" />
       {/* pit */}
@@ -106,7 +106,7 @@ function ShaftDiagram() {
         <text x="14" y="60" transform="rotate(-90 14 60)" textAnchor="middle">HEADROOM</text>
         <text x="14" y="378" transform="rotate(-90 14 378)" textAnchor="middle">PIT</text>
         <text x="306" y="218" transform="rotate(-90 306 218)" textAnchor="middle">TRAVEL</text>
-        <text x="160" y="228" textAnchor="middle" className="shaftdiagram__car">CAR</text>
+        <text x="160" y="228" textAnchor="middle" className="shaftdiagram__lift">LIFT</text>
       </g>
     </svg>
   )
@@ -178,8 +178,8 @@ function Dimensions({ lift }) {
 
 const PROCESS = [
   ['01', 'Survey', 'We measure the shaft, the floor-to-floor heights and the power position. Drawings are rarely what the building actually is.'],
-  ['02', 'Manufacture', 'Car frame, cabin and doors built and finished, then load-tested to 125% before dispatch.'],
-  ['03', 'Install', 'Rails aligned, machine set, doors fitted and adjusted, car commissioned on site.'],
+  ['02', 'Manufacture', 'Lift frame, cabin and doors built and finished, then load-tested to 125% before dispatch.'],
+  ['03', 'Install', 'Rails aligned, machine set, doors fitted and adjusted, lift commissioned on site.'],
   ['04', 'Hand over', 'Safety testing repeated on site, statutory inspection prepared, walkthrough with whoever runs the building.'],
 ]
 
@@ -385,7 +385,7 @@ export default function LiftDetail() {
               <p className="body">
                 {lift.machine_room === 'Not required'
                   ? 'The machine mounts on the guide rails at the head of the shaft, so the building gives up no room above it. A closed-loop VVVF drive shapes acceleration into a curve and holds levelling within a few millimetres, loaded or empty.'
-                  : 'A power unit sized to the duty, sited where the building has space for it, driving the car through a controlled ramp rather than a step. Levelling is held tight and re-levelled on load change.'}
+                  : 'A power unit sized to the duty, sited where the building has space for it, driving the lift through a controlled ramp rather than a step. Levelling is held tight and re-levelled on load change.'}
               </p>
             </Reveal>
             {partners?.length > 0 && (

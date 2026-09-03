@@ -27,37 +27,37 @@ APPLICATIONS = [
     ("office", "Offices & retail", "commercial",
      "Peak-hour traffic, group control, and finishes that survive heavy use."),
     ("hospital", "Hospitals & clinics", "institutional",
-     "Stretcher-width cars, levelling accuracy, and dependable emergency behaviour."),
+     "Stretcher-width lifts, levelling accuracy, and dependable emergency behaviour."),
     ("institutional", "Government & education", "institutional",
      "Tendered specifications, accessibility compliance, long service life."),
     ("industrial", "Factories & warehouses", "industrial",
-     "Goods handling, heavy loads, robust cars built for daily abuse."),
+     "Goods handling, heavy loads, robust lifts built for daily abuse."),
     ("parking", "Parking & basements", "industrial",
      "Stacking and moving vehicles where floor area is the constraint."),
 ]
 
 SAFETY = [
-    ("overload", "Overload detection", "The car will not move if it is asked to carry too much.",
-     "Load cells under the car platform measure weight continuously. Past the rated load the "
-     "doors stay open, an audible warning sounds and the car holds at the landing until weight "
+    ("overload", "Overload detection", "The lift will not move if it is asked to carry too much.",
+     "Load cells under the lift platform measure weight continuously. Past the rated load the "
+     "doors stay open, an audible warning sounds and the lift holds at the landing until weight "
      "is removed.",
-     "The car is loaded past 110% of rated capacity; departure must be inhibited.",
+     "The lift is loaded past 110% of rated capacity; departure must be inhibited.",
      "IS 14665 / EN 81-20"),
     ("power-failure", "Automatic rescue device", "A power cut moves you to the nearest floor, not nowhere.",
-     "On mains failure the ARD battery takes over, drives the car at reduced speed to the "
+     "On mains failure the ARD battery takes over, drives the lift at reduced speed to the "
      "nearest landing, opens the doors and holds the cabin light and fan on.",
-     "Mains supply is cut mid-travel; the car must land and release passengers unaided.",
+     "Mains supply is cut mid-travel; the lift must land and release passengers unaided.",
      "IS 14665 Part 4"),
-    ("emergency-braking", "Overspeed governor & safety gear", "If the car ever runs fast, steel jaws close on the rails.",
+    ("emergency-braking", "Overspeed governor & safety gear", "If the lift ever runs fast, steel jaws close on the rails.",
      "An overspeed governor senses descent above the trip speed and mechanically engages "
-     "progressive safety gear, which grips the guide rails and brings the car to a controlled stop.",
-     "The governor is tripped at rated overspeed with the car loaded; the safety gear must set "
+     "progressive safety gear, which grips the guide rails and brings the lift to a controlled stop.",
+     "The governor is tripped at rated overspeed with the lift loaded; the safety gear must set "
      "and hold on the rails.",
      "EN 81-20 / EN 81-50"),
     ("fire-mode", "Firefighter recall", "In an alarm the lift stops being a lift and becomes an exit route.",
-     "On a fire signal the car cancels all calls, returns to the designated evacuation landing, "
+     "On a fire signal the lift cancels all calls, returns to the designated evacuation landing, "
      "parks with doors open and locks out normal operation until reset.",
-     "The fire input is asserted; the car must recall and park without accepting car calls.",
+     "The fire input is asserted; the lift must recall and park without accepting further calls.",
      "IS 14665 / NBC 2016"),
     ("seismic", "Structural & seismic restraint", "Rails, brackets and counterweights are tied to the structure.",
      "Guide rails, brackets and counterweight frames are designed and fixed for the seismic zone "
@@ -78,7 +78,7 @@ SAFETY = [
 
 FINISHES = [
     # wall material
-    ("material", "brushed-steel", "Brushed stainless steel", "Hairline 304 stainless — the default for daily-duty cars.", "#B9BEC2", "#8E959A", "standard", 1),
+    ("material", "brushed-steel", "Brushed stainless steel", "Hairline 304 stainless — the default for daily-duty lifts.", "#B9BEC2", "#8E959A", "standard", 1),
     ("material", "antique-brass", "Antique brass", "Warm brushed brass, as used at Lacheta Nivas.", "#B08D57", "#8A6B3B", "premium", 2),
     ("material", "rose-gold", "Rose gold mirror", "Mirror-polished titanium coating with a rose cast.", "#C08A70", "#9C6A52", "premium", 3),
     ("material", "walnut", "Walnut veneer", "Book-matched veneer panels in a steel frame.", "#6B4A33", "#4A3121", "premium", 4),
@@ -88,12 +88,12 @@ FINISHES = [
     ("floor", "granite", "Granite", "Sealed granite slab, matched to the lobby.", "#6E6A66", "#4C4945", "premium", 1),
     ("floor", "marble", "Marble", "Statuario-type marble with a honed finish.", "#E4E1DA", "#C4BFB4", "premium", 2),
     ("floor", "vinyl", "Commercial vinyl", "Slip-resistant sheet vinyl for hospitals and offices.", "#8E959A", "#6B7276", "standard", 3),
-    ("floor", "chequer", "Steel chequer plate", "Anti-slip plate for goods and service cars.", "#7D8286", "#5A5F63", "standard", 4),
+    ("floor", "chequer", "Steel chequer plate", "Anti-slip plate for goods and service lifts.", "#7D8286", "#5A5F63", "standard", 4),
     # lighting
     ("light", "cove", "Perimeter cove", "Indirect LED cove around a floating ceiling.", "#F2E4C8", "#D8C49A", "premium", 1),
     ("light", "spots", "Recessed spots", "Discreet warm-white downlights in a flat ceiling.", "#F4EFE4", "#D9D2C2", "standard", 2),
     ("light", "starlight", "Starlight ceiling", "Dense fibre-point ceiling, as at Lekha Nilayam.", "#FFF3D6", "#E8D5A6", "signature", 3),
-    ("light", "linear", "Linear channels", "Continuous LED channels running the length of the car.", "#EFF3F5", "#CBD3D8", "standard", 4),
+    ("light", "linear", "Linear channels", "Continuous LED channels running the length of the lift.", "#EFF3F5", "#CBD3D8", "standard", 4),
     # doors
     ("door", "centre-auto", "Centre-opening automatic", "Two panels parting from the centre — the quietest option.", "#B9BEC2", "#8E959A", "standard", 1),
     ("door", "side-auto", "Side-opening automatic", "Telescopic panels to one side, for narrow shafts.", "#ADB3B7", "#868C90", "standard", 2),
@@ -114,27 +114,27 @@ COMPONENTS = [
      "directly. No gearbox means no gear oil, less heat and markedly less noise.",
      "Gearless PMSM · integrated brake", "Drive"),
     ("guide-rails", "02", "Guide rails & brackets",
-     "Machined steel T-rails hold the car and counterweight on a single vertical plane for the "
+     "Machined steel T-rails hold the cabin and counterweight on a single vertical plane for the "
      "whole travel. Everything else in the shaft is aligned to them.",
      "T-profile rails on bracketed fixings", "Structure"),
     ("safety-gear", "03", "Safety gear & governor",
-     "An overspeed governor watches the car's descent. If it ever exceeds the trip speed, "
-     "progressive safety gear grips the rails and stops the car mechanically.",
+     "An overspeed governor watches the lift's descent. If it ever exceeds the trip speed, "
+     "progressive safety gear grips the rails and stops the lift mechanically.",
      "Progressive safety gear · overspeed governor", "Safety"),
     ("controller", "04", "Control system",
      "A VVVF drive shapes every start and stop, so acceleration is a curve rather than a step. "
      "Floor levelling lands within a few millimetres, loaded or empty.",
-     "Closed-loop VVVF · serial car communication", "Control"),
+     "Closed-loop VVVF · serial cabin communication", "Control"),
     ("door-operator", "05", "Door operator",
      "The doors are the part passengers touch most. A dedicated VVVF operator drives them, "
      "with a full-height light curtain that reopens on any obstruction.",
      "VVVF door drive · infrared curtain", "Doors"),
     ("counterweight", "06", "Counterweight",
-     "Cast filler weights balance the car plus roughly half its rated load, so the motor only "
+     "Cast filler weights balance the cabin plus roughly half its rated load, so the motor only "
      "ever moves the difference.",
-     "Car weight + 50% of rated load", "Structure"),
+     "Cabin weight + 50% of rated load", "Structure"),
     ("suspension", "07", "Suspension ropes",
-     "Multiple independent steel ropes carry the car, each rated well beyond the whole load. "
+     "Multiple independent steel ropes carry the cabin, each rated well beyond the whole load. "
      "They are inspected and re-tensioned at every service.",
      "Steel wire ropes · redundant reeving", "Suspension"),
     ("buffers", "08", "Pit buffers",
@@ -161,7 +161,7 @@ LIFTS = [
             "elevators around a compact machine-room-less drive, so the only space you give up is "
             "the shaft itself.\n\n"
             "Finishes are chosen with the interior, not from a fixed catalogue — brass, walnut, "
-            "stone, mirror steel and glass all work within the same car shell. Where there is no "
+            "stone, mirror steel and glass all work within the same cabin shell. Where there is no "
             "existing shaft, a self-supporting steel structure with glazed infill can be built "
             "inside a stairwell or against an external wall."
         ),
@@ -182,14 +182,14 @@ LIFTS = [
             ("gallery", M.interior(3), "Home lift in a double-height hall"),
             ("gallery", M.interior(7), "Timber-lined lift lobby"),
             ("gallery", M.interior(9), "Bronze cabin against stone"),
-            ("detail", M.frame("lacheta-cop"), "Car operating panel"),
+            ("detail", M.frame("lacheta-cop"), "Lift operating panel"),
         ],
         variants=[
             ("ZH-4", "Compact 4-passenger", "The smallest practical shaft for a private home.",
              "272 kg", "4 persons", "0.3 m/s", "1,100 × 1,000 mm"),
             ("ZH-5", "Standard 5-passenger", "The usual choice for a three- to four-level villa.",
              "340 kg", "5 persons", "0.5 m/s", "1,250 × 1,100 mm"),
-            ("ZH-6", "Wide 6-passenger", "Extra width where a wheelchair must turn inside the car.",
+            ("ZH-6", "Wide 6-passenger", "Extra width where a wheelchair must turn inside the lift.",
              "408 kg", "6 persons", "0.5 m/s", "1,400 × 1,200 mm"),
         ],
         specs=[
@@ -201,7 +201,7 @@ LIFTS = [
             ("Power", "Standby draw", "Under 100 W", "With cabin lighting on standby"),
             ("Performance", "Rated speed", "0.3 – 1.0 m/s", ""),
             ("Performance", "Levelling accuracy", "± 5 mm", "Loaded or empty"),
-            ("Performance", "Noise in car", "Under 55 dB(A)", "At rated speed"),
+            ("Performance", "Noise in lift", "Under 55 dB(A)", "At rated speed"),
         ],
     ),
     dict(
@@ -209,14 +209,14 @@ LIFTS = [
         eyebrow="Panoramic", accent="#048D8E", order=2, is_featured=True,
         tagline="A lift you look out of, and a building looks into.",
         summary=(
-            "A glazed observation car in a glazed shaft, used where the lift is part of the "
+            "A glazed observation cabin in a glazed shaft, used where the lift is part of the "
             "architecture — atriums, hotel lobbies, retail floors and double-height homes."
         ),
         overview=(
-            "A capsule lift stops being building services and becomes a piece of the room. The car "
+            "A capsule lift stops being building services and becomes a piece of the room. The cabin "
             "is glazed on two, three or all four sides, the shaft is a structural glass and steel "
             "assembly, and everything that would normally be hidden — the rails, the ropes, the "
-            "car frame — is detailed on the assumption it will be seen.\n\n"
+            "lift frame — is detailed on the assumption it will be seen.\n\n"
             "That changes how it is built. Structure is designed for the sightline as much as the "
             "load, cabling is routed inside the frame, and glass is toughened and laminated so a "
             "failure stays in place. The result is a lift that carries people and also carries "
@@ -233,7 +233,7 @@ LIFTS = [
         images=[
             ("gallery", M.product("capsule", 1), "Capsule lift in a residential atrium"),
             ("gallery", M.product("capsule", 3), "Capsule lift in a retail atrium"),
-            ("gallery", M.product("capsule", 4), "Panoramic car in a hotel lobby"),
+            ("gallery", M.product("capsule", 4), "Panoramic lift in a hotel lobby"),
             ("gallery", M.frame("chilkuru-capsule"), "Glazed capsule at Chilkuru Residence"),
             ("gallery", M.frame("chilkuru-atrium"), "Capsule shaft through the atrium"),
             ("detail", M.frame("kashi-shaft"), "Structural glass shaft, seen from below"),
@@ -251,7 +251,7 @@ LIFTS = [
             ("Dimensions", "Minimum shaft", "1,600 × 1,600 mm", "Structural glass shaft"),
             ("Dimensions", "Pit depth", "900 – 1,400 mm", "By speed"),
             ("Dimensions", "Headroom", "3,600 mm", ""),
-            ("Glazing", "Car glazing", "Toughened laminated, 10 – 13.5 mm", "Interlayer retains on failure"),
+            ("Glazing", "Lift glazing", "Toughened laminated, 10 – 13.5 mm", "Interlayer retains on failure"),
             ("Glazing", "Shaft glazing", "Toughened laminated in a steel frame", ""),
             ("Performance", "Rated speed", "0.5 – 1.5 m/s", ""),
             ("Performance", "Levelling accuracy", "± 5 mm", ""),
@@ -287,26 +287,26 @@ LIFTS = [
             ("gallery", M.interior(8), "MRL passenger lift lobby"),
             ("detail", M.frame("kashi-drive"), "Gearless machine at the shaft head"),
             ("detail", M.frame("kashi-machine"), "Drive and sheave assembly"),
-            ("detail", M.frame("kashi-structure"), "Car frame and guide rails"),
+            ("detail", M.frame("kashi-structure"), "Lift frame and guide rails"),
             ("gallery", M.interior(2), "Lift lobby in a residential tower"),
         ],
         variants=[
             ("ZM-8", "8-passenger", "Small residential or boutique office core.",
              "544 kg", "8 persons", "1.0 m/s", "1,700 × 1,800 mm"),
-            ("ZM-13", "13-passenger", "The standard apartment and office car.",
+            ("ZM-13", "13-passenger", "The standard apartment and office lift.",
              "884 kg", "13 persons", "1.5 m/s", "1,900 × 2,000 mm"),
             ("ZM-20", "20-passenger", "High-traffic cores and stretcher-capable lobbies.",
              "1,360 kg", "20 persons", "2.0 m/s", "2,100 × 2,300 mm"),
         ],
         specs=[
-            ("Dimensions", "Minimum shaft", "1,700 × 1,800 mm", "For an 8-passenger car"),
+            ("Dimensions", "Minimum shaft", "1,700 × 1,800 mm", "For an 8-passenger lift"),
             ("Dimensions", "Pit depth", "1,200 – 1,600 mm", "By rated speed"),
             ("Dimensions", "Headroom", "3,800 – 4,400 mm", "By rated speed"),
             ("Power", "Supply", "3-phase 415 V, 50 Hz", ""),
             ("Power", "Regeneration", "Available", "Returns braking energy to the building supply"),
             ("Performance", "Rated speed", "1.0 – 2.5 m/s", ""),
             ("Performance", "Levelling accuracy", "± 3 mm", ""),
-            ("Performance", "Noise in car", "Under 52 dB(A)", ""),
+            ("Performance", "Noise in lift", "Under 52 dB(A)", ""),
         ],
     ),
     dict(
@@ -314,11 +314,11 @@ LIFTS = [
         eyebrow="Low-rise", accent="#C7C2B8", order=4,
         tagline="Load carried by the floor, not by the roof.",
         summary=(
-            "A jack pushes the car from below, so the shaft carries almost no load and the "
+            "A jack pushes the lift from below, so the shaft carries almost no load and the "
             "structure above it can stay light. Well suited to retrofits and heavy low-rise duty."
         ),
         overview=(
-            "In a hydraulic lift the car sits on a ram driven by an oil power pack, so the "
+            "In a hydraulic lift the cabin sits on a ram driven by an oil power pack, so the "
             "building does not need to support the whole suspended load at the top of the shaft. "
             "That makes it the natural answer when a lift is being added to a building that was "
             "never designed for one, or when the load is heavy and the travel is short.\n\n"
@@ -337,10 +337,10 @@ LIFTS = [
         images=[
             ("gallery", M.interior(2), "Hydraulic passenger lift lobby"),
             ("gallery", M.interior(6), "Retrofit lift in an existing stairwell"),
-            ("detail", M.frame("kashi-structure"), "Car frame and rails"),
+            ("detail", M.frame("kashi-structure"), "Lift frame and rails"),
         ],
         variants=[
-            ("ZY-6", "6-passenger direct-acting", "Single ram under the car, for two or three levels.",
+            ("ZY-6", "6-passenger direct-acting", "Single ram under the lift, for two or three levels.",
              "408 kg", "6 persons", "0.3 m/s", "1,500 × 1,600 mm"),
             ("ZY-13", "13-passenger indirect", "Roped 2:1 ram for greater travel.",
              "884 kg", "13 persons", "0.63 m/s", "1,900 × 2,000 mm"),
@@ -350,7 +350,7 @@ LIFTS = [
         specs=[
             ("Dimensions", "Maximum travel", "Up to 18 m", "Practical limit for direct-acting"),
             ("Dimensions", "Pit depth", "900 – 1,200 mm", ""),
-            ("Dimensions", "Headroom", "3,400 mm", "Lower than traction for the same car"),
+            ("Dimensions", "Headroom", "3,400 mm", "Lower than traction for the same lift"),
             ("Plant", "Power unit", "Submersible pump in an oil tank", "Sited remotely, up to 10 m away"),
             ("Plant", "Oil temperature", "Monitored, with cooling option", ""),
             ("Performance", "Rated speed", "0.15 – 0.63 m/s", ""),
@@ -363,16 +363,16 @@ LIFTS = [
         tagline="Built for the eight-forty-five rush.",
         summary=(
             "High-duty passenger lifts for offices, hotels and retail, with group control across "
-            "two or more cars and finishes chosen to survive constant use."
+            "two or more lifts and finishes chosen to survive constant use."
         ),
         overview=(
             "A commercial lift is specified around its worst five minutes, not its average hour. "
-            "Zion sizes cars, speeds and door timings against the building's expected peak "
-            "handling capacity, and where more than one car serves the same floors, a group "
+            "Zion sizes lifts, speeds and door timings against the building's expected peak "
+            "handling capacity, and where more than one lift serves the same floors, a group "
             "controller allocates calls between them so passengers wait once rather than twice.\n\n"
             "Everything a passenger touches is chosen for wear: hairline stainless walls that do "
             "not show handprints the way mirror does, micro-movement buttons rated for millions of "
-            "operations, and flooring that can be replaced in a night without taking the car apart."
+            "operations, and flooring that can be replaced in a night without taking the lift apart."
         ),
         speed="1.0 – 2.5 m/s", capacity="544 – 1,600 kg (8 – 24 persons)",
         stops="2 – 20 stops", drive="Gearless traction with group control",
@@ -384,17 +384,17 @@ LIFTS = [
         apps=["office", "hotel", "institutional", "apartment"],
         safety=["overload", "power-failure", "emergency-braking", "fire-mode", "seismic", "door-protection", "emergency-comms"],
         images=[
-            ("gallery", M.frame("chath-cabin"), "Passenger car at Chath Restaurant"),
+            ("gallery", M.frame("chath-cabin"), "Passenger lift at Chath Restaurant"),
             ("gallery", M.frame("chath-facade"), "Lift within the building facade"),
             ("detail", M.frame("chath-indicator"), "Landing indicators"),
-            ("detail", M.frame("chath-ceiling"), "Car ceiling and lighting"),
+            ("detail", M.frame("chath-ceiling"), "Lift ceiling and lighting"),
             ("gallery", M.interior(4), "Commercial lift lobby"),
             ("gallery", M.interior(6), "Retail lift entrance"),
         ],
         variants=[
             ("ZP-8", "8-passenger", "Boutique offices and small hotels.",
              "544 kg", "8 persons", "1.0 m/s", "1,900 × 2,000 mm"),
-            ("ZP-13", "13-passenger", "The standard commercial car.",
+            ("ZP-13", "13-passenger", "The standard commercial lift.",
              "884 kg", "13 persons", "1.5 m/s", "2,000 × 2,100 mm"),
             ("ZP-20", "20-passenger", "Main lobby duty in a busy building.",
              "1,360 kg", "20 persons", "2.5 m/s", "2,100 × 2,400 mm"),
@@ -402,7 +402,7 @@ LIFTS = [
         specs=[
             ("Dimensions", "Minimum shaft", "1,900 × 2,000 mm", ""),
             ("Dimensions", "Clear door opening", "900 – 1,200 mm", ""),
-            ("Control", "Group control", "Up to 8 cars", "Duplex, triplex and group collective"),
+            ("Control", "Group control", "Up to 8 lifts", "Duplex, triplex and group collective"),
             ("Control", "Dispatch", "Full collective selective", ""),
             ("Performance", "Rated speed", "1.0 – 2.5 m/s", ""),
             ("Performance", "Door open time", "0.9 – 1.5 s", "Adjustable by traffic profile"),
@@ -414,16 +414,16 @@ LIFTS = [
         eyebrow="Healthcare", accent="#048D8E", order=6,
         tagline="Wide enough for a trolley, gentle enough for the patient on it.",
         summary=(
-            "Deep stretcher-capable cars with accurate levelling, wide clear openings and "
+            "Deep stretcher-capable lifts with accurate levelling, wide clear openings and "
             "wipe-clean surfaces, built for hospitals, nursing homes and diagnostic centres."
         ),
         overview=(
-            "A hospital lift is dimensioned by the trolley, not the passenger count. The car is "
+            "A hospital lift is dimensioned by the trolley, not the passenger count. The cabin is "
             "deep rather than wide so a bed, its attendants and an IV stand fit without turning, "
             "and the clear opening is sized to let all of that through in one movement.\n\n"
             "Ride quality matters more here than anywhere else. Acceleration is shaped gently, "
             "levelling is held tight so a trolley wheel does not catch on the sill, and the whole "
-            "car interior is specified in surfaces that can be cleaned down between uses. Zion has "
+            "cabin interior is specified in surfaces that can be cleaned down between uses. Zion has "
             "delivered this configuration at Owaisi Hospitals in Hyderabad."
         ),
         speed="0.5 – 1.75 m/s", capacity="1,020 – 2,040 kg (15 – 30 persons)",
@@ -437,15 +437,15 @@ LIFTS = [
         safety=["overload", "power-failure", "emergency-braking", "fire-mode", "seismic", "door-protection", "emergency-comms"],
         images=[
             ("gallery", M.frame("owaisi-lobby"), "Lift lobby at Owaisi Hospitals"),
-            ("cabin", M.frame("owaisi-cabin"), "Stretcher-capable car"),
-            ("detail", M.frame("owaisi-cop"), "Car operating panel"),
-            ("detail", M.frame("owaisi-ceiling"), "Car ceiling and lighting"),
+            ("cabin", M.frame("owaisi-cabin"), "Stretcher-capable lift"),
+            ("detail", M.frame("owaisi-cop"), "Lift operating panel"),
+            ("detail", M.frame("owaisi-ceiling"), "Lift ceiling and lighting"),
             ("gallery", M.frame("owaisi-waiting"), "Waiting area at the lift bank"),
             ("gallery", M.frame("owaisi-corridor"), "Ward corridor entrance"),
             ("gallery", M.frame("owaisi-exterior"), "Owaisi Hospitals, Santosh Nagar"),
         ],
         variants=[
-            ("ZS-15", "15-passenger stretcher", "Single-trolley car for clinics and nursing homes.",
+            ("ZS-15", "15-passenger stretcher", "Single-trolley lift for clinics and nursing homes.",
              "1,020 kg", "15 persons", "1.0 m/s", "2,200 × 2,900 mm"),
             ("ZS-20", "20-passenger bed lift", "Bed plus attendants and equipment.",
              "1,360 kg", "20 persons", "1.5 m/s", "2,400 × 3,000 mm"),
@@ -453,7 +453,7 @@ LIFTS = [
              "1,768 kg", "26 persons", "1.75 m/s", "2,600 × 3,100 mm"),
         ],
         specs=[
-            ("Dimensions", "Car internal", "1,500 × 2,400 mm typical", "Depth sized to the trolley"),
+            ("Dimensions", "Lift internal", "1,500 × 2,400 mm typical", "Depth sized to the trolley"),
             ("Dimensions", "Clear door opening", "1,200 – 1,400 mm", ""),
             ("Dimensions", "Pit depth", "1,500 – 1,800 mm", ""),
             ("Interior", "Surfaces", "Hairline stainless, wipe-clean", "No open joints at floor level"),
@@ -467,17 +467,17 @@ LIFTS = [
         eyebrow="Industrial", accent="#8B8B86", order=7,
         tagline="Built to be loaded badly and keep working.",
         summary=(
-            "Heavy-duty platforms and cars for factories, warehouses and service cores, with "
+            "Heavy-duty platforms and lifts for factories, warehouses and service cores, with "
             "chequer-plate floors, protected walls and openings sized around a pallet."
         ),
         overview=(
             "A goods lift spends its life being loaded off-centre by someone in a hurry. It is "
-            "built accordingly: a stiffer car frame, chequer-plate flooring, bump rails on the "
+            "built accordingly: a stiffer lift frame, chequer-plate flooring, bump rails on the "
             "walls, and a door arrangement that clears a full pallet or trolley in one pass.\n\n"
             "Duty is specified around the heaviest single item rather than an average, and the "
             "drive is geared for controlled low-speed handling rather than travel time. Where "
             "vehicles or very heavy point loads are involved, a hydraulic platform is usually the "
-            "more robust answer than a traction car."
+            "more robust answer than a traction lift."
         ),
         speed="0.25 – 1.0 m/s", capacity="500 – 5,000 kg",
         stops="2 – 10 stops", drive="Geared traction or hydraulic platform",
@@ -502,8 +502,8 @@ LIFTS = [
         specs=[
             ("Dimensions", "Platform", "Sized to the load, up to 3,000 × 4,500 mm", ""),
             ("Dimensions", "Clear opening", "Full platform width where required", ""),
-            ("Car", "Flooring", "Steel chequer plate", "Or sealed industrial screed"),
-            ("Car", "Wall protection", "Bump rails and kick plates", ""),
+            ("Lift", "Flooring", "Steel chequer plate", "Or sealed industrial screed"),
+            ("Lift", "Wall protection", "Bump rails and kick plates", ""),
             ("Doors", "Type", "Vertical bi-parting or horizontal sliding", ""),
             ("Performance", "Rated speed", "0.25 – 1.0 m/s", "Low speed favours controlled handling"),
         ],
@@ -518,7 +518,7 @@ LIFTS = [
         ),
         overview=(
             "A dumbwaiter removes the single most tiring movement in a restaurant or a large "
-            "house: carrying trays up stairs. The car is stainless steel inside and out, the "
+            "house: carrying trays up stairs. The lift is stainless steel inside and out, the "
             "landing openings sit at counter height so nothing has to be lifted, and the whole "
             "assembly is compact enough to build into a wall cavity.\n\n"
             "Because it never carries people, the safety case is simpler and the shaft can be far "
@@ -547,11 +547,11 @@ LIFTS = [
              "300 kg", "—", "0.5 m/s", "1,000 × 1,000 mm"),
         ],
         specs=[
-            ("Dimensions", "Car internal", "500 × 500 mm up to 1,000 × 1,000 mm", ""),
+            ("Dimensions", "Lift internal", "500 × 500 mm up to 1,000 × 1,000 mm", ""),
             ("Dimensions", "Landing height", "Counter level or floor level", ""),
-            ("Car", "Material", "304 stainless steel throughout", "Shelves removable for cleaning"),
+            ("Lift", "Material", "304 stainless steel throughout", "Shelves removable for cleaning"),
             ("Doors", "Type", "Vertical bi-parting stainless", "Interlocked at every landing"),
-            ("Safety", "Occupancy", "Goods only", "Car size prevents human entry"),
+            ("Safety", "Occupancy", "Goods only", "Lift size prevents human entry"),
         ],
     ),
     dict(

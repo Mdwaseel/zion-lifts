@@ -278,7 +278,7 @@
   fill: var(--fg-faint);
 }
 
-.shaftdiagram__car {
+.shaftdiagram__lift {
   fill: var(--accent) !important;
   letter-spacing: 0.2em;
 }

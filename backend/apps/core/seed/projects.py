@@ -35,13 +35,13 @@ PROJECTS = [
             "would have cut the ground floor in two."
         ),
         solution=(
-            "A machine-room-less home lift in a structural glass shaft, with a bronze-finished car "
+            "A machine-room-less home lift in a structural glass shaft, with a bronze-finished cabin "
             "and a starlight ceiling. The frame was detailed as slim as the structure allowed and "
             "the drive was mounted at the shaft head so nothing sits above the roof line."
         ),
         result=(
             "The hall keeps its full height and daylight, and every level of the house is reachable "
-            "without touching the stair. The car has run daily since handover."
+            "without touching the stair. The lift has run daily since handover."
         ),
         system="Home Elevator — MRL gearless traction", capacity="408 kg / 6 persons",
         stops="4 stops", door="Automatic centre-opening, glass",
@@ -52,8 +52,8 @@ PROJECTS = [
             ("site", "lekha-aerial", "The house from above"),
             ("site", "lekha-approach", "Approach and entrance"),
             ("interior", "lekha-hall", "Circulation hall with the glazed shaft"),
-            ("interior", "lekha-cabin", "Bronze car in the hall"),
-            ("detail", "lekha-cop", "Car operating panel"),
+            ("interior", "lekha-cabin", "Bronze lift in the hall"),
+            ("detail", "lekha-cop", "Lift operating panel"),
             ("detail", "lekha-ceiling", "Starlight ceiling"),
             ("completion", "lekha-inuse", "The lift in daily use"),
             ("completion", "lekha-corridor", "Landing on an upper floor"),
@@ -70,10 +70,10 @@ PROJECTS = [
         ),
         challenge=(
             "The client wanted the lift to disappear into a heavily detailed interior. A standard "
-            "stainless car would have read as the only piece of equipment in the house."
+            "stainless lift would have read as the only piece of equipment in the house."
         ),
         solution=(
-            "An antique brass car with a marble floor, a cove-lit ceiling and a slim vertical "
+            "An antique brass lift with a marble floor, a cove-lit ceiling and a slim vertical "
             "control panel, set behind brass-framed automatic doors that align with the surrounding "
             "stone."
         ),
@@ -90,9 +90,9 @@ PROJECTS = [
             ("site", "lacheta-exterior", "The residence"),
             ("interior", "lacheta-lobby", "Ground floor lift lobby"),
             ("interior", "lacheta-glass", "The lift beside the stair"),
-            ("detail", "lacheta-ceiling", "Cove-lit car ceiling"),
+            ("detail", "lacheta-ceiling", "Cove-lit lift ceiling"),
             ("detail", "lacheta-indicator", "Floor indicator"),
-            ("detail", "lacheta-cop", "Car operating panel"),
+            ("detail", "lacheta-cop", "Lift operating panel"),
             ("completion", "lacheta-inuse", "In daily use"),
             ("completion", "lacheta-terrace", "Terrace level"),
         ],
@@ -112,7 +112,7 @@ PROJECTS = [
         ),
         solution=(
             "A self-supporting steel and glass shaft erected in the stairwell void, carrying its own "
-            "loads down to a new pad at the base. The car frame, rails and gearless machine were "
+            "loads down to a new pad at the base. The lift frame, rails and gearless machine were "
             "assembled in place over a short site programme."
         ),
         result=(
@@ -129,10 +129,10 @@ PROJECTS = [
             ("installation", "kashi-structure", "Self-supporting shaft structure"),
             ("installation", "kashi-drive", "Gearless machine at the shaft head"),
             ("installation", "kashi-machine", "Drive and sheave"),
-            ("interior", "kashi-cabin", "The finished car"),
+            ("interior", "kashi-cabin", "The finished lift"),
             ("interior", "kashi-interior", "Landing at first floor"),
             ("detail", "kashi-lop", "Landing operating panel"),
-            ("detail", "kashi-floor", "Car flooring"),
+            ("detail", "kashi-floor", "Lift flooring"),
             ("completion", "kashi-shaft", "Looking up the glazed shaft"),
             ("completion", "kashi-stair", "The lift alongside the stair"),
         ],
@@ -151,7 +151,7 @@ PROJECTS = [
             "to that volume rather than obstruct it."
         ),
         solution=(
-            "A four-sided glazed capsule in a slim steel frame, positioned so the car travels "
+            "A four-sided glazed capsule in a slim steel frame, positioned so the lift travels "
             "through the atrium rather than beside it, and continues up to the roof pavilion."
         ),
         result=(
@@ -168,10 +168,10 @@ PROJECTS = [
             ("site", "chilkuru-pavilion", "Rooftop pavilion, the top landing"),
             ("interior", "chilkuru-entrance", "Entrance level"),
             ("interior", "chilkuru-corridor", "Corridor to the atrium"),
-            ("interior", "chilkuru-capsule", "Capsule car in the atrium"),
+            ("interior", "chilkuru-capsule", "Capsule lift in the atrium"),
             ("interior", "chilkuru-atrium", "The shaft through the full height"),
-            ("detail", "chilkuru-ceiling", "Car ceiling"),
-            ("detail", "chilkuru-panel", "Car operating panel"),
+            ("detail", "chilkuru-ceiling", "Lift ceiling"),
+            ("detail", "chilkuru-panel", "Lift operating panel"),
             ("detail", "chilkuru-lop", "Landing indicator"),
         ],
     ),
@@ -190,7 +190,7 @@ PROJECTS = [
         ),
         solution=(
             "A commercial passenger lift positioned on the external elevation, with timber-clad "
-            "surrounds, illuminated landing indicators and a car finished to match the interior."
+            "surrounds, illuminated landing indicators and a lift finished to match the interior."
         ),
         result=(
             "The terrace works as a dining floor on a normal service night, and the lift has become "
@@ -205,9 +205,9 @@ PROJECTS = [
             ("site", "chath-aerial", "The restaurant from above at night"),
             ("site", "chath-facade", "Street elevation"),
             ("interior", "chath-entrance", "Lift entrance at street level"),
-            ("interior", "chath-cabin", "The car"),
+            ("interior", "chath-cabin", "The lift"),
             ("detail", "chath-indicator", "Landing indicators"),
-            ("detail", "chath-ceiling", "Car ceiling"),
+            ("detail", "chath-ceiling", "Lift ceiling"),
             ("completion", "chath-terrace", "Rooftop dining terrace"),
             ("completion", "chath-inuse", "A guest leaving the lift during service"),
         ],
@@ -239,7 +239,7 @@ PROJECTS = [
         hero=M.frame("niloufer-cabin"), poster=M.poster("niloufer-cafe"),
         video=M.video("niloufer-cafe"), loop=M.video("niloufer-cafe", loop=True),
         images=[
-            ("interior", "niloufer-cabin", "The car"),
+            ("interior", "niloufer-cabin", "The lift"),
             ("interior", "niloufer-interior", "Landing"),
             ("completion", "niloufer-portrait", "The client on the installation"),
         ],
@@ -258,7 +258,7 @@ PROJECTS = [
             "share the same cores, at all hours, and a lift out of service moves patients down a stair."
         ),
         solution=(
-            "Deep stretcher-capable cars with wide clear openings, tight levelling so trolley wheels "
+            "Deep stretcher-capable lifts with wide clear openings, tight levelling so trolley wheels "
             "clear the sill, wipe-clean stainless interiors, and firefighter recall across the group."
         ),
         result=(
@@ -274,9 +274,9 @@ PROJECTS = [
             ("site", "owaisi-exterior", "Owaisi Hospitals, Santosh Nagar"),
             ("interior", "owaisi-lobby", "Ground floor lift lobby"),
             ("interior", "owaisi-doors", "Lift bank"),
-            ("interior", "owaisi-cabin", "Stretcher-capable car"),
-            ("detail", "owaisi-cop", "Car operating panel"),
-            ("detail", "owaisi-ceiling", "Car ceiling and lighting"),
+            ("interior", "owaisi-cabin", "Stretcher-capable lift"),
+            ("detail", "owaisi-cop", "Lift operating panel"),
+            ("detail", "owaisi-ceiling", "Lift ceiling and lighting"),
             ("completion", "owaisi-waiting", "Waiting area at the lift bank"),
             ("completion", "owaisi-corridor", "Ward corridor"),
         ],

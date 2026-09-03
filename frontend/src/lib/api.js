@@ -8,14 +8,31 @@
 
 const BASE = import.meta.env.VITE_API_BASE ?? '/api'
 
+/**
+ * Static mode: the site is hosted as plain files (Vercel) with the API frozen
+ * into public/api by scripts/snapshot-api.mjs. Reads resolve to those files and
+ * writes are refused with a message the forms can show. Set by .env.static,
+ * i.e. `npm run build:static`.
+ */
+export const STATIC = import.meta.env.VITE_STATIC_API === '1'
+
 const cache = new Map()
+
+function query(params) {
+  if (!params) return ''
+  return new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''),
+  ).toString()
+}
 
 function url(path, params) {
   const clean = `${BASE}/${String(path).replace(/^\/+/, '')}`
-  if (!params) return clean
-  const qs = new URLSearchParams(
-    Object.entries(params).filter(([, v]) => v !== undefined && v !== null && v !== ''),
-  ).toString()
+  const qs = query(params)
+  if (STATIC) {
+    // mirrors the layout snapshot-api.mjs writes
+    const dir = clean.endsWith('/') ? clean : `${clean}/`
+    return qs ? `${dir}_q/${qs}.json` : `${dir}index.json`
+  }
   return qs ? `${clean}?${qs}` : clean
 }
 
@@ -53,6 +70,15 @@ function csrfToken() {
 }
 
 export async function post(path, body, { files } = {}) {
+  if (STATIC) {
+    const err = new Error(
+      'This preview of the site cannot send enquiries yet. Please call +91 75690 08004 or email info@zionlifts.com and we will pick it up from there.',
+    )
+    err.static = true
+    err.status = 0
+    err.fields = {}
+    throw err
+  }
   const target = url(path)
   let init
 

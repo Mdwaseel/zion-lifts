@@ -3,78 +3,139 @@ import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
 import Reveal, { SplitLines } from '@/components/Reveal'
-import { Arrow, ArrowDown, Bolt, Refresh, Shield } from '@/components/icons'
+import { Arrow, Bolt, Refresh, Shield } from '@/components/icons'
 import { useReducedMotion, useScrollProgress } from '@/lib/hooks'
 import { gsap, initGsap } from '@/lib/gsap'
 
 import ContextWave from './ContextWave'
 
 /* ==========================================================================
-   01 · HERO — THE ELEVATOR
-   Doors rest ajar on load; scrolling parts them onto the shaft beyond, while
-   the floor indicator climbs. No image sequence exists yet, so the ascent is
-   built from the real cabin photography plus a scroll-driven door mechanism.
+   01 · HERO — THE FILM
+   One take of the lift, pinned. It runs to its first stop on its own; each
+   scroll-step past a threshold releases the next chapter, which plays in real
+   time to its own stop, and scrolling back up rewinds to the stop before.
+   Nothing is scrubbed — the film always plays at speed; the scroll only
+   decides how far it is allowed to go.
    ========================================================================== */
 
-const FLOORS = ['G', '2', '5', '9', '14', '19', '24', '31', '36']
+/** where the film holds, in seconds */
+const STOPS = [4.1, 9.07, 13.26]
 
-/**
- * The doors rest slightly apart rather than shut. Closed, the fold was a black
- * rectangle with a headline on it and no product in sight; ajar, a band of the
- * real cabin shows down the centre and the gap tells you what scrolling does.
- */
-const AJAR = 0.1
+/** scroll progress across the runway (0–1) at which each later chapter releases.
+    Spaced so a chapter has room to play out before the next threshold, with
+    the last stretch left for the final one to finish before the pin lets go. */
+const RELEASE = [0, 0.22, 0.58]
+
+/** how close to a stop counts as arrived — one frame at 30fps is 33ms */
+const EPS = 0.03
+
+/** Runs `cb` once the intro overlay (if there is one) has left the page, so the
+    first chapter does not play out behind it. */
+function whenIntroDone(cb) {
+  if (!document.querySelector('.preloader')) {
+    cb()
+    return () => {}
+  }
+  const mo = new MutationObserver(() => {
+    if (!document.querySelector('.preloader')) {
+      mo.disconnect()
+      cb()
+    }
+  })
+  mo.observe(document.body, { childList: true, subtree: true })
+  return () => mo.disconnect()
+}
 
 export function Hero() {
   const [ref, progress] = useScrollProgress()
   const reduced = useReducedMotion()
+  const videoRef = useRef(null)
+  const rafRef = useRef(0)
+  const headingRef = useRef(STOPS[0])
+  const [introGone, setIntroGone] = useState(false)
+  const [canPlay, setCanPlay] = useState(false)
+  // the phone gets the lighter encode; decided once, at mount
+  const [src] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 900
+      ? '/media/hero/hero-720.mp4'
+      : '/media/hero/hero-1080.mp4'
+  )
 
-  // doors are fully open by 45% of the hero's travel
-  const travel = reduced ? 1 : Math.min(1, progress / 0.45)
-  const open = AJAR + travel * (1 - AJAR)
-  const floor = FLOORS[Math.min(FLOORS.length - 1, Math.floor(travel * FLOORS.length))]
+  // which stop the film is heading for, from where the visitor is on the runway
+  const chapter = progress >= RELEASE[2] ? 2 : progress >= RELEASE[1] ? 1 : 0
+
+  // copy leaves as the first chapter is released; the cue goes sooner
+  const fade = reduced ? 0 : Math.min(1, progress / 0.2)
+
+  useEffect(() => whenIntroDone(() => setIntroGone(true)), [])
+
+  useEffect(() => {
+    const v = videoRef.current
+    if (!v || reduced || !introGone || !canPlay) return undefined
+
+    const target = STOPS[chapter]
+    const before = headingRef.current
+    headingRef.current = target
+    cancelAnimationFrame(rafRef.current)
+
+    // scrolled back up: hold on the previous stop rather than replaying
+    if (target < before - EPS) {
+      v.pause()
+      v.currentTime = target
+      return undefined
+    }
+    if (v.currentTime >= target - EPS) {
+      v.pause()
+      return undefined
+    }
+
+    const tick = () => {
+      if (v.currentTime >= target - EPS) {
+        v.pause()
+        v.currentTime = target
+        return
+      }
+      rafRef.current = requestAnimationFrame(tick)
+    }
+    v.play()
+      .then(() => {
+        rafRef.current = requestAnimationFrame(tick)
+      })
+      .catch(() => {
+        /* autoplay refused — the poster stands in and the film waits for the next release */
+      })
+
+    return () => cancelAnimationFrame(rafRef.current)
+  }, [chapter, reduced, introGone, canPlay])
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), [])
 
   return (
     <section ref={ref} className="hero" aria-label="Zion Lifts">
       <div className="hero__stage">
-        {/* what lies beyond the doors */}
-        <div
-          className="hero__shaft"
-          style={{ '--open': open, transform: `scale(${1.14 - travel * 0.14})` }}
-        >
-          <Img
-            src="/media/frames/lekha-cabin.jpg"
-            alt=""
-            priority
-            sizes="100vw"
-            className="hero__shaft-img"
-          />
-        </div>
+        <video
+          ref={videoRef}
+          className="hero__film"
+          src={src}
+          poster="/media/hero/hero-poster.jpg"
+          muted
+          playsInline
+          preload={reduced ? 'none' : 'auto'}
+          disablePictureInPicture
+          aria-hidden="true"
+          tabIndex={-1}
+          onCanPlay={() => setCanPlay(true)}
+        />
+        <div className="hero__grade" aria-hidden="true" style={{ opacity: 1 - fade * 0.45 }} />
 
-        {/* the doors themselves */}
-        <div className="hero__doors" aria-hidden="true" style={{ '--open': open }}>
-          <div className="hero__door hero__door--l">
-            <span className="hero__door-seam" />
-          </div>
-          <div className="hero__door hero__door--r">
-            <span className="hero__door-seam" />
-          </div>
-        </div>
-
-        {/* floor indicator */}
-        <div className="hero__ticker" aria-hidden="true">
-          <span className="hero__ticker-arrow">&uarr;</span>
-          <span className="hero__ticker-num">{floor}</span>
-        </div>
-
-        <div className="shell hero__content" style={{ opacity: 1 - travel * 0.55 }}>
+        <div className="shell hero__content" style={{ opacity: 1 - fade }}>
           <Reveal variant="fade">
             <p className="eyebrow">Vertical transportation · Hyderabad</p>
           </Reveal>
 
           <SplitLines
             as="h1"
-            className="display display--mega hero__title"
+            className="display hero__title"
             lines={['Zion.', 'Engineered', 'to rise.']}
           />
 
@@ -98,10 +159,20 @@ export function Hero() {
           </Reveal>
         </div>
 
-        <div className="hero__scroll" aria-hidden="true" style={{ opacity: 1 - travel * 1.6 }}>
-          <span className="mono">Scroll to ascend</span>
-          <ArrowDown size={14} />
+        {/* the cue: a mouse, its wheel dropping through, the word beneath */}
+        <div className="hero__cue" aria-hidden="true" style={{ opacity: 1 - fade * 1.6 }}>
+          <span className="hero__mouse">
+            <span className="hero__wheel" />
+          </span>
+          <span className="hero__cue-label">Scroll</span>
         </div>
+
+        {/* the three stops */}
+        <ol className="hero__stops" aria-hidden="true">
+          {STOPS.map((s, i) => (
+            <li key={s} className={i <= chapter ? 'is-on' : ''} />
+          ))}
+        </ol>
       </div>
     </section>
   )
@@ -116,7 +187,7 @@ export function Hero() {
  *
  * The feature lines under each context are drawn from the application copy the
  * catalogue already carries ("tight shafts, finishes chosen to match the
- * interior", "stretcher-width cars, levelling accuracy"), so the strip states
+ * interior", "stretcher-width lifts, levelling accuracy"), so the strip states
  * things the rest of the site already states rather than inventing new claims.
  */
 const CONTEXTS = [
@@ -124,9 +195,9 @@ const CONTEXTS = [
     key: 'villa',
     label: 'Villa',
     line: 'A private house, where the lift has to belong to the interior.',
-    src: '/media/frames/lekha-hall.jpg',
-    pos: 'center 45%',
-    alt: 'A glazed home lift set into the hall of a private villa in Hyderabad',
+    src: '/media/contexts/context-villa.jpg',
+    pos: 'center 50%',
+    alt: 'A glazed home lift beside the stair in a double-height villa living room',
     to: '/lifts/home-elevator',
     amp: 0.8,
     features: [
@@ -139,14 +210,14 @@ const CONTEXTS = [
     key: 'apartment',
     label: 'Apartment',
     line: 'A shared core, running from the basement to the terrace all day.',
-    src: '/media/interiors/interior-02.jpg',
-    pos: 'center 38%',
-    alt: 'A lift lobby in a residential apartment tower',
+    src: '/media/contexts/context-apartment.jpg',
+    pos: 'center 50%',
+    alt: 'A lift on a residential apartment landing, off a shared corridor',
     to: '/lifts/mrl-traction',
     amp: 0.9,
     features: [
       ['Daily duty', 'Sized for family use,', 'every hour of the day.'],
-      ['Stretcher access', 'Cars proportioned', 'to take a stretcher.'],
+      ['Stretcher access', 'Lifts proportioned', 'to take a stretcher.'],
       ['Fewer parts', 'A gearless machine', 'has less to wear out.'],
     ],
   },
@@ -154,9 +225,9 @@ const CONTEXTS = [
     key: 'hotel',
     label: 'Hospitality',
     line: 'Guests, service and kitchen traffic, on three different schedules.',
-    src: '/media/frames/chath-entrance.jpg',
-    pos: 'center 55%',
-    alt: 'The lift entrance at Chath Restaurant, a hospitality project in Hyderabad',
+    src: '/media/contexts/context-hotel.jpg',
+    pos: 'center 50%',
+    alt: 'Guests crossing a hotel lobby towards the lift',
     to: '/lifts/passenger-elevator',
     amp: 1,
     features: [
@@ -169,9 +240,9 @@ const CONTEXTS = [
     key: 'office',
     label: 'Office',
     line: 'Judged entirely on its worst five minutes of the morning.',
-    src: '/media/interiors/interior-04.jpg',
-    pos: 'center 42%',
-    alt: 'A black-framed panoramic lift in a commercial building',
+    src: '/media/contexts/context-office.jpg',
+    pos: 'center 50%',
+    alt: 'An office floor at the lift landing, with staff arriving',
     to: '/lifts/passenger-elevator',
     amp: 1.1,
     features: [
@@ -184,9 +255,9 @@ const CONTEXTS = [
     key: 'hospital',
     label: 'Hospital',
     line: 'Sized by the trolley, not the passenger count.',
-    src: '/media/frames/owaisi-lobby.jpg',
-    pos: 'center 48%',
-    alt: 'A hospital lift lobby at Owaisi Hospitals, Hyderabad',
+    src: '/media/contexts/context-hospital.jpg',
+    pos: 'center 50%',
+    alt: 'A hospital corridor where a patient is wheeled into a stretcher-width lift',
     to: '/lifts/hospital-elevator',
     amp: 0.75,
     features: [
@@ -199,9 +270,9 @@ const CONTEXTS = [
     key: 'industrial',
     label: 'Industrial',
     line: 'Loaded badly, in a hurry, every day of its life.',
-    src: '/media/frames/kashi-machine.jpg',
-    pos: 'center 40%',
-    alt: 'The drive, sheave and structural steel frame at the head of a Zion shaft',
+    src: '/media/contexts/context-industrial.jpg',
+    pos: 'center 50%',
+    alt: 'A goods lift on a factory floor, loaded by workers between machine bays',
     to: '/lifts/goods-elevator',
     amp: 1.25,
     features: [
@@ -253,8 +324,12 @@ export function WorldBelow() {
       const x = Math.min(N - 0.0001, Math.max(0, progress * N))
       const idx = Math.floor(x)
       const frac = x - idx
-      // hold, then hand over during the tail of the slot
-      const t = frac <= 1 - BLEND ? 0 : (frac - (1 - BLEND)) / BLEND
+      const last = idx === N - 1
+      // Hold, then hand over during the tail of the slot — except in the last
+      // slot, which has nothing to hand over to. `next` clamps back onto `idx`
+      // there, so blending would fade the only visible layer to nothing and
+      // leave an empty stage for the final quarter of the section.
+      const t = last || frac <= 1 - BLEND ? 0 : (frac - (1 - BLEND)) / BLEND
       const next = Math.min(N - 1, idx + 1)
 
       for (let i = 0; i < N; i++) {
@@ -328,7 +403,11 @@ export function WorldBelow() {
   const current = CONTEXTS[active]
 
   return (
-    <section ref={sectionRef} className="section section--flush world" aria-labelledby="world-title">
+    <section
+      ref={sectionRef}
+      className="section section--flush world"
+      aria-labelledby="world-title"
+    >
       <div className="world__pin">
         <div className="world__stage">
           {CONTEXTS.map((c, i) => (

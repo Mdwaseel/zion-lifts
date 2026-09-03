@@ -120,8 +120,8 @@ function Installations() {
 
 const STAGES = [
   ['01', 'Engineering', 'Understanding the building before anything is drawn — survey, traffic, structure, the constraints nobody wrote down.'],
-  ['02', 'Manufacturing', 'Car frames, cabins and structural shafts built in-house at Jeedimetla, then load-tested before dispatch.'],
-  ['03', 'Installation', 'Rails aligned, machine set, doors adjusted, car commissioned — sequenced around a building that is often still in use.'],
+  ['02', 'Manufacturing', 'Lift frames, cabins and structural shafts built in-house at Jeedimetla, then load-tested before dispatch.'],
+  ['03', 'Installation', 'Rails aligned, machine set, doors adjusted, lift commissioned — sequenced around a building that is often still in use.'],
   ['04', 'Support', 'Maintenance, safety testing and 24/7 breakdown cover, through the twenty-odd years that follow.'],
 ]
 
@@ -280,7 +280,7 @@ export default function About() {
             index="07"
             eyebrow="Inside Zion"
             title="Where elevators take shape."
-            lead="Fabrication came in-house in 2014, so car frames, cabins and structural shafts are built to our own tolerances rather than bought in."
+            lead="Fabrication came in-house in 2014, so lift frames, cabins and structural shafts are built to our own tolerances rather than bought in."
           />
         </div>
         <div className="factory__scroller">
@@ -478,7 +478,7 @@ export default function About() {
       <CtaBand
         eyebrow="15 · See it yourself"
         title="See Zion in motion."
-        lead="Come to the factory and watch a car get loaded to 125% of its rating. It tells you more than any brochure."
+        lead="Come to the factory and watch a lift get loaded to 125% of its rating. It tells you more than any brochure."
         primary={{ to: '/contact#visit', label: 'Arrange a visit' }}
         secondary={{ to: '/contact', label: 'Get a quote' }}
       />

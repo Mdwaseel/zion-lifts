@@ -14,6 +14,7 @@ export default function Reveal({
   variant = 'up',
   delay = 0,
   className = '',
+  style,
   ...rest
 }) {
   const [ref, inView] = useInView()
@@ -23,7 +24,7 @@ export default function Reveal({
     <Tag
       ref={ref}
       className={`reveal reveal--${variant} ${inView || reduced ? 'is-in' : ''} ${className}`}
-      style={delay && !reduced ? { transitionDelay: `${delay}ms` } : undefined}
+      style={delay && !reduced ? { ...style, transitionDelay: `${delay}ms` } : style}
       {...rest}
     >
       {children}

@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "lint": "oxlint src"
+    "lint": "oxlint src",
+    "snapshot": "node scripts/snapshot-api.mjs",
+    "build:static": "vite build --mode static"
   },
   "dependencies": {
     "gsap": "^3.13.0",

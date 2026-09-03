@@ -112,7 +112,7 @@ CERTIFICATIONS = [
         name="Load and overspeed testing",
         issuer="In-house test bench",
         description=(
-            "Every car is load-tested to 125% of rated capacity, and the overspeed governor "
+            "Every lift is load-tested to 125% of rated capacity, and the overspeed governor "
             "and safety gear are tripped and verified before dispatch."
         ),
         order=2,

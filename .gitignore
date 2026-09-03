@@ -14,10 +14,10 @@ frontend/.vite/
 npm-debug.log*
 
 # --- generated media -------------------------------------------------------
-# Rebuilt from the masters in "Zion HD Photos - Generated", "Zion Website",
-# logos/ and videos-*/ by the scripts in assets-src/. ~164 MB, so it is not
-# worth versioning; run `python assets-src/build_all.py` after a clone.
-frontend/public/media/
+# frontend/public/media is built from the masters by the scripts in
+# assets-src/, but it is versioned: the static site on Vercel is deployed
+# straight from the repository and needs every image and film in it.
+# frontend/public/api is the API snapshot (npm run snapshot) and ships too.
 
 # --- source masters (large; keep in the studio's own storage) --------------
 videos-20260828T181837Z-1-004/

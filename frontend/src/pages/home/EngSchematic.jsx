@@ -6,7 +6,7 @@ import { useReducedMotion } from '@/lib/hooks'
    The faint schematic behind the engineering headline.
 
    A shaft section drawn the way a general-arrangement drawing would show it:
-   a centre line with a car travelling it, the levelling circles it is measured
+   a centre line with a lift travelling it, the levelling circles it is measured
    against, datum ticks down each side, and a few coordinate points. It is
    deliberately near-invisible — it exists to make the negative space beside
    the headline read as intentional, not to be looked at.
@@ -48,7 +48,7 @@ export default function EngSchematic() {
   return (
     <div className="eng__schematic" ref={ref} aria-hidden="true">
       <svg viewBox="0 0 420 320" preserveAspectRatio="xMidYMid meet" focusable="false">
-        {/* levelling circles the car is measured against */}
+        {/* levelling circles the lift is measured against */}
         <g className="eng__rings">
           <circle cx="210" cy="150" r="52" />
           <circle cx="210" cy="150" r="88" />
@@ -62,7 +62,7 @@ export default function EngSchematic() {
           <line className="eng__rail" x1="242" y1="24" x2="242" y2="296" />
         </g>
 
-        {/* the car, travelling */}
+        {/* the lift, travelling */}
         <g className="eng__car">
           <rect x="196" y="120" width="28" height="60" rx="1" />
           <line x1="196" y1="150" x2="224" y2="150" />
