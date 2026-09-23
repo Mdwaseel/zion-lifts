@@ -13,9 +13,12 @@
 
 const BASE = '/media/chatbot'
 
-// The artwork is very slightly wider than tall. Stating both dimensions keeps
-// it from distorting and reserves the space before it loads.
-const ASPECT = 96 / 89
+// The trimmed master, 1402x1102. Stating both dimensions reserves the right
+// space before the image loads, so the launcher does not shift as it arrives.
+// This has to track the artwork: `build_chatbot.py` prints the master's size,
+// and the mascot sits in the Zion triangle now, which is wider than the round
+// mark it replaced.
+const ASPECT = 1402 / 1102
 
 export default function Mark({ size = 26, className }) {
   const height = Math.round(size / ASPECT)
