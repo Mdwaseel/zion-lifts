@@ -1,0 +1,456 @@
+/* ==========================================================================
+   /login — control room access
+
+   One composition, not two halves: a single obsidian ground carrying the
+   hoistway as light and line, with the form on a floating glass card at the
+   optical centre. Nothing is split down the middle, so nothing has a seam to
+   defend on a narrow screen — the card just narrows and the ground stays.
+
+   The card keeps the dark token context on purpose, so .field, .btn and .link
+   inherit their on-dark values from the design system rather than being
+   restyled here.
+   ========================================================================== */
+
+.login {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
+  padding: clamp(1.25rem, 1rem + 1.2vw, 2.25rem) var(--page-x);
+  background: var(--obsidian);
+  color: var(--fg);
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* --- the ground ---------------------------------------------------------- */
+.login__field {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* The light. Two sources — teal high on the left, a warm brass trace low on
+   the right — so the black has a direction rather than being flat. */
+.login__glow {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(38% 42% at 22% 18%, rgba(46, 201, 202, 0.2), transparent 70%),
+    radial-gradient(46% 40% at 82% 88%, rgba(176, 141, 87, 0.09), transparent 72%),
+    radial-gradient(60% 55% at 50% 50%, rgba(255, 255, 255, 0.035), transparent 75%);
+  filter: blur(10px);
+  animation: login-glow-drift 22s var(--ease-in-out) infinite alternate;
+}
+
+/* Guide rails. Full height, paired at a shaft's width, fading out well before
+   the card so nothing competes with the type. */
+.login__rails {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0.09) 0 1px,
+    transparent 1px 132px
+  );
+  mask-image: radial-gradient(90% 75% at 50% 45%, transparent 34%, #000 100%);
+  -webkit-mask-image: radial-gradient(90% 75% at 50% 45%, transparent 34%, #000 100%);
+}
+
+/* Floor lines. Weaker than the rails and set wider, so the two read as one
+   drawing rather than as graph paper. */
+.login__floors {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.055) 0 1px,
+    transparent 1px 176px
+  );
+  mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 22%, #000 78%, transparent);
+}
+
+@keyframes login-glow-drift {
+  from {
+    transform: translate3d(-1.5%, -1%, 0) scale(1);
+  }
+  to {
+    transform: translate3d(1.5%, 1.5%, 0) scale(1.06);
+  }
+}
+
+/* --- the stage ----------------------------------------------------------- */
+.login__stage {
+  display: grid;
+  justify-items: center;
+  gap: var(--gap-s);
+  width: 100%;
+}
+
+.login__meta {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+  text-align: center;
+}
+
+/* --- the card ------------------------------------------------------------ */
+.login-card {
+  position: relative;
+  width: min(100%, 28rem);
+  padding: clamp(1.75rem, 1.3rem + 1.6vw, 2.5rem) clamp(1.75rem, 1.2rem + 2vw, 2.75rem);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-xl);
+  background: rgba(255, 255, 255, 0.055);
+  backdrop-filter: var(--material-blur);
+  -webkit-backdrop-filter: var(--material-blur);
+  box-shadow: var(--shadow-lift);
+  animation: login-card-in var(--dur-slow) var(--ease-out) both;
+}
+
+/* The lit top edge. One hairline that catches the glow, which is what stops a
+   translucent panel on black from reading as a grey rectangle. */
+.login-card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 1px;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.28) 22%,
+    rgba(46, 201, 202, 0.4) 50%,
+    rgba(255, 255, 255, 0.28) 78%,
+    transparent
+  );
+}
+
+@keyframes login-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.login-card__panel {
+  display: grid;
+  gap: var(--gap-s);
+}
+
+.login-card__panel--waiting {
+  justify-items: center;
+  text-align: center;
+  gap: var(--gap);
+  padding-block: 3.5rem;
+}
+
+/* --- head ---------------------------------------------------------------- */
+.login-card__mark {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--teal-bright);
+}
+
+.login-card__mark--warn {
+  color: #f0a58f;
+}
+
+.login-mark g {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.35;
+  stroke-linecap: round;
+  vector-effect: non-scaling-stroke;
+}
+
+.login-mark__rails {
+  opacity: 0.4;
+}
+
+/* The car arrives once, on load. One movement, no loop: this is a login page,
+   not a screensaver. */
+.login-mark__travel {
+  transform-origin: center;
+  animation: login-travel-in 0.9s var(--ease-out) 0.15s both;
+}
+
+@keyframes login-travel-in {
+  from {
+    transform: scaleY(0.6);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+.login-card__eyebrow {
+  font-size: var(--t-micro);
+  letter-spacing: var(--tr-wide);
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.login-card__title {
+  font-size: var(--t-h3);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--tr-h3);
+  font-weight: var(--w-semibold);
+}
+
+.login-card__lead {
+  font-size: var(--t-body);
+  color: var(--fg-dim);
+  margin-bottom: var(--gap-xs);
+}
+
+.login-card__wide {
+  width: 100%;
+  padding-block: 0.95rem;
+  margin-top: var(--gap-xs);
+}
+
+.login-card__foot {
+  display: grid;
+  gap: 0.35rem;
+  margin-top: var(--gap);
+  padding-top: var(--gap);
+  border-top: 1px solid var(--rule-soft);
+  font-size: var(--t-small);
+  color: var(--fg-faint);
+}
+
+.login-card__back {
+  font-size: var(--t-small);
+  justify-self: start;
+}
+
+/* --- form ---------------------------------------------------------------- */
+.login-form {
+  display: grid;
+  gap: 1.25rem;
+}
+
+/* Never colour alone: the alert carries an icon and a rule as well as the tint,
+   so it survives a monochrome display and a red/green deficiency. */
+.login-form__alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid rgba(212, 102, 79, 0.55);
+  border-left: 3px solid #d4664f;
+  border-radius: var(--radius);
+  background: rgba(212, 102, 79, 0.14);
+  color: #f4b3a2; /* 8.1:1 on the card ground */
+  font-size: var(--t-small);
+  line-height: 1.45;
+}
+
+.login-form__alert svg {
+  flex: none;
+  margin-top: 0.15rem;
+}
+
+.login-form__alert:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 3px;
+}
+
+.login-form__password {
+  position: relative;
+}
+
+.login-form__password input {
+  padding-right: 3.25rem;
+}
+
+.login-form__reveal {
+  position: absolute;
+  top: 50%;
+  right: 0.35rem;
+  transform: translateY(-50%);
+  /* 44px, so it is a comfortable target on a phone. */
+  width: 2.75rem;
+  height: 2.75rem;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius);
+  color: var(--fg-faint);
+  transition: color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out);
+}
+
+.login-form__reveal:hover:not(:disabled),
+.login-form__reveal:focus-visible {
+  color: var(--fg);
+  background: var(--surface-2);
+}
+
+/* --- captcha ------------------------------------------------------------- */
+/* Image and refresh share a row so the challenge costs one band of height
+   rather than two — the card has to clear the fold on a laptop. Below about
+   320px there is no longer room for both, and the button drops under. */
+.auth-captcha__frame {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.auth-captcha__image {
+  flex: 1 1 12rem;
+  min-width: 0;
+  min-height: 72px;
+  display: grid;
+  place-items: center;
+  padding: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  /* The PNG is dark glyphs on white, so the tile stays white — legibility of
+     the challenge outranks the card's tone. */
+  background: #fff;
+  overflow: hidden;
+}
+
+.auth-captcha__image img {
+  /* The challenge has to stay legible on a 360px screen, so it scales down
+     with the card rather than being cropped or scrolled. */
+  width: 100%;
+  max-width: 240px;
+  height: auto;
+  border-radius: 4px;
+}
+
+.auth-captcha__placeholder {
+  font-size: var(--t-micro);
+  color: #6e6e73;
+  padding: 1.5rem 0.5rem;
+  text-align: center;
+}
+
+.auth-captcha__refresh {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  font-size: var(--t-micro);
+  font-weight: var(--w-medium);
+  color: var(--fg-dim);
+  transition: color var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out);
+}
+
+.auth-captcha__refresh:hover:not(:disabled) {
+  color: var(--fg);
+  border-color: var(--fg);
+}
+
+.auth-captcha__refresh:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- pending ------------------------------------------------------------- */
+.login-card__spinner {
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid var(--rule);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: login-spin 0.7s linear infinite;
+}
+
+.login-card__spinner--sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 2px;
+  border-color: rgba(255, 255, 255, 0.4);
+  border-top-color: #fff;
+}
+
+@keyframes login-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.login-card__wide:disabled,
+.btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* --- responsive ---------------------------------------------------------- */
+/* On a phone the card sheds its frame and the ground carries the page: a
+   28rem panel inset inside a 360px screen wastes the width the form needs. */
+@media (max-width: 560px) {
+  .login {
+    place-items: start center;
+    padding-inline: 0;
+    padding-block: 0;
+  }
+
+  .login__stage {
+    gap: var(--gap-l);
+    padding-block: clamp(2rem, 1.5rem + 4vw, 3rem) 2.5rem;
+  }
+
+  .login-card {
+    width: 100%;
+    padding: var(--page-x);
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    box-shadow: none;
+  }
+
+  .login-card::before {
+    display: none;
+  }
+
+  .login__meta {
+    padding-inline: var(--page-x);
+  }
+}
+
+/* Translucency is a preference: frost the card solid when it is refused, so
+   the type never sits on whatever happens to be behind it. */
+@media (prefers-reduced-transparency: reduce) {
+  .login-card {
+    background: var(--obsidian-2);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login__glow,
+  .login-mark__travel,
+  .login-card {
+    animation: none;
+  }
+
+  .login-card__spinner {
+    animation-duration: 1.6s;
+  }
+}

@@ -2,6 +2,10 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
+import CERTIFICATIONS from '@/data/certifications'
+import MILESTONES from '@/data/milestones'
+import SERVICE_PILLARS from '@/data/servicePillars'
+import { statsFor } from '@/data/stats'
 import YearsTower from '@/components/YearsTower'
 import Reveal from '@/components/Reveal'
 import { Arrow, ArrowDown, PILLAR_ICONS, Shield } from '@/components/icons'
@@ -783,12 +787,17 @@ function Invitation() {
 /* --- page ----------------------------------------------------------------- */
 
 export default function About() {
-  const { data: stats } = useApi('stats/', { group: 'about' })
-  const { data: milestones } = useApi('milestones/')
   const { data: team } = useApi('team/')
   const { data: awards } = useApi('awards/')
-  const { data: certifications } = useApi('certifications/')
-  const { data: pillars } = useApi('service-pillars/')
+
+  /* Static — see src/data. The Certification, Milestone, ServicePillar and
+     Stat models were dropped from the backend (adminpanel migration 0004):
+     none of it changes between deploys, so it renders with the first paint
+     instead of arriving a round trip later. */
+  const stats = statsFor('about')
+  const milestones = MILESTONES
+  const certifications = CERTIFICATIONS
+  const pillars = SERVICE_PILLARS
 
   useEffect(() => {
     document.title = 'About — Zion Lifts'

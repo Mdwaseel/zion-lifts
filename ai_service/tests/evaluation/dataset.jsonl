@@ -1,0 +1,2 @@
+{"question": "What does Qdrant store?", "expected_document_ids": [], "expected_answer": "Dense vector embeddings for similarity search."}
+{"question": "How does hybrid search combine rankings?", "expected_document_ids": [], "expected_answer": "With reciprocal rank fusion over dense and BM25 results."}

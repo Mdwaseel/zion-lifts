@@ -1,10 +1,11 @@
 import { Suspense, lazy, useEffect, useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 
 import Layout from '@/components/Layout'
 import Preloader, { hasSeenIntro, introForced } from '@/components/Preloader'
 import { prefetchCore } from '@/lib/api'
 import { useReducedMotion } from '@/lib/hooks'
+import { AuthProvider } from '@/lib/auth'
 import { SiteProvider } from '@/lib/site'
 
 import Home from '@/pages/Home'
@@ -23,6 +24,10 @@ const Faq = lazy(() => import('@/pages/Faq'))
 const Journal = lazy(() => import('@/pages/Journal'))
 const JournalDetail = lazy(() => import('@/pages/JournalDetail'))
 const Legal = lazy(() => import('@/pages/Legal'))
+// Deliberately outside <Layout>: the control room door is not part of the site.
+const Login = lazy(() => import('@/pages/Login'))
+// The custom control room. Split out so none of it reaches a public visitor.
+const AdminApp = lazy(() => import('@/admin/AdminApp'))
 const NotFound = lazy(() => import('@/pages/NotFound'))
 
 function RouteFallback() {
@@ -67,8 +72,15 @@ function useLenis(enabled) {
 }
 
 export default function App() {
-  const [intro, setIntro] = useState(() => introForced() || !hasSeenIntro())
-  useLenis(!intro)
+  // The control room is a door, not a destination: no brand intro, and no
+  // momentum scrolling on a single-screen form.
+  const path = useLocation().pathname
+  const isAuthRoute = path.startsWith('/login') || path.startsWith('/control')
+
+  // `?intro` replays the intro on a page that has already seen it this
+  // session — but never on the control room, which has no intro to replay.
+  const [intro, setIntro] = useState(() => !isAuthRoute && (introForced() || !hasSeenIntro()))
+  useLenis(!intro && !isAuthRoute)
 
   useEffect(() => {
     prefetchCore()
@@ -79,6 +91,24 @@ export default function App() {
       {intro && <Preloader onDone={() => setIntro(false)} />}
       <Suspense fallback={<RouteFallback />}>
         <Routes>
+          {/* Scoped to this branch on purpose: mounting the provider globally
+              would add a session probe to every public page load. */}
+          <Route
+            path="login"
+            element={
+              <AuthProvider>
+                <Login />
+              </AuthProvider>
+            }
+          />
+          <Route
+            path="control/*"
+            element={
+              <AuthProvider>
+                <AdminApp />
+              </AuthProvider>
+            }
+          />
           <Route element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="lifts" element={<Lifts />} />

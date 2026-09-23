@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom'
 import { Img } from '@/components/Media'
 import { Arrow, PILLAR_ICONS, Phone, Shield } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
-import { useApi, useReducedMotion } from '@/lib/hooks'
+import SERVICE_PILLARS from '@/data/servicePillars'
+import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
@@ -81,7 +82,7 @@ function Opening({ phone }) {
 
 export default function Service() {
   const site = useSite()
-  const { data: pillars } = useApi('service-pillars/')
+  const pillars = SERVICE_PILLARS
   const phone = site.phone_service || site.phone
 
   useEffect(() => {

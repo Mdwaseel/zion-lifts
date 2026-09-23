@@ -395,6 +395,7 @@
 .field input[type='text'],
 .field input[type='tel'],
 .field input[type='email'],
+.field input[type='password'],
 .field input[type='number'],
 .field select,
 .field textarea {
@@ -435,6 +436,12 @@
   min-height: 8rem;
   resize: vertical;
   line-height: 1.6;
+}
+
+.field input:disabled,
+.field textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .field input:focus,

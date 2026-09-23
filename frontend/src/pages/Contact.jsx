@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { Img } from '@/components/Media'
 import { Accordion } from '@/components/sections'
 import { Arrow, Chat, Mail, Phone, Pin, Wrench } from '@/components/icons'
+import { faqCategories } from '@/data/faqs'
 import { gsap } from '@/lib/gsap'
 import { useApi, useReducedMotion } from '@/lib/hooks'
 import { telHref, whatsappHref } from '@/lib/media'
@@ -242,7 +243,6 @@ function Facility() {
 export default function Contact() {
   const site = useSite()
   const { data: lifts } = useApi('lifts/')
-  const { data: faqCats } = useApi('faq-categories/', { scope: 'contact' })
   const [office, setOffice] = useState('head_office')
   // mirrored out of the enquiry form so the live summary can read it
   const [snapshot, setSnapshot] = useState({ form: {}, files: [] })
@@ -253,7 +253,7 @@ export default function Contact() {
 
   const offices = site.offices ?? []
   const current = offices.find((o) => o.kind === office) ?? offices[0]
-  const contactFaqs = (faqCats ?? []).flatMap((c) => c.questions ?? [])
+  const contactFaqs = faqCategories('contact').flatMap((c) => c.questions)
 
   return (
     <div className="ct">

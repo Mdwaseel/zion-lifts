@@ -1,0 +1,18 @@
+# Optional: run the embedding and reranking models in-process instead of
+# calling the Hugging Face API.
+#
+# Deliberately not part of requirements.txt. These two pull roughly 2.5 GB of
+# wheels and add several seconds to every import, in every API container and
+# every Celery worker child. The default deployment embeds over HTTP
+# (EMBEDDING_PROVIDER=auto with HF_API_TOKEN set) and reranks not at all.
+#
+# Install when you want either of:
+#   EMBEDDING_PROVIDER=local  -> app/embeddings/huggingface.py
+#   RERANKER_ENABLED=true     -> app/retrieval/reranker.py (CrossEncoder)
+#
+#   pip install -r requirements.txt -r requirements-local-models.txt
+#
+# Carried forward from the previous pins rather than re-verified against a
+# running import; CI installs them in full, which is where they are exercised.
+sentence-transformers==3.3.1
+torch==2.5.1

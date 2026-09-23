@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 
 import { ClientLogos } from '@/components/sections'
+import SERVICE_PILLARS from '@/data/servicePillars'
 import { useApi } from '@/lib/hooks'
 
 import { Hero, WorldBelow } from './home/Ascent'
@@ -17,7 +18,6 @@ export default function Home() {
   const { data: lifts } = useApi('lifts/')
   const { data: projects } = useApi('projects/')
   const { data: finishes } = useApi('finishes/')
-  const { data: pillars } = useApi('service-pillars/')
   const { data: team } = useApi('team/')
   const { data: testimonials } = useApi('testimonials/')
 
@@ -38,7 +38,7 @@ export default function Home() {
       <ProjectsReel projects={projects ?? []} />
       <Installations />
       <Details />
-      <AfterInstall pillars={pillars ?? []} />
+      <AfterInstall pillars={SERVICE_PILLARS} />
       <People team={team ?? []} />
       <Voices testimonials={testimonials ?? []} />
       <ClientLogos />

@@ -7,6 +7,7 @@ import { Accordion } from '@/components/sections'
 import { Arrow, ArrowDown, GaugeMark, UpDownMark, UsersMark } from '@/components/icons'
 import { LIFT_ICONS } from '@/components/lift-marks'
 import { PLACES } from '@/components/place-marks'
+import { faqCategory } from '@/data/faqs'
 import { gsap } from '@/lib/gsap'
 import { useApi, useReducedMotion } from '@/lib/hooks'
 
@@ -484,14 +485,13 @@ export default function Lifts() {
   const { data: applications } = useApi('applications/')
   const { data: projects } = useApi('projects/')
   const { data: finishes } = useApi('finishes/')
-  const { data: faqCats } = useApi('faq-categories/')
 
   useEffect(() => {
     document.title = 'Lift systems — Zion Lifts'
   }, [])
 
   const all = lifts ?? []
-  const chooseFaq = (faqCats ?? []).find((c) => c.slug === 'choosing-a-lift')
+  const chooseFaq = faqCategory('choosing-a-lift')
 
   return (
     <div className="lc">

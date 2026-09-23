@@ -1,7 +1,9 @@
-"""Django settings for the Zion Lifts site."""
+"""Django settings for the Zion Lifts site.""" 
+from datetime import timedelta
 from pathlib import Path
 import os
 
+from corsheaders.defaults import default_headers
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
@@ -10,7 +12,9 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-only-not-for-production-4f9a2c81")
 DEBUG = os.getenv("DJANGO_DEBUG", "1") == "1"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0").split(",")
+ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,0.0.0.0,host.docker.internal").split(",")
+if DEBUG and "*" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("*")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -20,13 +24,16 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "corsheaders",
     "django_filters",
-    "apps.core",
-    "apps.catalog",
-    "apps.projects",
-    "apps.content",
-    "apps.enquiries",
+    "apps.accounts",
+    # The site's models, the control room over them, and the public read API
+    # all live in one app — see apps/adminpanel/models.py for why.
+    "apps.adminpanel",
+    "apps.knowledge",
+    # Website analytics: the public tracker, and the reports over what it wrote.
+    "apps.analytics",
 ]
 
 MIDDLEWARE = [
@@ -39,6 +46,9 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Last, so the duration it records covers every middleware above it and
+    # `request.user` is already resolved when the completion line is written.
+    "zion.observability.middleware.RequestObservabilityMiddleware",
 ]
 
 ROOT_URLCONF = "zion.urls"
@@ -60,12 +70,20 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "zion.wsgi.application"
 
+import os
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.getenv("DB_NAME" ),
+        "USER": os.getenv("DB_USER" ),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST", "localhost"),
+        "PORT": os.getenv("DB_PORT", "5432"),
     }
 }
+
+
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -91,6 +109,10 @@ MEDIA_ROOT = BASE_DIR / "uploads"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+def env_bool(name, default):
+    return os.getenv(name, "1" if default else "0").strip().lower() in {"1", "true", "yes", "on"}
+
+
 REST_FRAMEWORK = {
     "DEFAULT_FILTER_BACKENDS": [
         "django_filters.rest_framework.DjangoFilterBackend",
@@ -99,16 +121,137 @@ REST_FRAMEWORK = {
     ],
     "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     "PAGE_SIZE": 48,
+    # The public content endpoints stay AllowAny (DRF's default). This only
+    # decides *who* a request is when it carries an auth cookie: the JWT cookie
+    # first, then the session, so a signed-in admin browsing the API in a tab
+    # is recognised too.
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "apps.accounts.authentication.JWTCookieAuthentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    # How many reverse proxies sit in front of Django. This is the setting that
+    # decides which address a throttle counts against, so getting it wrong
+    # disables rate limiting entirely: left as None, DRF keys the bucket on the
+    # whole client-supplied X-Forwarded-For header, and an attacker varying that
+    # header lands in a fresh bucket on every request. 0 = no proxy, trust
+    # REMOTE_ADDR; 1 = one nginx in front, take the last hop it appended.
+    "NUM_PROXIES": int(os.getenv("NUM_PROXIES", "0")),
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.ScopedRateThrottle"],
-    "DEFAULT_THROTTLE_RATES": {"enquiry": "12/hour"},
+    "DEFAULT_THROTTLE_RATES": {
+        "enquiry": "12/hour",
+        # The analytics beacon fires once per page a visitor opens, so this is
+        # sized against a person browsing quickly rather than against a form
+        # submission: generous enough that nobody reading the site is ever
+        # dropped, tight enough that the endpoint cannot be used to fill the
+        # table faster than browsing would.
+        "analytics_track": os.getenv("ANALYTICS_RATE_LIMIT", "240/hour"),
+        # Loose enough for a person mistyping a password a few times; tight
+        # enough that a script cannot work through a wordlist.
+        "login": os.getenv("LOGIN_RATE_LIMIT", "10/minute"),
+        "login_account": os.getenv("LOGIN_ACCOUNT_RATE_LIMIT", "12/hour"),
+        "captcha": os.getenv("CAPTCHA_RATE_LIMIT", "30/minute"),
+    },
 }
 
-CORS_ALLOWED_ORIGINS = os.getenv(
-    "CORS_ALLOWED_ORIGINS",
-    "http://localhost:5173,http://127.0.0.1:5173,http://localhost:4173",
-).split(",")
+# --- authentication --------------------------------------------------------
+# Email first, so the React login page and the admin's own form accept the same
+# identifier. ModelBackend stays behind it for usernames and for permissions.
+AUTHENTICATION_BACKENDS = [
+    "apps.accounts.backends.EmailOrUsernameBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+# The cache backs DRF throttling and the CAPTCHA store, both of which are only
+# correct if every worker sees the same entries. LocMemCache is per-process:
+# fine for development and the test suite, wrong behind more than one gunicorn
+# worker. Set REDIS_URL in production.
+_redis_url = os.getenv("REDIS_URL", "").strip()
+CACHES = {
+    "default": (
+        {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": _redis_url}
+        if _redis_url
+        else {
+            "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+            "LOCATION": "zion-default",
+        }
+    )
+}
+
+# JWT. The access token is short-lived because it is presented on every request
+# and is never checked against a server-side list — once minted it is valid
+# until it expires, so the window is the whole of its blast radius. The refresh
+# token is long-lived because its only job is to avoid asking for the password
+# again; it is scoped to one URL path, rotated on every use, and revocable,
+# because rotation puts the spent one on the blacklist.
+JWT_ACCESS_COOKIE = os.getenv("JWT_ACCESS_COOKIE", "access_token")
+JWT_REFRESH_COOKIE = os.getenv("JWT_REFRESH_COOKIE", "refresh_token")
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(os.getenv("JWT_ACCESS_LIFETIME_MINUTES", "15"))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(os.getenv("JWT_REFRESH_LIFETIME_DAYS", "7"))),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
+    "ALGORITHM": "HS256",
+    # A separate key by preference: rotating the JWT secret then invalidates
+    # every session without also invalidating signed cookies and password-reset
+    # links, which is what changing DJANGO_SECRET_KEY would do.
+    "SIGNING_KEY": os.getenv("JWT_SIGNING_KEY", SECRET_KEY),
+    "AUTH_HEADER_TYPES": ("Bearer",),
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
+}
+
+# --- auth cookies ----------------------------------------------------------
+# Same-site by default: in development Vite proxies /api to Django, and in
+# production nginx serves the site and proxies /api and /admin from one origin.
+# SameSite=Lax is therefore correct and is a free layer of CSRF defence. Only
+# set SameSite=None (which requires Secure) if the API really does move to a
+# different site from the front end.
+AUTH_COOKIE_SECURE = env_bool("AUTH_COOKIE_SECURE", not DEBUG)
+AUTH_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "Lax")
+AUTH_COOKIE_DOMAIN = os.getenv("AUTH_COOKIE_DOMAIN", "").strip()
+AUTH_COOKIE_PATH = "/"
+# The refresh token is only ever read by /api/accounts/refresh/ and /logout/, so
+# the browser is told not to send it anywhere else.
+AUTH_REFRESH_COOKIE_PATH = "/api/accounts/"
+
+# --- CAPTCHA ---------------------------------------------------------------
+CAPTCHA_TTL_SECONDS = int(os.getenv("CAPTCHA_TTL_SECONDS", "300"))
+CAPTCHA_MAX_ATTEMPTS = int(os.getenv("CAPTCHA_MAX_ATTEMPTS", "3"))
+CAPTCHA_LENGTH = int(os.getenv("CAPTCHA_LENGTH", "5"))
+
+CORS_ALLOWED_ORIGINS = [
+    o.strip()
+    for o in os.getenv(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,http://127.0.0.1:5173,http://localhost:5174,http://127.0.0.1:5174,http://localhost:4173",
+    ).split(",")
+    if o.strip()
+]
+
+# The one origin the site is actually served from. Kept separate because the
+# login flow needs to name it (redirects, cookie scope) rather than guess from a
+# list, and folded into the allow-lists so it cannot be forgotten in either.
+FRONTEND_URL = os.getenv("FRONTEND_URL", "http://localhost:5173").strip().rstrip("/")
+if FRONTEND_URL and FRONTEND_URL not in CORS_ALLOWED_ORIGINS:
+    CORS_ALLOWED_ORIGINS.append(FRONTEND_URL)
+
+# Never CORS_ALLOW_ALL_ORIGINS: credentialed requests plus a wildcard origin is
+# an open door to every authenticated endpoint on the site.
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = CORS_ALLOWED_ORIGINS
+CORS_ALLOW_HEADERS = list(default_headers) + ["x-csrftoken"]
+CSRF_TRUSTED_ORIGINS = list(CORS_ALLOWED_ORIGINS)
+
+# Session cookie: the admin runs on it, so it gets the same posture as the JWT
+# cookies. HttpOnly is on in every environment, not only in production.
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "Lax")
+CSRF_COOKIE_SAMESITE = os.getenv("AUTH_COOKIE_SAMESITE", "Lax")
+# CSRF_COOKIE_HTTPONLY stays False on purpose: the React client has to read this
+# one to echo it back in X-CSRFToken. It is a token, not a credential — knowing
+# it is useless without also being able to send the session cookie.
+CSRF_COOKIE_HTTPONLY = False
 
 # Where the React build writes its public asset tree — the seeder points at it.
 FRONTEND_MEDIA_URL = os.getenv("FRONTEND_MEDIA_URL", "/media")
@@ -127,8 +270,134 @@ ENQUIRY_NOTIFY_TO = [
     e for e in os.getenv("ENQUIRY_NOTIFY_TO", "sales@zionlifts.com").split(",") if e
 ]
 
+# --- logging ---------------------------------------------------------------
+# One named logger for security events. Everything written to it is an outcome
+# plus an actor — user id, email on failure, client address — and never a
+# credential: no passwords, no tokens, no cookie values, no CAPTCHA answers.
+# Point AUTH_LOG_FILE at a path in production to keep the trail off stdout.
+_auth_log_file = os.getenv("AUTH_LOG_FILE", "").strip()
+
+# Structured in production, readable in development. Both formatters redact:
+# see zion/observability/redaction.py for what is removed and what is reduced to
+# a hash instead.
+LOG_FORMAT = os.getenv("LOG_FORMAT", "json" if not DEBUG else "console").strip().lower()
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").strip().upper()
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "request_id": {"()": "zion.observability.logging.RequestIdFilter"},
+    },
+    "formatters": {
+        "security": {
+            "format": "{asctime} {levelname} {name} {message}",
+            "style": "{",
+        },
+        "json": {"()": "zion.observability.logging.JsonFormatter"},
+        "console": {"()": "zion.observability.logging.ConsoleFormatter"},
+    },
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "security",
+        },
+        "structured": {
+            "class": "logging.StreamHandler",
+            "formatter": LOG_FORMAT if LOG_FORMAT in ("json", "console") else "console",
+            "filters": ["request_id"],
+        },
+        **(
+            {
+                "auth_file": {
+                    "class": "logging.handlers.RotatingFileHandler",
+                    "filename": _auth_log_file,
+                    "maxBytes": 5 * 1024 * 1024,
+                    "backupCount": 5,
+                    "formatter": "security",
+                    "encoding": "utf-8",
+                }
+            }
+            if _auth_log_file
+            else {}
+        ),
+    },
+    "root": {"handlers": ["structured"], "level": LOG_LEVEL},
+    "loggers": {
+        # Request records and application telemetry. Kept off the "security"
+        # handler on purpose: an audit trail answering "who changed this" and
+        # telemetry answering "why is this slow" have different readers, and
+        # different retention.
+        "zion.request": {
+            "handlers": ["structured"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+        "apps.knowledge": {
+            "handlers": ["structured"],
+            "level": LOG_LEVEL,
+            "propagate": False,
+        },
+        "apps.accounts.security": {
+            "handlers": ["console"] + (["auth_file"] if _auth_log_file else []),
+            "level": os.getenv("AUTH_LOG_LEVEL", "INFO"),
+            "propagate": False,
+        },
+        "django.security": {
+            "handlers": ["console"] + (["auth_file"] if _auth_log_file else []),
+            "level": "WARNING",
+            "propagate": False,
+        },
+    },
+}
+
+# --- observability ----------------------------------------------------------
+# The header a correlation id arrives on and is echoed back in. Must match
+# REQUEST_ID_HEADER on the ai_service side, or one upload produces two
+# unconnected halves of a trace.
+REQUEST_ID_HEADER = os.getenv("REQUEST_ID_HEADER", "X-Request-ID")
+
+# How long an ingestion job may stay in flight before an operator should look at
+# it. Detection only: nothing is failed automatically on this signal, because a
+# job that is merely slow and a job whose worker died are indistinguishable from
+# the outside, and only one of them is safe to give up on.
+INGESTION_STALE_AFTER_SECONDS = int(os.getenv("INGESTION_STALE_AFTER_SECONDS", 1800))
+
 FILE_UPLOAD_MAX_MEMORY_SIZE = 10 * 1024 * 1024
 DATA_UPLOAD_MAX_MEMORY_SIZE = 25 * 1024 * 1024
+
+# --- knowledge base / ai_service -------------------------------------------
+# Django owns the document records; ai_service owns retrieval. The only thing
+# crossing between them is a Celery message, so the only configuration Django
+# needs about the AI side is the broker they share and the name of the embedding
+# each version was built with — which is stamped onto the version at upload so
+# the record stays true after the AI service is reconfigured.
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL", _redis_url)
+AI_EMBEDDING_MODEL = os.getenv("AI_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")
+AI_EMBEDDING_MODEL_VERSION = os.getenv("AI_EMBEDDING_MODEL_VERSION", "v1")
+
+# Mirrors MAX_UPLOAD_BYTES in ai_service. Enforced here because this is where
+# the upload actually arrives.
+KNOWLEDGE_MAX_UPLOAD_BYTES = int(os.getenv("KNOWLEDGE_MAX_UPLOAD_BYTES", 25 * 1024 * 1024))
+
+# The shared secret on /api/internal/knowledge/. Both services must hold the
+# same value: the worker presents it to report progress and to fetch a stored
+# document, and this side compares it in constant time. It is not a user
+# credential and must never be used as one.
+#
+# Unset means the internal routes refuse everything, which is the right failure:
+# a misconfigured deployment should stop ingesting, not accept anonymous writes
+# to its document pipeline. It is required whenever DEBUG is off.
+AI_SERVICE_INTERNAL_TOKEN = os.getenv("AI_SERVICE_INTERNAL_TOKEN", "").strip()
+
+# Reading ai_service's operational endpoints needs a *different* secret from the
+# one above. AI_SERVICE_INTERNAL_TOKEN is what the worker presents when calling
+# into Django; this is what Django presents when calling into ai_service, and it
+# must equal ai_service's own INTERNAL_TOKEN. Two names because they are two
+# credentials — sharing one would mean a leak in either direction compromised
+# both.
+AI_SERVICE_URL = os.getenv("AI_SERVICE_URL", "").strip().rstrip("/")
+AI_SERVICE_OPS_TOKEN = os.getenv("AI_SERVICE_OPS_TOKEN", "").strip()
 
 # --- Production hardening ---------------------------------------------------
 # Applied automatically whenever DJANGO_DEBUG=0, so a deployment cannot forget
@@ -150,3 +419,69 @@ if not DEBUG:
         raise ImproperlyConfigured(
             "DJANGO_SECRET_KEY must be set to a real value when DEBUG is off."
         )
+
+    # The auth cookies carry the same weight as the session cookie, so they get
+    # the same rule rather than an environment variable that can be left at
+    # false by accident.
+    if not AUTH_COOKIE_SECURE:
+        raise ImproperlyConfigured(
+            "AUTH_COOKIE_SECURE must be true when DEBUG is off: the JWT cookies "
+            "would otherwise be sent over plain HTTP."
+        )
+
+    # SameSite=None means the cookie is attached to cross-site requests, which
+    # removes a layer of CSRF defence. Browsers only accept it with Secure, and
+    # this project should only need it if the API is moved to another domain.
+    if AUTH_COOKIE_SAMESITE.lower() == "none" and not AUTH_COOKIE_SECURE:
+        raise ImproperlyConfigured("AUTH_COOKIE_SAMESITE=None requires AUTH_COOKIE_SECURE=true.")
+
+    # The development origins are permissive by design and must not survive into
+    # production: CORS_ALLOW_CREDENTIALS is on, and CSRF_TRUSTED_ORIGINS mirrors
+    # this list, so leaving localhost in it means a process on a visitor's own
+    # machine is treated as a trusted origin for credentialed requests.
+    _dev_origins = [o for o in CORS_ALLOWED_ORIGINS if "localhost" in o or "127.0.0.1" in o]
+    if _dev_origins:
+        raise ImproperlyConfigured(
+            "CORS_ALLOWED_ORIGINS and FRONTEND_URL must name the real site when "
+            f"DEBUG is off; found development origins: {', '.join(_dev_origins)}"
+        )
+
+    # The worker's callback is the only way an ingestion result reaches this
+    # database. An unset token does not merely disable it — it makes every
+    # uploaded document sit in PROCESSING for ever with no explanation.
+    if not AI_SERVICE_INTERNAL_TOKEN or len(AI_SERVICE_INTERNAL_TOKEN) < 32:
+        raise ImproperlyConfigured(
+            "AI_SERVICE_INTERNAL_TOKEN must be a random value of at least 32 "
+            "characters when DEBUG is off; the ingestion worker authenticates "
+            "with it and the internal routes reject everything without it."
+        )
+
+    # The JWT signing key falls back to SECRET_KEY, and SECRET_KEY has a
+    # committed development default — anyone with the repository could otherwise
+    # mint a token for any user id. The SECRET_KEY check above covers the
+    # fallback; this covers an explicitly set but throwaway JWT key.
+    if SIMPLE_JWT["SIGNING_KEY"].startswith("dev-only") or len(SIMPLE_JWT["SIGNING_KEY"]) < 32:
+        raise ImproperlyConfigured(
+            "JWT_SIGNING_KEY (or DJANGO_SECRET_KEY, which it falls back to) must "
+            "be a long random value when DEBUG is off."
+        )
+
+
+# --- website analytics -----------------------------------------------------
+# A visit ends after this much silence; the next page view starts a new one.
+# 30 minutes is the industry convention, which matters because it is what every
+# other tool these numbers get compared against uses.
+ANALYTICS_SESSION_TIMEOUT_MINUTES = int(os.getenv("ANALYTICS_SESSION_TIMEOUT_MINUTES", "30"))
+
+# How recently a visit must have been touched to count as "online now".
+ANALYTICS_ONLINE_WINDOW_MINUTES = int(os.getenv("ANALYTICS_ONLINE_WINDOW_MINUTES", "5"))
+
+# The site's own domains, so a visitor clicking from one page to another is not
+# filed as a referral from the site to itself. Defaults to ALLOWED_HOSTS, which
+# is already the list of names this site answers on; set this only where the two
+# genuinely differ. Configuration rather than the request's Host header because
+# any proxy that rewrites Host — nginx without proxy_set_header, Vite's
+# changeOrigin in development — would otherwise break the traffic-source report.
+ANALYTICS_OWN_HOSTS = [
+    host.strip() for host in os.getenv("ANALYTICS_OWN_HOSTS", "").split(",") if host.strip()
+] or ALLOWED_HOSTS
