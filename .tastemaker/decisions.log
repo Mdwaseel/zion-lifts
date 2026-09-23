@@ -1,0 +1,311 @@
+2026-09-19 | pending-review | lift detail page | structure | cut from 18 numbered sections to 8 (hero, statement, figures+film, cabin, plates, engineering+safety, field, next lift); removed process/aftercare/testimonials/FAQ/related cards as repeats of the homepage
+2026-09-19 | pending-review | lift detail page | motion | scroll-scrubbed door film sticky beside the specs; word-by-word statement; drawn shaft diagram
+2026-09-19 | rejected | site-wide | colour | gold/brass accent — user: "eliminate golden color and implement blue only". All brass tokens removed; accents are --teal (light) / --teal-bright (dark).
+2026-09-19 | rejected | lift detail page | gallery | horizontal pinned reel for "In place" — replaced at user's request with a 3D tilted 3-column wall that stands up on scroll (animated-gallery pattern).
+2026-09-19 | kept | lift detail page | projects | reuse the homepage ProjectsReel carousel for "In the field" rather than a bespoke list.
+2026-09-19 | pending-review | lift detail page | safety | pinned one-system-at-a-time sequence with rolling numeral and clickable index.
+2026-09-19 | kept | lift detail page | motion | user asked for the whole page in the gallery wall's scroll-driven style: hero draws back into a frame, word-blur statement, sticky card stack, size cards standing up, scroll-drawn shaft with travelling car, configurator entrance, tilting drive frame, flap-board safety panels, next-lift frame opening.
+2026-09-19 | rejected | lift detail page | safety | rolling numeral + single panel — user asked for a redesign; replaced by a row of expanding "leaves" (spines with vertical names, one open), scroll-driven and clickable.
+2026-09-19 | kept | site-wide | header | morphing scroll navbar: full-width at rest, floating glass shell on scroll, compact (brand + CTA) while reading down, links back on scroll up, progress hairline.
+2026-09-19 | rejected | lift detail page | captions | mono captions under the statement photo and the door film; and the "Talk to an engineer" link in the closing ask.
+2026-09-19 | rejected | lift detail page | safety | expanding "leaves" row — user: "didn't like the output". Lesson: two text-only versions were rejected; this section needs a visual.
+2026-09-19 | pending-review | lift detail page | safety | annotated section drawing of the lift (SafetyDrawing.jsx): camera moves through the shaft per system, the part lights and traces itself, account alongside; sticky drawing over scrolling accounts on phones.
+2026-09-19 | pending-review | lift detail + collection | cabin | CabinStudio (pages/lift/CabinStudio.jsx): a 3D hand of five render plates in CSS perspective — dealt by scroll, tipped by the pointer, new render rises up the plate on change; glass spec bar + CTA. Replaces the shared Configurator on lift pages only (homepage keeps the original).
+2026-09-19 | pending-review | /lifts collection | structure | 11 numbered sections cut to 7: opening, index (list + 3-question filter that folds rows + cursor-following preview), compare table, places tiles with icons and lift cross-links, cabin studio, homepage ProjectsReel, FAQ. Removed: card grid, engineering glance, shield safety grid, CtaBand (footer CTA closes).
+2026-09-19 | rejected | /lifts collection | index | big-type name list + chip filter band + cursor-following preview — user: "didn't like it". Third text-led design rejected on this project (after two safety versions): this client wants imagery leading, not typography.
+2026-09-19 | pending-review | /lifts collection | index | film wall: nine 4:5 plates with each lift's own loop playing on hover (in view on touch), three columns drifting at different scroll speeds, pointer tilt + glare, others dim on hover; filter as one fill-in sentence with native selects; non-matching plates switch off (leave on <1000px).
+2026-09-19 | rejected | /lifts collection | index | film wall of nine plates — user asked for "another design".
+2026-09-19 | pending-review | /lifts collection | index | scroll-driven arc carousel: nine plates on a curved 3D arc, the scroll turns it, the facing lift plays its film with its account beside it; sentence filter narrows the arc; arrows + click to travel. Held (sticky) section.
+2026-09-19 | pending-review | /lifts collection | compare | table replaced by nine "shafts" on one scale — each lift's range is a car that rides to position; Speed / Capacity / Stops switch; drive + machine room shown in a detail bar; the full table kept for screen readers.
+2026-09-19 | pending-review | /about | structure+motion | 15 numbered sections cut to 9, image-led: frame-exit hero with stats; origin read into focus (Scrub) + tilting photo; the years as floors — a car rides a shaft up through 7 milestones (held); method as a sticky stack of four dark photo cards (stages merged with the four crews); factory as a zoom-parallax you fall into (held); quality tiles standing up + awards rows; installations counter driven by scroll over a sliding photo wall; aftercare pillars; invitation frame that opens. Dropped: built-to-fit tiles, partners grid, "looking ahead", CtaBand, footer CTA on /about.
+2026-09-19 | rejected | /about | journey | pinned "years as floors" lift ride — user asked for "a timeline thing" instead.
+2026-09-19 | pending-review | /about | journey | vertical timeline: a centre line that fills with scroll, seven years alternating either side with a photo frame that tips up and opens, nodes that light as reached; line at the left on phones. Not pinned.
+2026-09-19 | rejected | /about | journey | vertical alternating line-and-dots timeline — user: "doesn't match the vibe". Generic patterns read as off-brand here even when animated.
+2026-09-19 | pending-review | /about | journey | cinematic scrubber: held full-bleed scene per milestone (dissolve + slow settle), year as four rolling digit wheels, account bottom-left, and a ruler of every year 2012–2024 along the foot with a glowing playhead the scroll drives; milestone marks are clickable.
+2026-09-19 | rejected | /about | journey | full-bleed cinematic scrubber with year ruler — user: "looks completely AI slop". Third generic pattern rejected for this section (floors-as-abstract-shaft, dots timeline, scrubber).
+2026-09-19 | pending-review | /about | journey | YearsTower.jsx: the thirteen years drawn as a building elevation that goes up a storey per milestone, each floor with its own architecture (workshop shutter, factory gantry, office windows, lit service-desk window, gearless machine, glazed capsule level, crown + installations sign); tower crane climbs with it, lift car rides the flank shaft, LED floor indicator shows the year; camera follows the top floor on phones.
+2026-09-19 | pending-review | /about | journey (A vs B) | two candidate designs shown one after the other for the client, tagged "Design A — The building" and "Design B — The landing". B: a lift landing seen from the passenger's side — brushed-steel doors that close, travel and open on each year's photograph, an LED indicator over the door, and a car operating panel whose call buttons are the years. Toggle: COMPARING in pages/About.jsx; delete the losing component once chosen.
+2026-09-19 | pending-review | /projects index | structure | Seven-shaft hero + "in traction" held index (sheave, car-side buildings climb, counterweight-side lifts descend) + sectors grouped by building with place icons + opening-frame CTA; filters dropped (7 projects).
+2026-09-19 | pending-review | home · After the installation | typography/motion | User asked for "animated type": headline printed across two door leaves that part on scroll to the lift in use; services as a column of display type sliding in from alternate sides beside a rolling year counter (0–25 in service). Old image+pillar-card grid removed.
+2026-09-19 | kept-by-request | nav | interaction | Hamburger and full-screen menu removed; compact pill expands on hover/focus/tap; links become a second row in the shell below 860px.
+2026-09-20 | rejected | home · After the installation | structure | v1 (door-split headline + type column with year counter) and v2 (door-split headline + hanging service tags with pendulum physics) — user: "didn't like it", both the headline stage and the list. Skeuomorphic paper objects and type-only lists are out for this section.
+2026-09-20 | pending-review | home · After the installation | structure | v3: Scrub headline + sticky stack of five wide dark photo cards (real frames per service, mirrored alternately, name drawn in from the side, card dims/scales as the next covers it). Same family as the kept Belongs/Method stacks.
+2026-09-20 | pending-review | home · People | structure | four expanding photo panels on dark, scroll walks the row, pointer/tap/keyboard takes over.
+2026-09-20 | pending-review | home · In their words | typography/motion | one client at a time, word-by-word rising quote, lift photo arrives from below, names row is control + clock.
+2026-09-20 | kept-by-request | footer | structure | "Where should we take you? / Tell us what you're building." closing CTA removed site-wide.
+2026-09-20 | rejected | home · After the installation | structure | v3 sticky stack of photo cards — user: "not interesting". Flat 2D layouts keep losing on this site; spatial/3D pieces keep winning.
+2026-09-20 | pending-review | home · After the installation | structure/motion | v4: dark held stage, five-sided CSS-3D prism of service photographs turned a face at a time by scroll (dwell + swing), pointer lean, outline type band scrubbing behind it, keyed account at the left, arrows + dots.
+2026-09-20 | rejected | home · People | structure | v2 shaft fly-through (wireframe frames receding, crews at depth) — user: "didn't like it". v1 expanding dark panels also replaced. Dark + abstract line-work around small photos loses; asked for direction, user said "do what you think is best".
+2026-09-20 | pending-review | home · People | structure/motion | v3: light ground, four portrait cards dealt as a fanned 3D deck that the scroll spreads flat into a row; copy arrives under each card left to right; hover lifts one and quiets the rest; swipe row on phones.
+2026-09-20 | kept-by-request | home · In their words | structure | User asked for the expanding photo-panels design (first People version) to be used for testimonials, autoplaying. Built: five tall panels on dark, open one in colour with word-rising quote, 6.5s autoplay with a clock line, pauses under the pointer, click/keyboard takes over. Signal: the dark expanding-panels pattern IS liked.
+2026-09-20 | rejected | home · People | structure | v3 fanned deck spreading into a light row — user asked to redesign again.
+2026-09-20 | pending-review | home · People | structure/motion | v4: held horizontal filmstrip on light ground — headline then four large photos carried sideways by scroll, photo drifting in its frame, giant italic name differenced across the frame edge, progress line survey→service.
+2026-09-20 | rejected | home · In their words | structure | expanding photo panels with autoplay — user: "doesn't look good" (even though they had pointed at that pattern). Correction to the earlier note: the panels pattern is NOT a confirmed like.
+2026-09-20 | pending-review | home · In their words | structure/motion | auto-sliding ring carousel on dark: one large card (lift photo + word-rising quote + byline) centred, neighbours turned away and dimmed, 5.5s autoplay with a clock line between the counter numbers, pause on hover, arrows/dots/swipe/arrow keys.
+2026-09-20 | pending-review | /gallery | structure/motion | Rebuilt in the homepage's language: dark hero behind a tilted, drifting 3D wall of every photograph (five columns looping opposite ways, leans away on exit) with category counts as anchor links; archive as five category filmstrips on paper, each carried sideways by scroll in alternating directions (native swipe rows on touch / reduced motion), frames opening from their centre line; lightbox kept and now walks the whole archive in page order; opening-frame CTA. Filter chips + masonry + CtaBand removed.
+2026-09-20 | pending-review | /projects | motion | Sector tiles now stand up out of the page in perspective as they open, and a hovered tile lifts while its row quiets — same behaviours as the homepage pieces. Structure unchanged.
+2026-09-20 | kept | /gallery hero | structure | tilted drifting wall hero — user: "the hero section is good".
+2026-09-20 | rejected | /gallery rows | interaction | scroll-driven sideways drift — user: not interactive, visitors can't stop and look. Rule: browsing surfaces must be user-controlled; scroll-linked motion is for storytelling sections only.
+2026-09-20 | pending-review | /gallery rows | interaction | rows stay still; mouse drag (no snap), swipe, sideways wheel, arrows, progress mark, drag never opens the lightbox, click does.
+2026-09-20 | pending-review | /contact | structure/motion | Shell rebuilt in the homepage language; forms, map and phone links untouched. Hero: the two intents as a landing hall-call station (up = new lift, down = service) — glass plate, lit button rings, each button brings its own photograph up behind the page; direct lines along the hero foot. "What happens next" as a line drawn by scroll with four stops lighting in turn. Facility as the opening-frame section. Serif RiseIn heads throughout; index numbers dropped.
+2026-09-20 | kept-by-request | forms | iconography | Every option chip in the enquiry and service forms carries a mark (building types, project stage, lift system, scope, service kind, urgency); eleven new marks added to place-marks.jsx on the same 24px/1.5-stroke grid. Marks stay grey until hovered or chosen.
+2026-09-20 | kept-by-request | /service | structure | Service & support split out of /contact into its own page: hero leads with the 24/7 number (pulsing call button), then the service form with the sticky "if someone is trapped" note, then the five service pillars. Contact's "down" hall-call button, About, the homepage and the footer now link to /service.
+2026-09-20 | rejected | header | structure/motion | morphing glass pill (expand on hover) — user: "i dont want the header to be that".
+2026-09-20 | kept-by-request | header | structure/motion | Two shapes: a ground-less bar at the top of a page (brand, links with rolling hover labels, floor indicator, phone, quote); on scroll it draws in to a black tab hung from the top edge with rounded lower corners, mark + links spread evenly, progress line on its lower edge — built from the user's reference screenshot. One menu at every width, no hamburger.
+2026-09-20 | pending-review | footer | structure/motion | Directory columns (links slide aside for a short teal rule), then the name "Zion Lifts" full width in serif with letters rising as the footer comes up, a lift call-button "Top floor / Back to the top" (Lenis scroll), low teal glow, small print.
+2026-09-21 | rejected | /projects | structure | v2 (seven-shaft hero + traction wheel with car/counterweight columns + sector tiles) — user asked for another redesign ("into something good").
+2026-09-21 | pending-review | /projects | structure/motion | v3 "the ride": the page is a lift. Held stage of car doors (brushed dark panels, lit meeting edge, landing lights sweeping past while shut) that open on the lobby film at G and on one project photograph/loop per floor; hall lantern with direction arrows and floor number; car operating panel down the right (round buttons G–07, directory of building names on ≥1200px) that scrolls the car to a floor via Lenis; account keyed by floor. Then "the street" on paper: every building as a photograph the height of its stops on one ground line with a floor rail, storey lines, sector brackets, buildings rising out of the ground on entry, a lit car riding to the top floor on hover; phone = horizontal scroller. Invitation frame kept.
+2026-09-21 | pending-review | /projects/:slug | structure | Enhanced, not rebuilt: title rises word by word; CtaBand replaced by the site's opening-frame close showing the next related project (its photograph, statement, case-study pill, quote + all-projects links); related grid now shows the remaining related projects only.
+2026-09-21 | rejected | /projects | structure | v3 "the ride" (held stage of car doors opening on a project per floor + car operating panel + street elevation of buildings by stops) — user: "i didnt liked it change the page design". Third held-stage/mechanism version of this page to lose; one-project-at-a-time behind a mechanical metaphor is the pattern to stop proposing here.
+2026-09-21 | pending-review | /projects | structure/motion | v4, no scroll-driven mechanism at all. "The wall": every project hung in its own large frame along one long CSS-3D wall at varied depths and heights, walked by drag with inertia and end springs, sideways trackpad, arrows and keys; camera leans toward the pointer, frames breathe on their hooks, a rested-on frame comes forward and plays its loop; sector marks light one kind of building, dim the rest and walk to the first. Then "On film": a cinema stage playing the seven site films one at a time (reel sized to the stage over a wash of its own poster) with a rack of posters to cut between and the project's account beside it. Invitation frame kept. Case-study page enhancements from earlier today kept.
+2026-09-22 | rejected | /projects | structure | v4 "the wall" (3D drag wall of frames) and v5 "the city" (CSS-3D photographic city, heights by stops, spotlight tour) — user: "not good change it", then "i want something unique". Four bespoke set-pieces in a row lost on this page (traction wheel, ride, wall, city).
+2026-09-22 | pending-review | /projects | structure | v6 returns to the one thing the user explicitly liked and once asked for here: the gallery's taste. Tilted drifting wall of every case-study photograph (54 frames) with sector counts as anchors; the case studies as hand-moved strips on paper, one a sector (photo, number, name, statement, facts, all one link); the film screen kept; invitation kept. Wall and strip extracted to pages/gallery/pieces.jsx and shared with /gallery.
+2026-09-22 | kept-by-request | home · installations map | structure | New section after the projects reel, built from the user's reference (their own "find nearest Zion Lifts" Leaflet page): 377 installations from the register pinned on OpenStreetMap, quietened to sit on paper; press a pin or an area and the map flies in while the details (area, city, lifts there, distance from the office, position, directions) come up in the panel on the right; search, "near me", show all. Leaflet loaded from a CDN only when the section is near; data snapshotted to public/data/installations.json with scripts/fetch-installations.mjs to refresh it.
+2026-09-22 | kept-by-request | footer | structure | Rebuilt from the user's reference screenshot: a white rounded card set in from the screen on a pale ground — lockup left, statement right; Company / Lifts / Contact columns with the contact lines behind small square icon marks; head-office hours and social marks on the right; small print with the legal links. The giant serif name and the "top floor" call button are gone.
+2026-09-22 | kept-by-request | home · installations map | iconography | Circle dots replaced by teal map-pin markers (SVG data URL, drop shadow); the pressed one is larger and white-faced with the pulsing ring beneath its point.
+2026-09-22 | kept-by-request | footer | composition | User: the first card looked off at 1920. Card capped at 1400px; the three columns packed together on the left with a fluid gap; a dark 'Get a quote' pill with a teal ring and the social row under it on the right; hours as a quiet line under the address; 'Hyderabad, India · since 2012' mono line under the lockup; statement set right, two lines.
+2026-09-22 | kept-by-request | footer | material | User: the white card looked off from the rest of the site. Same card and layout, now in the site's materials: dark ground, near-black card with a hairline edge, light lockup, statement in the serif, mono teal column labels, dim-white links, teal icon marks, the white quote pill with the teal ring.
+2026-09-22 | pending-review | /projects/:slug | structure/motion | Case-study page rebuilt in the site's language, one building at a time: full-bleed photograph that drifts and slowly settles on load, the name in the serif at its foot with the statement beside it and the lift's figures (system, capacity, stops, doors, drive, scope) along the bottom edge as a nameplate; the brief read into focus word by word on ivory; challenge / solution / result as three chapters on paper, each with the photograph of that stage tipping up into the page; the site film on the cinema stage; every photograph on a hand-moved strip opening in the lightbox; the client's words as a large serif quote on dark; the next building as the closing frame. Old projects.css, pinned sequence, SectionHead/CtaBand/ProjectCard uses removed from this page. Lightbox and frame sizes moved to shared modules.
+2026-09-22 | kept-by-request | /projects/:slug archive | structure/motion | 'Every photograph' changed from the gallery's drag strip to a masonry wall: a CSS grid on a 10px row unit where each frame's span is computed from its own proportions and the live column width (ResizeObserver), so nothing is cropped and the order of the job is kept left to right; the opening frame takes two columns when it lies wide; each frame is uncovered from its lower edge as it reaches the screen, staggered in threes; hover darkens and raises the caption with a teal plus ring, and touch screens keep the caption on; click opens the shared lightbox. Note for later: the reveal clip must sit on an inner element — a clip-path on the observed node zeroes its intersection rect and the observer never fires.
+
+## 2026-09-23 — Homepage hero: new footage, scrubbed instead of played
+KEPT (user-requested replacement of the previous play-to-stops hero).
+Footage: Zion Website/hero-section/Hero-new.mp4 — 1932x1080, 24fps, 8.4s.
+Lobby push-in -> doors open -> through the car -> Zion COP panel.
+
+Mechanism: the runway IS the timeline. gsap.ticker reads the section's
+getBoundingClientRect each frame, lerps toward it (EASE 0.14) and writes
+video.currentTime. Nothing autoplays; every frame shown is a frame the visitor
+scrolled to, and scrolling up runs the lift back down.
+
+Encoding: all-intra (-g 1 -keyint_min 1 -sc_threshold 0), 203/203 keyframes in
+both encodes. Without this, seeking lands on the nearest keyframe and the scrub
+stutters. Cost is size: CRF 26 @1920 = 8.9MB, CRF 27 @1280 = 4.4MB.
+
+Lessons worth keeping:
+- LEAD/TAIL (6%/8% of the runway) hold the first and last frames instead of
+  flashing past them at the section edges.
+- A scrubbed video is never played, so some browsers (iOS above all) decode
+  nothing and paint blank. One muted play() immediately paused primes it.
+- Progress is written as --p on the section, not React state: the grade, copy
+  and progress line read it in CSS, so nothing re-renders per pixel of scroll.
+- The old grade was built for dark footage. This take is lit warm marble, so the
+  eyebrow and lead sat on bright stone until a left-hand scrim was added
+  (bottom-only on phones, where the copy runs full width).
+- Three stop-marks replaced by one continuous hairline: the film is continuous
+  now, so the dots would have been describing a cut that no longer exists.
+
+## 2026-09-23 — Homepage hero: editorial art direction over the scrubbed take
+KEPT (user brief + reference image of a luxury-architecture hero).
+Scroll-scrub mechanism from earlier today left completely intact; only the
+composition, type and controls changed.
+
+Composition: type moved from bottom-left to centre-left and set into the shadow
+at the left of the lobby, where the grade already takes the frame down. The lift
+stands centre-right and is never covered at any width.
+
+Type: Fraunces 300 (already the site's editorial face, already loaded) at
+clamp(2.3rem, 4.6vw, 4.5rem). Two sentences, the second in bronze. First pass
+used 5.4vw in a 52vw column and the headline broke into four lines mid-sentence
+— a masthead that wraps mid-sentence stops reading as one. Widened to 60vw and
+eased to 4.6vw, which lands on the reference's three-line rhythm.
+
+Two accents, one job each — worth keeping as a rule:
+  bronze (#d2ae8a, drawn from the lobby's own door frame) = the brand's voice,
+    never clickable. Headline accent, eyebrow rule, scroll stroke.
+  teal = things you can act on. The live chapter mark, and focus rings.
+This is why the headline is bronze and the live mark is teal, not the reverse.
+Bronze is defined on `.hero` and nowhere else, so the site stays teal-only
+below the fold — the user's long-standing no-gold rule still holds everywhere
+except the one surface they asked for it on.
+
+01–04: NOT slides. There is one continuous take, so four fake slide dots would
+have been describing a carousel that does not exist. They are the points the
+take turns on (approach / threshold / doors / cabin), they light as the scroll
+reaches them, and they are real buttons that send the scroll back to that point.
+Honest, and more useful than the decoration would have been.
+
+Declined from the brief: the nav rewrite (HOME/RESOURCES/GET IN TOUCH). Nav is
+site-wide and RESOURCES has no route — it would have been a link to nowhere on
+every page. Flagged to the user rather than invented.
+
+## 2026-09-23 — Hero: real image sequence, stripped frame, teal restored; new preloader
+KEPT (user: "the hero section is acting like scroll scrub i want it to be
+image sequence scroll only", plus removals, CTA redesign, accent change).
+
+SEQUENCE (replaces the scrubbed <video> from earlier today)
+135 WebP stills drawn to a <canvas>, one per scroll position. 1600-wide set
+7.2MB, 900-wide 3.8MB — both lighter than the 8.9MB video they replace.
+Why it is genuinely better, not just different: a still is either decoded or it
+is not. Seeking a video can land a few tenths off the frame asked for and
+arrives late on a flick; a still cannot. Proved it: scrolling to 0.25, away,
+and back returns a byte-identical canvas. Video seeking could never guarantee
+that.
+Loading is coarse-to-fine — every 8th still, then 4th, 2nd, all — so the whole
+length of the take is scrubbable within a second and merely sharpens as the
+rest land, rather than the visitor waiting on an in-order load to reach the
+part they already scrolled to. `nearest()` falls back to the closest arrived
+still, so there is never a blank frame.
+
+REMOVED from the frame, as asked: the VERTICAL TRANSPORTATION eyebrow, the
+SCROLL cue, and the 01–04 marks. The frame is now the claim, the way in, and
+the take. It is much stronger for it — worth remembering that the instinct to
+furnish a hero with cues was wrong here.
+
+ACCENT back to --teal-bright. The bronze experiment lasted one round; the
+user's long-standing teal-only rule stands, and the headline now ties to the
+"Lifts" in the nav. No bronze token remains anywhere.
+
+CTA: the ring became a leader line — words, a rule running out from them, the
+arrow at its end. On hover the rule draws further out and the arrow travels
+with it, so the line itself is the movement and nothing has to glow.
+
+PRELOADER: mark + wordmark hold on black, then the mark launches — straight up,
+accelerating, plume behind it, ground falling away while it still climbs so the
+launch reveals the page. The triangle was already a nose cone; the exit is the
+one the shape asks for.
+Two bugs worth remembering:
+- Putting the arrival animation and the launch transform on ONE element makes
+  the browser drop the transition and jump straight to the end, because the
+  transform replaces a running animation inside the same style recalculation.
+  Nest them: inner element arrives, outer element launches.
+- The plume was drawn at the centre of the FRAME, but the lockup is a flex row,
+  so the mark sits left of centre and the plume hung under the wordmark. It
+  belongs to the mark, not the viewport — nest it in the mark's own box.
+
+LEFT BEHIND: 20MB of now-unreferenced hero media (hero-1080/720.mp4,
+hero-poster.jpg, hero-scrub-1080/720.mp4). Flagged to the user, not deleted.
+
+## 2026-09-23 — Hero: glass pill CTA, scroll cue restored
+KEPT (user supplied the reference button markup/CSS and an image of the cue).
+
+CTA: the leader line became the reference's glass pill — label, then the action
+held in a filled disc at the end. Kept the reference's material logic (lit rim
+from inset highlights on two corners, blurred diagonal sheen on ::after,
+backdrop-blur) but retuned the values for a DARK ground; at the reference's own
+numbers, which assume a light page, it read as a white slab on the film. The
+disc takes the teal, consistent with teal = the thing you can do.
+
+Dropped from the reference on purpose: `filter: contrast(3)` on a wrapper. It
+is what gives that demo its liquid-glass rim, but it crushes the label's colour
+and interacts badly with backdrop-filter over a canvas. Said so rather than
+shipping it degraded.
+
+CUE: the mouse-and-wheel indicator is back at the foot of the frame, centred,
+fading out by 10% of the runway. Removed it two rounds ago at the user's
+request and they asked for it back — noted, the cue earns its place.
+
+BUILD BUG WORTH REMEMBERING
+`backdrop-filter` silently vanished from the built CSS. Cause: I wrote the
+standard property FIRST and `-webkit-` second; the minifier treats the two as
+aliases and keeps only the last, so the standard property was dropped and only
+the webkit form shipped. The rest of this codebase writes `-webkit-` first,
+standard second. Follow that order everywhere.
+Also: `getComputedStyle(el).backdropFilter` returns the STRING "none" when
+unset, which is truthy — `a || b` fallbacks in a check will never reach `b`.
+That nearly hid the bug.
+
+TEST NOTE: the reverse-determinism check on the sequence is settle-sensitive.
+The lerp (EASE 0.14) needs ~2.5s to converge; at 1.4s it can sit one frame off
+and the canvas fingerprint differs. Not a bug — give it the time before
+calling a mismatch real.
+
+## 2026-09-23 — /projects case studies: the held stage (KEPT — pending user)
+Rejections before this, in order: traction wheel, lift ride, 3D drag wall,
+photographic city, horizontal drag strips, alternating image/copy register
+("AI slop"), drawing sheets ("change the design").
+
+THE FEEDBACK THAT FINALLY MATTERED: "look how the homepage and other pages are
+and then change the design". Every rejected attempt invented a NEW section
+language. The site already had one and I was not using it.
+
+The site's signature (`.world` / WorldBelow in home.css + Ascent.jsx):
+  sticky pin + runway, full-bleed photographic layers crossfading with a small
+  scale, a left veil so type sits across the photo's edge, a copy block that
+  re-enters on each change via gsap.fromTo stagger, a specification strip along
+  the foot, and a numbered rail you can click.
+
+The case studies are now built in exactly that language (`.pw`), so the page
+reads as part of the site instead of a portfolio grid bolted onto it.
+One deliberate difference so it is family and not a clone: on the home page the
+title is FIXED and contexts change under it; here the headline IS the building,
+set in Fraunces and changing with the photograph, because the building is the
+subject rather than an example of one. The rail is grouped by sector.
+
+This also finally kills the original defect: healthcare has ONE case study, so
+every strip/grid attempt wrapped a scroller around a single card. On a rail,
+one case study is one line. The content problem dissolved once the container
+was right.
+
+SELF-CRITIQUE of the register that was called slop, recorded so it is not
+repeated: Specificity 1 (pasteable into any agency site unchanged), Philosophy 1
+(no position, just a competent layout), Variety 2 (alternating rows is THE
+default shape). It also failed tastemaker gate 6 outright — zero intentional
+rule-breaks, everything on grid, evenly spaced, perfectly safe.
+
+LESSON, the important one: on this project, "unique" does not mean a new
+mechanism. Five bespoke mechanisms were rejected. What works is the site's own
+established language carrying real content. Extend, do not invent.
+
+Also this round: the preloader progress bar was removed at the user's request;
+the hold is now carried by a teal charge glow gathering under the mark and
+spending itself at the launch, which suits the rocket rather than competing
+with it.
+
+## 2026-09-23 — Homepage lifts section (.lx): the rail slimmed, the type seated
+KEPT (user supplied a detailed spec + a gold reference mockup).
+
+The reference mockup was GOLD; the live section was already teal. Kept teal —
+the user asked for the site's blue, and no gold token exists in this codebase.
+
+RAIL: was a 4.25rem column carrying a name under all nine marks, which read as
+a sidebar and crowded the room behind it. Now 64px wide, 51px clear of the edge,
+marks only, generous spacing, 1.6rem radius, 20px backdrop blur, active mark in
+teal with a soft ring. The name comes out on a flag to the LEFT on hover/focus,
+so it stays discoverable without being permanent furniture.
+
+REMOVED the hairline that ran beside the rail (and its GSAP tween + ref). The
+04/09 at the foot already says where you are; saying it twice was the clutter.
+
+GRADE: the left scrim went from 0.78→0.5@26% to 0.9→0.74@24%→0.34@44%. The
+copy had been sitting on two figures in the photograph. The lift itself, centre
+-right, is still untouched.
+
+TWO REGRESSIONS I INTRODUCED AND BACKED OUT — worth remembering:
+Chasing the brief's "approximately 2 lines", I clamped the description to 3
+lines and the drive value to 2. Both then truncated mid-word with an ellipsis
+("...retrofits and heavy…", "with submersib…"). Losing real copy is a worse
+trade than a slightly taller block. The compactness has to come from the
+measure and the size, never from cutting the sentence off.
+
+PARALLAX: the brief asked for subtle image parallax. It already exists — the
+timeline scales each room 1.06 → 1.0 across its own segment, scrubbed by
+scroll. Did not add a second one.
+
+ICONS: the brief asked to use public/media/lift-icons/*.svg. The rail already
+renders that same artwork via components/lift-marks.jsx, normalised to a shared
+1000-unit square and drawn in currentColor. The raw files are fill="#000" with
+mismatched viewBoxes (e.g. "287 32 1624 1624"), so using them directly would
+render black — unable to take the teal active state — at nine different optical
+sizes, plus nine extra requests. Kept lift-marks; told the user why.
+
+## 2026-09-23 — Installations map: choosing a place now actually zooms into it
+Clicking a PIN already zoomed. Choosing an AREA from the list often did not:
+Kompally, Jubilee Hills and others moved the map slightly and looked inert.
+
+Cause: `flyToBounds` fits whatever bounds it is handed, and an area whose
+installations are spread across the city fits at roughly the zoom the city view
+already sits at. Leaflet's bounds options carry `maxZoom` but there is no
+`minZoom` — the fit can only be capped from above, never floored.
+
+Fix: work out the fitting zoom with `map.getBoundsZoom(bounds, false)` first,
+then clamp it from BOTH ends — never further out than 13.5, never closer than
+16 — and `flyTo(center, z)`. Single installations go to a firm 16, street level.
+Bounds padding dropped from 0.3 to 0.12 since the clamp now does that work.
+
+TESTING NOTE worth keeping: reading the map's zoom from the FIRST `.leaflet-tile`
+in the DOM is unreliable — stale tiles from the previous level are retained
+during a fly, so a working zoom reads as "no change". Take the mode of all
+`.leaflet-tile-loaded` URLs instead. A second false failure came from holding
+Playwright element handles across a React re-render (`showAll` clears the
+search and rebuilds the list); re-query by name each time.

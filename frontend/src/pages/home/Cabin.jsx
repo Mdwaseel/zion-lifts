@@ -148,10 +148,23 @@ export function Cabin() {
     }
     if (from === active) return
 
+    /* A fast scroll changes `active` again before the last crossfade has
+       finished; that timeline is killed below and would leave its outgoing
+       layer stranded at whatever opacity it had reached, showing through the
+       new one. So every layer not part of this change is put away first, and
+       the two that are carry on from wherever they are rather than restarting. */
+    const live = layers.filter(Boolean)
+    gsap.killTweensOf(live)
+    layers.forEach((el, i) => {
+      if (el && i !== from && i !== active) gsap.set(el, { autoAlpha: 0, scale: 1 })
+    })
+    if (Number(gsap.getProperty(layers[active], 'opacity')) === 0) {
+      gsap.set(layers[active], { scale: 1.02 })
+    }
+
     const tl = gsap.timeline()
-    tl.to(layers[from], { autoAlpha: 0, duration: 0.55, ease: 'power2.inOut' }, 0).fromTo(
+    tl.to(layers[from], { autoAlpha: 0, duration: 0.55, ease: 'power2.inOut' }, 0).to(
       layers[active],
-      { autoAlpha: 0, scale: 1.02 },
       { autoAlpha: 1, scale: 1, duration: 0.72, ease: EASE },
       0.04,
     )

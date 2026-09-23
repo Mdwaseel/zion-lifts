@@ -1,12 +1,15 @@
 import { useEffect } from 'react'
 
-import { ClientLogos, TestimonialRow } from '@/components/sections'
+import { ClientLogos } from '@/components/sections'
 import { useApi } from '@/lib/hooks'
 
 import { Hero, WorldBelow } from './home/Ascent'
 import { Cabin } from './home/Cabin'
-import { AfterInstall, FinalAscent, People, Trust } from './home/Human'
-import { Configurator, Engineering, Machine } from './home/Machine'
+import { AfterInstall, FinalAscent, People, Voices } from './home/Human'
+import { Installations } from './home/Installations'
+import { LiftsExperience } from './home/LiftsExperience'
+import { Engineering } from './home/Machine'
+import CabinStudio from './lift/CabinStudio'
 import { Blueprint, Certifications, Details, ProjectsReel } from './home/Proof'
 import './home/home.css'
 
@@ -16,8 +19,6 @@ export default function Home() {
   const { data: finishes } = useApi('finishes/')
   const { data: pillars } = useApi('service-pillars/')
   const { data: team } = useApi('team/')
-  const { data: certifications } = useApi('certifications/')
-  const { data: partners } = useApi('partners/')
   const { data: testimonials } = useApi('testimonials/')
 
   useEffect(() => {
@@ -28,19 +29,19 @@ export default function Home() {
     <>
       <Hero />
       <WorldBelow />
-      <Machine lifts={lifts ?? []} />
+      <LiftsExperience lifts={lifts ?? []} />
       <Engineering />
       <Cabin />
-      <Configurator finishes={finishes ?? []} />
+      <CabinStudio finishes={finishes ?? []} />
       <Blueprint />
       <Certifications />
       <ProjectsReel projects={projects ?? []} />
+      <Installations />
       <Details />
       <AfterInstall pillars={pillars ?? []} />
       <People team={team ?? []} />
-      <TestimonialRow testimonials={(testimonials ?? []).slice(0, 3)} />
+      <Voices testimonials={testimonials ?? []} />
       <ClientLogos />
-      <Trust certifications={certifications ?? []} partners={partners ?? []} />
       <FinalAscent />
     </>
   )

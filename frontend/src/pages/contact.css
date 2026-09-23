@@ -79,7 +79,7 @@
 }
 
 .intent--service .intent__eyebrow {
-  color: var(--brass-light);
+  color: var(--teal-bright);
 }
 
 .intent__title {
@@ -156,7 +156,7 @@
 }
 
 .direct__card--service .direct__icon {
-  color: var(--brass-light);
+  color: var(--teal-bright);
 }
 
 .direct__label {
@@ -268,7 +268,7 @@
 }
 
 .field__hint--alert {
-  color: var(--brass-light);
+  color: var(--teal-bright);
 }
 
 /* --- dropzone ------------------------------------------------------------ */
@@ -612,8 +612,8 @@
 }
 
 .servicenote {
-  border: 1px solid var(--brass);
-  background: color-mix(in srgb, var(--brass) 9%, transparent);
+  border: 1px solid var(--teal-bright);
+  background: color-mix(in srgb, var(--teal-bright) 9%, transparent);
   padding: clamp(1.35rem, 1rem + 1.5vw, 2rem);
   display: grid;
   gap: 0.85rem;
@@ -626,7 +626,7 @@
   font-family: var(--font-display);
   font-size: var(--t-h4);
   font-weight: 400;
-  color: var(--brass-light);
+  color: var(--teal-bright);
 }
 
 .servicenote__body {
@@ -641,9 +641,9 @@
   font-weight: 600;
   color: #fff;
   padding-top: 0.75rem;
-  border-top: 1px solid rgba(176, 141, 87, 0.4);
+  border-top: 1px solid rgba(46, 201, 202, 0.4);
 }
 
 .servicenote__phone:hover {
-  color: var(--brass-light);
+  color: var(--teal-bright);
 }

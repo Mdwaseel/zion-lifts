@@ -2,8 +2,10 @@ import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
-import Reveal, { RevealGroup } from '@/components/Reveal'
-import { Arrow, Box, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
+import Reveal from '@/components/Reveal'
+import { Arrow, ArrowDown, Box, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
+import { gsap } from '@/lib/gsap'
+import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
 
 /* ==========================================================================
    08 · OUR PROCESS — four stages of one installation
@@ -404,7 +406,7 @@ function ProjectCard({ project: p, index, count }) {
   )
 }
 
-export function ProjectsReel({ projects = [] }) {
+export function ProjectsReel({ projects = [], eyebrow = 'The projects', title, lead }) {
   const list = projects.slice(0, 12)
   const count = list.length
   const trackRef = useRef(null)
@@ -550,21 +552,29 @@ export function ProjectsReel({ projects = [] }) {
         <header className="reel__head">
           <div className="reel__intro">
             <Reveal variant="fade">
-              <p className="reel__eyebrow">The projects</p>
+              <p className="reel__eyebrow">{eyebrow}</p>
               <span className="reel__eyebrow-rule" aria-hidden="true" />
             </Reveal>
             <Reveal delay={60}>
               <h2 className="reel__title" id="reel-title">
-                Real buildings.
-                <br />
-                Real installations.
+                {title ?? (
+                  <>
+                    Real buildings.
+                    <br />
+                    Real installations.
+                  </>
+                )}
               </h2>
             </Reveal>
             <Reveal delay={130}>
               <p className="reel__lead">
-                High-performance lift solutions,
-                <br />
-                engineered for real-world environments.
+                {lead ?? (
+                  <>
+                    High-performance lift solutions,
+                    <br />
+                    engineered for real-world environments.
+                  </>
+                )}
               </p>
             </Reveal>
           </div>
@@ -638,8 +648,13 @@ export function ProjectsReel({ projects = [] }) {
 }
 
 /* ==========================================================================
-   12 · THE DETAILS
-   Eight macro plates. The photography carries it; almost no motion.
+   12 · THE DETAILS — the spread
+   Eight macro plates start as one fanned pile in the middle of a pinned
+   stage. Scrolling scatters them to their own places around the headline,
+   which rises out of the centre as they clear it; once spread, they drift a
+   little with the pointer, the front plates more than the back. On a touch
+   screen they settle into two columns instead and nothing follows a finger;
+   with motion reduced the section is the plain grid it used to be.
    ========================================================================== */
 
 const DETAILS = [
@@ -653,44 +668,220 @@ const DETAILS = [
   { label: 'The ceiling', src: '/media/frames/lacheta-ceiling.jpg' },
 ]
 
+/* One slot per plate, in paint order (first is furthest back). `stack` is the
+   pile — offset in vw/vh and the angle — `end` is where it settles on a wide
+   screen, `sm` the column position on a touch screen. Sizes are vw × vh so
+   the composition holds its shape at any aspect; `s` is the rest scale. */
+const SLOTS = [
+  { stack: { x: -8, y: -10, r: -18 }, end: { x: -20, y: -30 }, sm: { x: -22, y: -38 }, w: 17, h: 22, s: 0.72 },
+  { stack: { x: 14, y: -10, r: 20 }, end: { x: 32, y: -26 }, sm: { x: 22, y: -38 }, w: 18, h: 32, s: 0.9 },
+  { stack: { x: -16, y: 0, r: -4 }, end: { x: -36, y: 0 }, sm: { x: -22, y: -20 }, w: 15, h: 32, s: 0.9 },
+  { stack: { x: 1, y: -10, r: -2 }, end: { x: 6, y: -31 }, sm: { x: 22, y: -20 }, w: 25, h: 26, s: 0.8 },
+  { stack: { x: 18, y: 1, r: 6 }, end: { x: 37, y: 8 }, sm: { x: -22, y: 20 }, w: 18, h: 32, s: 0.8 },
+  { stack: { x: -6, y: 10, r: 6 }, end: { x: -24, y: 33 }, sm: { x: 22, y: 20 }, w: 22, h: 25, s: 0.9 },
+  { stack: { x: 8, y: 7, r: 3 }, end: { x: 2, y: 36 }, sm: { x: -22, y: 38 }, w: 20, h: 24, s: 0.8 },
+  { stack: { x: 20, y: 12, r: -7 }, end: { x: 30, y: 33 }, sm: { x: 22, y: 38 }, w: 16, h: 20, s: 0.9 },
+]
+
+/* the pile holds for the first stretch of the runway, scatters, then settles */
+const SCATTER_START = 0.12
+const SCATTER_END = 0.9
+const STACK_SCALE = 0.82
+/* pointer drift, in vw/vh at full depth */
+const DRIFT_X = 2.6
+const DRIFT_Y = 2.2
+/* touch layout: uniform scale, column offset and plate size */
+const SMALL = { scale: 0.72, colX: 22, w: 40, h: 16 }
+
+const clamp01 = (v) => Math.max(0, Math.min(1, v))
+const depthOf = (i, n) => (n <= 1 ? 1 : 0.55 + (i / (n - 1)) * 0.75)
+
 export function Details() {
-  return (
-    <section className="section on-paper details" aria-labelledby="details-title">
-      <div className="shell">
-        <div className="section-head section-head--split">
-          <div>
-            <Reveal variant="fade">
+  const reduced = useReducedMotion()
+  const touch = useMediaQuery('(pointer: coarse)')
+  const sectionRef = useRef(null)
+  const cardsRef = useRef([])
+  const copyRef = useRef(null)
+  const hintRef = useRef(null)
+  const capsRef = useRef([])
+  const state = useRef({ progress: 0, px: 0, py: 0, rawX: 0, rawY: 0, spread: false })
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section || reduced) return undefined
+
+    const st = state.current
+    const n = SLOTS.length
+
+    const paint = () => {
+      const p = clamp01((st.progress - SCATTER_START) / (SCATTER_END - SCATTER_START))
+      for (let i = 0; i < n; i++) {
+        const el = cardsRef.current[i]
+        if (!el) continue
+        const slot = SLOTS[i]
+        const endX = touch ? Math.sign(slot.sm.x) * SMALL.colX : slot.end.x
+        const endY = touch ? slot.sm.y : slot.end.y
+        const rest = touch ? SMALL.scale : slot.s
+        const tx = slot.stack.x + (endX - slot.stack.x) * p
+        const ty = slot.stack.y + (endY - slot.stack.y) * p
+        const drift = touch ? 0 : depthOf(i, n) * p
+        const dx = tx - st.px * DRIFT_X * drift
+        const dy = ty - st.py * DRIFT_Y * drift
+        el.style.translate = `calc(-50% + ${dx.toFixed(3)}vw) calc(-50% + ${dy.toFixed(3)}vh)`
+        el.style.rotate = `${(slot.stack.r * (1 - p)).toFixed(3)}deg`
+        el.style.scale = (STACK_SCALE + (rest - STACK_SCALE) * p).toFixed(4)
+        const cap = capsRef.current[i]
+        if (cap) cap.style.opacity = clamp01((p - 0.82) / 0.18).toFixed(3)
+      }
+      if (copyRef.current) {
+        copyRef.current.style.opacity = clamp01((p - 0.3) / 0.35).toFixed(3)
+        copyRef.current.style.scale = (0.85 + 0.15 * clamp01((p - 0.3) / 0.6)).toFixed(4)
+      }
+      if (hintRef.current) {
+        hintRef.current.style.opacity = (1 - clamp01(st.progress / SCATTER_START)).toFixed(3)
+      }
+      st.spread = p > 0.985
+    }
+
+    // Progress is read from the section's own rectangle every frame rather
+    // than from a ScrollTrigger: the pinned sections above set their runway
+    // heights after mount, which leaves a trigger measured at mount with a
+    // stale start. The rectangle is always current, and reading it on the
+    // ticker keeps the plates on the same frame as Lenis' smoothing.
+    const measure = () => {
+      const r = section.getBoundingClientRect()
+      const runway = Math.max(1, r.height - window.innerHeight)
+      return clamp01(-r.top / runway)
+    }
+
+    // pointer drift once spread, eased towards where the pointer is
+    const onMove = (e) => {
+      if (!st.spread) return
+      st.rawX = (e.clientX / window.innerWidth) * 2 - 1
+      st.rawY = (e.clientY / window.innerHeight) * 2 - 1
+    }
+    const onLeave = () => {
+      st.rawX = 0
+      st.rawY = 0
+    }
+    const tick = () => {
+      // nothing to do while the section is nowhere near the viewport
+      const r = section.getBoundingClientRect()
+      if (r.bottom < -innerHeight || r.top > innerHeight * 2) return
+      const progress = measure()
+      let dirty = progress !== st.progress
+      st.progress = progress
+      if (!st.spread) {
+        st.rawX = 0
+        st.rawY = 0
+      }
+      const ddx = st.rawX - st.px
+      const ddy = st.rawY - st.py
+      if (Math.abs(ddx) > 0.0005 || Math.abs(ddy) > 0.0005) {
+        st.px += ddx * 0.08
+        st.py += ddy * 0.08
+        dirty = true
+      }
+      if (dirty) paint()
+    }
+    if (!touch) {
+      window.addEventListener('pointermove', onMove, { passive: true })
+      document.addEventListener('pointerleave', onLeave)
+    }
+    st.progress = measure()
+    paint()
+    gsap.ticker.add(tick)
+
+    return () => {
+      window.removeEventListener('pointermove', onMove)
+      document.removeEventListener('pointerleave', onLeave)
+      gsap.ticker.remove(tick)
+    }
+  }, [reduced, touch])
+
+  if (reduced) {
+    return (
+      <section className="section on-paper details" aria-labelledby="details-title">
+        <div className="shell">
+          <div className="section-head section-head--split">
+            <div>
               <p className="eyebrow">The details</p>
-            </Reveal>
-            <Reveal delay={60}>
               <h2 className="h2" id="details-title" style={{ marginTop: '1.1rem' }}>
                 Details make
                 <br />
                 the difference.
               </h2>
-            </Reveal>
-          </div>
-          <Reveal delay={130}>
+            </div>
             <p className="body">
               The parts of a lift people actually touch: the button, the handrail, the sill you step
               over without looking. Everything else is engineering nobody should have to notice.
             </p>
-          </Reveal>
+          </div>
+          <div className="details__grid">
+            {DETAILS.map((d) => (
+              <figure className="details__cell" key={d.label}>
+                <Img src={d.src} alt={d.label} ratio="1 / 1" sizes="(min-width: 1000px) 23vw, 92vw" />
+                <figcaption className="details__cap">{d.label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section
+      ref={sectionRef}
+      className={`section on-paper details details--spread ${touch ? 'details--touch' : ''}`}
+      aria-labelledby="details-title"
+    >
+      <div className="details__stage">
+        <div className="details__copy" ref={copyRef}>
+          <p className="eyebrow">The details</p>
+          <h2 className="details__title" id="details-title">
+            Details make <span className="details__soft">the</span> difference.
+          </h2>
+          <p className="details__sub">
+            The parts of a lift people actually touch: the button, the handrail, the sill you step
+            over without looking. Everything else is engineering nobody should have to notice.
+          </p>
         </div>
 
-        <RevealGroup className="details__grid" step={70} variant="wipe">
-          {DETAILS.map((d) => (
-            <figure className="details__cell" key={d.label}>
-              <Img
-                src={d.src}
-                alt={d.label}
-                ratio="1 / 1"
-                sizes="(min-width: 1000px) 23vw, (min-width: 620px) 46vw, 92vw"
-              />
-              <figcaption className="details__cap">{d.label}</figcaption>
-            </figure>
-          ))}
-        </RevealGroup>
+        <ul className="details__plates" aria-label="Eight details">
+          {DETAILS.map((d, i) => {
+            const slot = SLOTS[i]
+            const w = touch ? SMALL.w : slot.w
+            const h = touch ? SMALL.h : slot.h
+            return (
+              <li
+                key={d.label}
+                className="details__plate"
+                ref={(el) => {
+                  cardsRef.current[i] = el
+                }}
+                style={{ width: `${w}vw`, height: `${h}vh`, zIndex: i + 2 }}
+              >
+                <figure className="details__face">
+                  <Img src={d.src} alt={d.label} sizes={`${Math.round(w * 1.4)}vw`} />
+                  <figcaption
+                    className="details__cap details__cap--float"
+                    ref={(el) => {
+                      capsRef.current[i] = el
+                    }}
+                  >
+                    {d.label}
+                  </figcaption>
+                </figure>
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="details__hint" ref={hintRef} aria-hidden="true">
+          <span>Scroll</span>
+          <ArrowDown size={14} />
+        </div>
       </div>
     </section>
   )

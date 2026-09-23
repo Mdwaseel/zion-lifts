@@ -1,146 +1,476 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
-import Reveal, { RevealGroup } from '@/components/Reveal'
-import { Accordion, CtaBand, LiftCard, PageHero, SectionHead } from '@/components/sections'
-import { Arrow, Shield } from '@/components/icons'
-import { useApi } from '@/lib/hooks'
+import Reveal from '@/components/Reveal'
+import { Accordion } from '@/components/sections'
+import { Arrow, ArrowDown, GaugeMark, UpDownMark, UsersMark } from '@/components/icons'
+import { LIFT_ICONS } from '@/components/lift-marks'
+import { PLACES } from '@/components/place-marks'
+import { gsap } from '@/lib/gsap'
+import { useApi, useReducedMotion } from '@/lib/hooks'
 
-import { Configurator } from './home/Machine'
+import { ProjectsReel } from './home/Proof'
+import CabinStudio from './lift/CabinStudio'
+import { Rise, RiseIn, clamp01, useScrollVar, whenIntroDone } from './lift/shared'
 import './lifts.css'
 
-/* --- 02 · LIFT FINDER ----------------------------------------------------- */
+/* ==========================================================================
+   /lifts — the collection
+   The nine systems stand on a curved arc that the scroll turns: the lift that
+   faces you plays its film and its account stands beside it. Below it, the
+   figures are nine shafts on one scale.
+   ========================================================================== */
 
-const PROPERTY = [
-  { key: 'any', label: 'Any building' },
-  { key: 'residential', label: 'Home or villa' },
-  { key: 'commercial', label: 'Office, hotel or retail' },
-  { key: 'institutional', label: 'Hospital or institution' },
-  { key: 'industrial', label: 'Factory or parking' },
-]
+const pad = (n) => String(n).padStart(2, '0')
 
-const FLOORS = [
-  { key: 'any', label: 'Any' },
-  { key: '2', label: '2–3', value: 3 },
-  { key: '4', label: '4–6', value: 6 },
-  { key: '7', label: '7–12', value: 12 },
-  { key: '13', label: '13+', value: 18 },
-]
+/* --- the opening ---------------------------------------------------------- */
 
-const LOAD = [
-  { key: 'any', label: 'Any' },
-  { key: 'small', label: 'Up to 6 people', max: 6 },
-  { key: 'mid', label: '8–15 people', max: 15 },
-  { key: 'large', label: '15+ or goods', max: 99 },
-]
+function Opening({ count }) {
+  const ref = useRef(null)
+  const reduced = useReducedMotion()
+  const [shown, setShown] = useState(false)
 
-function Finder({ lifts, filter, setFilter }) {
-  const groups = [
-    { id: 'property', label: 'Property type', options: PROPERTY },
-    { id: 'floors', label: 'Number of floors', options: FLOORS },
-    { id: 'load', label: 'Passengers or load', options: LOAD },
-  ]
+  useEffect(() => whenIntroDone(() => setShown(true)), [])
+
+  // leaving, the room draws back into a frame, as it does on a lift's own page
+  useEffect(() => {
+    if (reduced) return undefined
+    const el = ref.current
+    let last = -1
+    const tick = () => {
+      const p = clamp01(window.scrollY / window.innerHeight)
+      if (Math.abs(p - last) < 0.001) return
+      last = p
+      el.style.setProperty('--x', p.toFixed(4))
+    }
+    gsap.ticker.add(tick)
+    return () => gsap.ticker.remove(tick)
+  }, [reduced])
 
   return (
-    <section className="section section--tight on-stone finder" id="finder">
-      <div className="shell">
-        <SectionHead
-          index="02"
-          eyebrow="Lift finder"
-          title="Narrow it down."
-          lead="Three questions. The grid below responds as you answer them — or ignore it and read all nine."
-        />
-        <div className="finder__grid">
-          {groups.map((g) => (
-            <fieldset className="finder__group" key={g.id}>
-              <legend className="field__label">{g.label}</legend>
-              <div className="chips">
-                {g.options.map((o) => (
-                  <button
-                    key={o.key}
-                    type="button"
-                    className={`chip ${filter[g.id] === o.key ? 'is-on' : ''}`}
-                    onClick={() => setFilter((f) => ({ ...f, [g.id]: o.key }))}
-                    aria-pressed={filter[g.id] === o.key}
-                  >
-                    {o.label}
-                  </button>
-                ))}
-              </div>
-            </fieldset>
-          ))}
-        </div>
-        <p className="finder__result">
-          <strong>{lifts.length}</strong> of 9 systems match
-          {Object.values(filter).some((v) => v !== 'any') && (
-            <button
-              type="button"
-              className="link finder__reset"
-              onClick={() => setFilter({ property: 'any', floors: 'any', load: 'any' })}
-            >
-              Reset
-            </button>
-          )}
+    <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''}`}>
+      <div className="lc-hero__scene">
+        <Img src="/media/interiors/interior-05.jpg" alt="" priority sizes="100vw" />
+      </div>
+      <div className="lc-hero__grade" aria-hidden="true" />
+
+      <div className="lc-hero__copy">
+        <p className="ld-label lc-hero__label">The range</p>
+        <h1 className="lc-hero__title">
+          <Rise text="Nine ways to move vertically." />
+        </h1>
+        <p className="lc-hero__lead">
+          One engineering approach underneath — a gearless machine, a rail-guided cabin and a controller that shapes
+          every start and stop. Nine shells around it, for nine kinds of building.
         </p>
+      </div>
+
+      <div className="lc-hero__foot">
+        <p>
+          <strong>{pad(count || 9)}</strong> systems
+        </p>
+        <a href="#index">The index</a>
+        <a href="#compare">Side by side</a>
+        <a href="#index" className="lc-hero__cue" aria-label="Scroll to the index">
+          <ArrowDown size={16} />
+        </a>
+      </div>
+    </header>
+  )
+}
+
+/* --- the collection: a carousel you scroll through ------------------------ */
+
+const STEP = 38 // degrees of arc between one lift and the next
+
+/** The lifts stand on a curved arc, like cars round a shaft. The section holds
+    the screen and the scroll turns the arc: whichever lift faces you plays its
+    film, and its account stands beside it. One number — how far round the arc
+    has turned — places every plate, picks the account and moves the counter. */
+function Index({ lifts }) {
+  const sec = useRef(null)
+  const ring = useRef(null)
+  const fill = useRef(null)
+  const reduced = useReducedMotion()
+  const [active, setActive] = useState(0)
+
+  const list = lifts
+  const n = list.length
+  const held = !reduced && n > 1
+
+  useEffect(() => {
+    if (!held) return undefined
+    const el = sec.current
+    const rg = ring.current
+    const plates = [...rg.querySelectorAll('.lc-car')]
+    let radius = 0
+    let beside = false
+    const measure = () => {
+      // beside the account, the cars that have gone by leave quickly so they never cross the type
+      beside = window.matchMedia('(min-width: 900px)').matches
+      radius = (plates[0]?.offsetWidth ?? 300) * 1.72
+      rg.style.transform = `translateZ(${-radius}px)`
+    }
+    measure()
+    window.addEventListener('resize', measure)
+
+    let cur = 0
+    let last = -1
+    let shown = -1
+    const tick = () => {
+      const r = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      if (r.bottom < 0 || r.top > vh) return
+      const p = clamp01(-r.top / Math.max(1, r.height - vh))
+      cur += (p * (n - 1) - cur) * 0.1
+      if (Math.abs(cur - last) > 0.0008) {
+        last = cur
+        plates.forEach((pl, i) => {
+          const d = i - cur
+          const away = Math.abs(d)
+          if (away > 3.1) {
+            pl.style.visibility = 'hidden'
+            return
+          }
+          pl.style.visibility = 'visible'
+          pl.style.transform = `rotateY(${(d * STEP).toFixed(2)}deg) translateZ(${radius.toFixed(0)}px)`
+          const fade = beside && d < 0 ? Math.max(0, away - 0.3) / 0.85 : Math.max(0, away - 1.4) / 1.7
+          pl.style.opacity = Math.max(0, 1 - fade).toFixed(3)
+          pl.style.setProperty('--away', Math.min(1, away).toFixed(3))
+        })
+        if (fill.current) fill.current.style.transform = `scaleX(${(n > 1 ? cur / (n - 1) : 1).toFixed(4)})`
+      }
+      const i = Math.max(0, Math.min(n - 1, Math.round(cur)))
+      if (i !== shown) {
+        shown = i
+        setActive(i)
+      }
+    }
+    gsap.ticker.add(tick)
+    return () => {
+      gsap.ticker.remove(tick)
+      window.removeEventListener('resize', measure)
+    }
+  }, [held, n, list])
+
+  const go = (i) => {
+    const to = Math.max(0, Math.min(n - 1, i))
+    if (!held) {
+      setActive(to)
+      return
+    }
+    const el = sec.current
+    const top = el.getBoundingClientRect().top + window.scrollY
+    const y = top + (n > 1 ? to / (n - 1) : 0) * (el.offsetHeight - window.innerHeight)
+    if (window.__lenis) window.__lenis.scrollTo(y, { duration: 1 })
+    else window.scrollTo({ top: y, behavior: 'smooth' })
+  }
+
+  const at = Math.min(active, Math.max(0, n - 1))
+  const lift = list[at]
+  const Mark = lift ? LIFT_ICONS[lift.slug] : null
+
+  return (
+    <section
+      ref={sec}
+      className={`lc-index ${held ? 'is-held' : 'is-free'}`}
+      id="index"
+      style={held ? { height: `calc(100svh + ${(n - 1) * 46}svh)` } : undefined}
+    >
+      <div className="lc-index__stage">
+        <div className="lc-index__glow" aria-hidden="true" />
+
+        <header className="lc-index__top">
+          <h2 className="lc-index__title">
+            Every lift Zion <em>builds.</em>
+          </h2>
+        </header>
+
+        {lift && (
+          <div className="lc-index__body">
+            {/* the account of the lift facing you */}
+            <div className="lc-about" key={lift.slug} aria-live="polite">
+              <p className="lc-about__n">
+                {Mark && <Mark size={26} />}
+                <span>
+                  {pad(lifts.indexOf(lift) + 1)} — {lift.eyebrow}
+                </span>
+              </p>
+              <h3 className="lc-about__name">{lift.name}</h3>
+              <p className="lc-about__line">{lift.tagline}</p>
+              <dl className="lc-about__specs">
+                {[
+                  ['Capacity', lift.capacity, UsersMark],
+                  ['Speed', lift.speed, GaugeMark],
+                  ['Stops', lift.stops, UpDownMark],
+                ].map(([k, v, Icon]) => (
+                  <div key={k}>
+                    <Icon size={17} />
+                    <dt>{k}</dt>
+                    <dd>{v}</dd>
+                  </div>
+                ))}
+              </dl>
+              <Link to={`/lifts/${lift.slug}`} className="lc-about__go">
+                <span>View the lift</span>
+                <span className="lc-about__ring">
+                  <Arrow size={17} />
+                </span>
+              </Link>
+            </div>
+
+            <div className="lc-arc">
+              <ol ref={ring} className="lc-arc__ring">
+                {list.map((l, i) => (
+                  <li key={l.slug} className={`lc-car ${i === at ? 'is-on' : ''}`} style={{ '--d': i - at }}>
+                    <button type="button" onClick={() => go(i)} tabIndex={i === at ? -1 : 0} aria-label={`Show ${l.name}`}>
+                      <Img src={`/media/lifts/${l.slug}.jpg`} alt="" sizes="(min-width: 900px) 26vw, 64vw" priority />
+                      {i === at && !reduced && (
+                        <video src={`/media/lifts/${l.slug}.mp4`} autoPlay muted loop playsInline aria-hidden="true" tabIndex={-1} />
+                      )}
+                      <span className="lc-car__name">{l.short_name}</span>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </div>
+
+            <div className="lc-index__foot">
+              <span className="lc-index__now">{pad(at + 1)}</span>
+              <span className="lc-index__line" aria-hidden="true">
+                <span ref={fill} />
+              </span>
+              <span>{pad(n)}</span>
+              <button type="button" onClick={() => go(at - 1)} disabled={at === 0} aria-label="Previous lift">
+                <Arrow size={16} />
+              </button>
+              <button type="button" onClick={() => go(at + 1)} disabled={at === n - 1} aria-label="Next lift">
+                <Arrow size={16} />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </section>
   )
 }
 
-/* --- 04 · COMPARE --------------------------------------------------------- */
+/* --- side by side: nine shafts -------------------------------------------- */
+
+/** the two ends of a range written as "0.3 – 1.0 m/s" or "2,000 – 2,700 kg …" */
+function range(text) {
+  const nums = (String(text ?? '').split('(')[0].match(/[\d.,]+/g) ?? [])
+    .map((t) => parseFloat(t.replace(/,/g, '')))
+    .filter((v) => !Number.isNaN(v))
+  if (!nums.length) return null
+  return [Math.min(...nums.slice(0, 2)), Math.max(...nums.slice(0, 2))]
+}
+
+const METRICS = [
+  { key: 'speed', label: 'Speed', unit: 'm/s', ticks: [0, 0.5, 1, 1.5, 2, 2.5], scale: (v) => v / 2.5 },
+  {
+    key: 'capacity',
+    label: 'Capacity',
+    unit: 'kg',
+    ticks: [0, 250, 1000, 2000, 3500, 5000],
+    // the range runs from a dumbwaiter to a goods lift, so the scale is a root one
+    scale: (v) => Math.sqrt(v / 5000),
+  },
+  { key: 'stops', label: 'Stops', unit: 'stops', ticks: [0, 5, 10, 15, 20], scale: (v) => v / 20 },
+]
 
 function Compare({ lifts }) {
-  const rows = [
-    ['Drive', (l) => l.drive],
-    ['Speed', (l) => l.speed],
-    ['Capacity', (l) => l.capacity],
-    ['Stops', (l) => l.stops],
-    ['Machine room', (l) => l.machine_room],
-  ]
+  const ref = useRef(null)
+  const [metric, setMetric] = useState(0)
+  const [over, setOver] = useState(-1)
+  const [seen, setSeen] = useState(false)
+  const m = METRICS[metric]
+
+  useEffect(() => {
+    const io = new IntersectionObserver(
+      ([e]) => {
+        if (e.isIntersecting) {
+          setSeen(true)
+          io.disconnect()
+        }
+      },
+      { threshold: 0.3 },
+    )
+    io.observe(ref.current)
+    return () => io.disconnect()
+  }, [])
+
+  const focus = over >= 0 ? lifts[over] : null
+
   return (
-    <section className="section compare" id="compare">
+    <section className="section on-paper lc-compare" id="compare">
       <div className="shell">
-        <SectionHead
-          index="04"
-          eyebrow="Compare"
-          title="Side by side."
-          lead="The five figures that usually decide it. Everything else is detail we can work through together."
-        />
-        <div className="tablescroll">
-          <table className="comparetable">
-            <caption className="sr-only">Comparison of Zion lift systems</caption>
-            <thead>
-              <tr>
-                <th scope="col">System</th>
-                {rows.map(([label]) => (
-                  <th scope="col" key={label}>
-                    {label}
-                  </th>
-                ))}
-                <th scope="col" className="sr-only">
-                  Link
-                </th>
+        <header className="lc-compare__head">
+          <RiseIn as="h2" className="lc-h2" text="Side by side." />
+          <Reveal delay={100}>
+            <p className="lc-index__lead">
+              Nine shafts, one scale. Choose what to measure and each car rides to where that lift sits.
+            </p>
+          </Reveal>
+        </header>
+
+        <Reveal className="lc-measure" role="tablist" aria-label="What to compare">
+          {METRICS.map((x, i) => (
+            <button
+              key={x.key}
+              type="button"
+              role="tab"
+              aria-selected={i === metric}
+              className={i === metric ? 'is-on' : ''}
+              onClick={() => setMetric(i)}
+            >
+              {x.label}
+            </button>
+          ))}
+        </Reveal>
+
+        <div ref={ref} className={`lc-shafts ${seen ? 'is-in' : ''}`} onPointerLeave={() => setOver(-1)}>
+          <ol className="lc-shafts__scale" aria-hidden="true">
+            {m.ticks.map((t) => (
+              <li key={`${m.key}-${t}`} style={{ '--at': m.scale(t) }}>
+                <span>{t.toLocaleString('en-IN')}</span>
+              </li>
+            ))}
+            <li className="lc-shafts__unit">{m.unit}</li>
+          </ol>
+
+          <div className="lc-shafts__row">
+            {lifts.map((l, i) => {
+              const Mark = LIFT_ICONS[l.slug]
+              const r = range(l[m.key]) ?? [0, 0]
+              const lo = clamp01(m.scale(r[0]))
+              const hi = clamp01(m.scale(r[1]))
+              return (
+                <Link
+                  key={l.slug}
+                  to={`/lifts/${l.slug}`}
+                  className={`lc-shaft ${over === i ? 'is-over' : ''}`}
+                  style={{ '--lo': lo, '--hi': Math.max(hi, lo + 0.035), '--i': i }}
+                  onPointerEnter={() => setOver(i)}
+                  onFocus={() => setOver(i)}
+                  onBlur={() => setOver(-1)}
+                  aria-label={`${l.name}: ${m.label.toLowerCase()} ${l[m.key]}`}
+                >
+                  <span className="lc-shaft__well" aria-hidden="true">
+                    <span className="lc-shaft__rope" />
+                    <span className="lc-shaft__car">
+                      <em>{r[1].toLocaleString('en-IN')}</em>
+                      <em>{r[0].toLocaleString('en-IN')}</em>
+                    </span>
+                  </span>
+                  <span className="lc-shaft__mark">{Mark && <Mark size={24} />}</span>
+                  <span className="lc-shaft__name">{l.short_name}</span>
+                </Link>
+              )
+            })}
+          </div>
+        </div>
+
+        {/* what the chart cannot draw: the drive, and whether it needs a machine room */}
+        <div className={`lc-detail ${focus ? 'is-on' : ''}`} aria-live="polite">
+          {focus ? (
+            <>
+              <strong>{focus.name}</strong>
+              <span>
+                <em>Drive</em>
+                {focus.drive}
+              </span>
+              <span>
+                <em>Machine room</em>
+                {focus.machine_room}
+              </span>
+              <span>
+                <em>{m.label}</em>
+                {focus[m.key]}
+              </span>
+            </>
+          ) : (
+            <span className="lc-detail__hint">Point at a shaft for its drive and machine room — or press it to open that lift.</span>
+          )}
+        </div>
+
+        <table className="sr-only">
+          <caption>Comparison of Zion lift systems</caption>
+          <thead>
+            <tr>
+              <th scope="col">System</th>
+              <th scope="col">Drive</th>
+              <th scope="col">Speed</th>
+              <th scope="col">Capacity</th>
+              <th scope="col">Stops</th>
+              <th scope="col">Machine room</th>
+            </tr>
+          </thead>
+          <tbody>
+            {lifts.map((l) => (
+              <tr key={l.slug}>
+                <th scope="row">{l.name}</th>
+                <td>{l.drive}</td>
+                <td>{l.speed}</td>
+                <td>{l.capacity}</td>
+                <td>{l.stops}</td>
+                <td>{l.machine_room}</td>
               </tr>
-            </thead>
-            <tbody>
-              {lifts.map((l) => (
-                <tr key={l.slug}>
-                  <th scope="row">
-                    <Link to={`/lifts/${l.slug}`}>{l.name}</Link>
-                  </th>
-                  {rows.map(([label, fn]) => (
-                    <td key={label}>{fn(l) || '—'}</td>
-                  ))}
-                  <td className="comparetable__go">
-                    <Link to={`/lifts/${l.slug}`} aria-label={`View ${l.name}`}>
-                      <Arrow size={14} />
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  )
+}
+
+/* --- where they go -------------------------------------------------------- */
+
+function Places({ applications, lifts }) {
+  const ref = useRef(null)
+  useScrollVar(ref, { from: 0.95, to: 0.15 })
+  const places = (applications ?? []).filter((a) => PLACES[a.slug])
+  if (!places.length) return null
+
+  return (
+    <section className="section on-stone lc-places">
+      <div className="shell">
+        <header className="lc-compare__head">
+          <RiseIn as="h2" className="lc-h2" text="Where these lifts go." />
+          <Reveal delay={100}>
+            <p className="lc-index__lead">
+              The building decides most of the specification before anyone opens a catalogue.
+            </p>
+          </Reveal>
+        </header>
+
+        <div ref={ref} className="lc-places__grid">
+          {places.map((a, i) => {
+            const { Icon, src } = PLACES[a.slug]
+            const suited = lifts.filter((l) => (l.applications ?? []).some((x) => x.slug === a.slug))
+            return (
+              <article className="lc-place" key={a.slug} style={{ '--i': i % 4 }}>
+                <div className="lc-place__in">
+                  <div className="lc-place__media">
+                    <Img src={src} alt="" sizes="(min-width: 1000px) 24vw, (min-width: 640px) 46vw, 92vw" />
+                  </div>
+                  <span className="lc-place__icon">
+                    <Icon size={26} />
+                  </span>
+                  <h3>{a.name}</h3>
+                  <p>{a.description}</p>
+                  <ul>
+                    {suited.map((l) => (
+                      <li key={l.slug}>
+                        <Link to={`/lifts/${l.slug}`}>{l.short_name}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </article>
+            )
+          })}
         </div>
       </div>
     </section>
@@ -152,246 +482,52 @@ function Compare({ lifts }) {
 export default function Lifts() {
   const { data: lifts } = useApi('lifts/')
   const { data: applications } = useApi('applications/')
-  const { data: safety } = useApi('safety-features/')
   const { data: projects } = useApi('projects/')
   const { data: finishes } = useApi('finishes/')
   const { data: faqCats } = useApi('faq-categories/')
-
-  const [filter, setFilter] = useState({ property: 'any', floors: 'any', load: 'any' })
 
   useEffect(() => {
     document.title = 'Lift systems — Zion Lifts'
   }, [])
 
   const all = lifts ?? []
-
-  const filtered = useMemo(() => {
-    return all.filter((l) => {
-      if (filter.property !== 'any') {
-        const groups = new Set((l.applications ?? []).map((a) => a.group))
-        if (!groups.has(filter.property)) return false
-      }
-      if (filter.floors !== 'any') {
-        const want = FLOORS.find((f) => f.key === filter.floors)?.value ?? 0
-        if (l.max_floors < want && l.min_floors > want) return false
-        if (l.max_floors < Number(filter.floors)) return false
-      }
-      if (filter.load !== 'any') {
-        const max = LOAD.find((o) => o.key === filter.load)?.max ?? 99
-        if (filter.load === 'small' && l.min_persons > 6) return false
-        if (filter.load === 'mid' && (l.max_persons < 8 || l.min_persons > 15)) return false
-        if (filter.load === 'large' && l.max_persons < 15 && l.max_persons > 0) return false
-        void max
-      }
-      return true
-    })
-  }, [all, filter])
-
   const chooseFaq = (faqCats ?? []).find((c) => c.slug === 'choosing-a-lift')
 
   return (
-    <>
-      <PageHero
-        eyebrow="The range"
-        title="Nine ways to move vertically."
-        lead="One engineering approach underneath — a gearless machine, rail-guided cabin and a controller that shapes every start and stop. Nine shells around it, for nine kinds of building."
-        crumbs={[
-          { label: 'Home', to: '/' },
-          { label: 'Lifts' },
-        ]}
-        image="/media/interiors/interior-05.jpg"
-        meta={
-          <>
-            <span className="mono">01 · Index</span>
-            <a className="link" href="#finder">
-              Find the right one <Arrow size={14} />
-            </a>
-            <a className="link" href="#compare">
-              Compare all nine <Arrow size={14} />
-            </a>
-          </>
-        }
-      />
+    <div className="lc">
+      <Opening count={all.length} />
+      {all.length > 0 && <Index lifts={all} />}
+      {all.length > 0 && <Compare lifts={all} />}
+      <Places applications={applications} lifts={all} />
+      <CabinStudio finishes={finishes} />
+      {projects?.length > 0 && (
+        <ProjectsReel
+          projects={projects}
+          eyebrow="Installed"
+          title={
+            <>
+              These systems,
+              <br />
+              in buildings.
+            </>
+          }
+          lead="A few of the places they are running today."
+        />
+      )}
 
-      <Finder lifts={filtered} filter={filter} setFilter={setFilter} />
-
-      {/* --- 03 · THE GRID --- */}
-      <section className="section" id="range">
-        <div className="shell">
-          <SectionHead index="03" eyebrow="The systems" title="Every lift Zion builds." />
-          {filtered.length ? (
-            <RevealGroup className="liftgrid" step={70}>
-              {filtered.map((l, i) => (
-                <LiftCard key={l.slug} lift={l} index={i + 1} />
-              ))}
-            </RevealGroup>
-          ) : (
-            <div className="state">
-              <p className="state__title">Nothing matches all three answers.</p>
-              <p className="body">
-                That usually means the requirement is a custom one, which is worth a conversation
-                rather than a filter.
-              </p>
-              <Link to="/contact" className="btn btn--accent btn--sm">
-                Tell us what you need <Arrow size={14} />
-              </Link>
-            </div>
-          )}
-        </div>
-      </section>
-
-      <Compare lifts={all} />
-
-      {/* --- 05 · APPLICATIONS --- */}
-      <section className="section on-paper">
-        <div className="shell">
-          <SectionHead
-            index="05"
-            eyebrow="Applications"
-            title="Where these lifts go."
-            lead="The building decides most of the specification before anyone opens a catalogue."
-          />
-          <RevealGroup className="applist" step={60}>
-            {(applications ?? []).map((a) => (
-              <div className="applist__item" key={a.slug}>
-                <h3 className="applist__name">{a.name}</h3>
-                <p className="applist__desc">{a.description}</p>
-                <p className="applist__group mono">{a.group}</p>
-              </div>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
-
-      {/* --- 06 · ENGINEERING AT A GLANCE --- */}
-      <section className="section glance">
-        <div className="shell glance__inner">
-          <Reveal variant="wipe" className="glance__media">
-            <Img
-              src="/media/frames/kashi-drive.jpg"
-              alt="Gearless traction machine at the head of a shaft"
-              ratio="4 / 3"
-              sizes="(min-width: 900px) 48vw, 100vw"
-              parallax={24}
-            />
-          </Reveal>
-          <div className="glance__copy">
-            <Reveal variant="fade">
-              <p className="eyebrow">
-                <span className="index-num">06</span> Engineering at a glance
-              </p>
-            </Reveal>
-            <Reveal delay={70}>
-              <h2 className="h2">The same machine under all of them.</h2>
-            </Reveal>
-            <Reveal delay={130}>
-              <p className="body">
-                A permanent-magnet gearless motor at the head of the shaft. Machined steel rails
-                holding the lift on one vertical plane. A closed-loop drive shaping every start and
-                stop into a curve. Progressive safety gear that works without electricity.
-              </p>
-            </Reveal>
-            <Reveal delay={190}>
-              <Link to="/#machine" className="link">
-                See the whole machine <Arrow size={14} />
-              </Link>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* --- 07 · CUSTOMISATION --- */}
-      <Configurator finishes={finishes ?? []} compact />
-
-      {/* --- 08 · SAFETY --- */}
-      <section className="section on-stone">
-        <div className="shell">
-          <SectionHead
-            index="08"
-            eyebrow="Safety"
-            title="Fitted to every lift, without exception."
-            lead="Not a premium tier. These are on the standard specification of every system on this page."
-          />
-          <RevealGroup className="safetylist" step={60}>
-            {(safety ?? []).map((s) => (
-              <div className="safetylist__item" key={s.slug}>
-                <Shield className="safetylist__icon" />
-                <h3 className="safetylist__name">{s.name}</h3>
-                <p className="safetylist__line">{s.headline}</p>
-                {s.standard && <p className="safetylist__std mono">{s.standard}</p>}
-              </div>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
-
-      {/* --- 09 · PROJECTS --- */}
-      <section className="section">
-        <div className="shell">
-          <SectionHead
-            index="09"
-            eyebrow="Installed"
-            title="These systems, in buildings."
-            action={
-              <Link to="/projects" className="link">
-                All projects <Arrow size={14} />
-              </Link>
-            }
-          />
-          <RevealGroup className="liftgrid" step={80}>
-            {(projects ?? []).slice(0, 3).map((p) => (
-              <article className="card" key={p.slug}>
-                <div className="card__media">
-                  <Img
-                    src={p.hero_image_url || p.poster_url}
-                    alt={p.name}
-                    sizes="(min-width: 1000px) 32vw, 92vw"
-                  />
-                </div>
-                <div className="card__body">
-                  <p className="card__eyebrow">{p.lift_type_name || p.category?.name}</p>
-                  <h3 className="card__title">
-                    <Link to={`/projects/${p.slug}`} className="card__link">
-                      {p.name}
-                    </Link>
-                  </h3>
-                  <p className="card__text">{p.statement}</p>
-                  <div className="card__foot">
-                    <span className="card__spec">{p.location}</span>
-                  </div>
-                </div>
-              </article>
-            ))}
-          </RevealGroup>
-        </div>
-      </section>
-
-      {/* --- 10 · CHOOSING FAQ --- */}
       {chooseFaq && (
-        <section className="section on-paper">
+        <section className="section on-paper lc-faq">
           <div className="shell shell--text">
-            <SectionHead
-              index="10"
-              eyebrow="Choosing"
-              title="The questions people actually ask."
-              action={
-                <Link to="/faq" className="link">
-                  Every question <Arrow size={14} />
-                </Link>
-              }
-            />
+            <header className="lc-compare__head lc-faq__head">
+              <RiseIn as="h2" className="lc-h2" text="The questions people actually ask." />
+              <Link to="/faq" className="link">
+                Every question <Arrow size={14} />
+              </Link>
+            </header>
             <Accordion items={chooseFaq.questions} defaultOpen={0} />
           </div>
         </section>
       )}
-
-      <CtaBand
-        eyebrow="11 · Next step"
-        title="Tell us what you're building."
-        lead="Send a floor plan and the number of levels and we will come back with a system, a specification and a real figure."
-        primary={{ to: '/contact', label: 'Get a quote' }}
-        secondary={{ to: '/projects', label: 'See the work' }}
-      />
-    </>
+    </div>
   )
 }

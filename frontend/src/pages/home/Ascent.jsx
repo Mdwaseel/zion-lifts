@@ -2,35 +2,39 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
-import Reveal, { SplitLines } from '@/components/Reveal'
 import { Arrow, Bolt, Refresh, Shield } from '@/components/icons'
-import { useReducedMotion, useScrollProgress } from '@/lib/hooks'
+import { useReducedMotion } from '@/lib/hooks'
 import { gsap, initGsap } from '@/lib/gsap'
 
 import ContextWave from './ContextWave'
 
 /* ==========================================================================
-   01 · HERO — THE FILM
-   One take of the lift, pinned. It runs to its first stop on its own; each
-   scroll-step past a threshold releases the next chapter, which plays in real
-   time to its own stop, and scrolling back up rewinds to the stop before.
-   Nothing is scrubbed — the film always plays at speed; the scroll only
-   decides how far it is allowed to go.
+   01 · HERO — THE SEQUENCE
+   One take of the lift, pinned, and the scroll is its timeline. It is a real
+   image sequence: 135 stills drawn to a canvas, one per scroll position. Not a
+   video being seeked — a still is either decoded or it is not, so a frame can
+   never arrive late or land a few tenths off the one that was asked for, which
+   is what makes a scrubbed <video> stutter on a flick and on iOS.
+
+   The direction is editorial: the take is the page, the type is set into the
+   shadow at the left of the lobby, and the lift is never covered.
    ========================================================================== */
 
-/** where the film holds, in seconds */
-const STOPS = [4.1, 9.07, 13.26]
+/** the stills, at the two sizes they were written out in */
+const SEQ_COUNT = 135
+const seqSrc = (dir, i) => `/media/hero/seq/${dir}/${String(i + 1).padStart(4, '0')}.webp`
 
-/** scroll progress across the runway (0–1) at which each later chapter releases.
-    Spaced so a chapter has room to play out before the next threshold, with
-    the last stretch left for the final one to finish before the pin lets go. */
-const RELEASE = [0, 0.22, 0.58]
+/** how much of the runway is spent before the sequence starts, and after it
+    ends, so the first and last stills are held rather than flashed past */
+const LEAD = 0.06
+const TAIL = 0.08
 
-/** how close to a stop counts as arrived — one frame at 30fps is 33ms */
-const EPS = 0.03
+/** how fast the sequence catches up with the scroll: lower is heavier, and
+    hides the step between stills on a fast flick */
+const EASE = 0.14
 
 /** Runs `cb` once the intro overlay (if there is one) has left the page, so the
-    first chapter does not play out behind it. */
+    sequence is not drawn behind it. */
 function whenIntroDone(cb) {
   if (!document.querySelector('.preloader')) {
     cb()
@@ -46,133 +50,199 @@ function whenIntroDone(cb) {
   return () => mo.disconnect()
 }
 
+const clamp01 = (n) => (n < 0 ? 0 : n > 1 ? 1 : n)
+
+/**
+ * Loads the stills coarse-to-fine — every eighth, then every fourth, and so on
+ * — so the whole length of the take is scrubbable within the first few frames
+ * and simply gets sharper as the rest arrive, instead of the visitor waiting on
+ * a strictly-in-order load to reach the part they have already scrolled to.
+ */
+function loadSequence(dir, onFrame) {
+  const frames = Array.from({ length: SEQ_COUNT }, () => null)
+  const queued = new Set()
+  const order = []
+  for (const step of [8, 4, 2, 1]) {
+    for (let i = 0; i < SEQ_COUNT; i += step) {
+      if (!queued.has(i)) {
+        queued.add(i)
+        order.push(i)
+      }
+    }
+  }
+
+  let next = 0
+  let live = 0
+  let stopped = false
+  const CONCURRENCY = 6
+
+  const pump = () => {
+    while (!stopped && live < CONCURRENCY && next < order.length) {
+      const i = order[next++]
+      live += 1
+      const img = new Image()
+      img.decoding = 'async'
+      img.onload = () => {
+        live -= 1
+        if (stopped) return
+        frames[i] = img
+        onFrame(i)
+        pump()
+      }
+      img.onerror = () => {
+        live -= 1
+        if (!stopped) pump()
+      }
+      img.src = seqSrc(dir, i)
+    }
+  }
+  pump()
+
+  return {
+    frames,
+    stop() {
+      stopped = true
+    },
+  }
+}
+
 export function Hero() {
-  const [ref, progress] = useScrollProgress()
+  const sectionRef = useRef(null)
+  const canvasRef = useRef(null)
   const reduced = useReducedMotion()
-  const videoRef = useRef(null)
-  const rafRef = useRef(0)
-  const headingRef = useRef(STOPS[0])
   const [introGone, setIntroGone] = useState(false)
-  const [canPlay, setCanPlay] = useState(false)
-  // the phone gets the lighter encode; decided once, at mount
-  const [src] = useState(() =>
-    typeof window !== 'undefined' && window.innerWidth < 900
-      ? '/media/hero/hero-720.mp4'
-      : '/media/hero/hero-1080.mp4'
+  // the phone gets the lighter set; decided once, at mount
+  const [dir] = useState(() =>
+    typeof window !== 'undefined' && window.innerWidth < 900 ? 'w900' : 'w1600'
   )
-
-  // which stop the film is heading for, from where the visitor is on the runway
-  const chapter = progress >= RELEASE[2] ? 2 : progress >= RELEASE[1] ? 1 : 0
-
-  // copy leaves as the first chapter is released; the cue goes sooner
-  const fade = reduced ? 0 : Math.min(1, progress / 0.2)
 
   useEffect(() => whenIntroDone(() => setIntroGone(true)), [])
 
   useEffect(() => {
-    const v = videoRef.current
-    if (!v || reduced || !introGone || !canPlay) return undefined
+    const el = sectionRef.current
+    const cv = canvasRef.current
+    if (!el || !cv || reduced) return undefined
 
-    const target = STOPS[chapter]
-    const before = headingRef.current
-    headingRef.current = target
-    cancelAnimationFrame(rafRef.current)
+    const ctx = cv.getContext('2d', { alpha: false })
 
-    // scrolled back up: hold on the previous stop rather than replaying
-    if (target < before - EPS) {
-      v.pause()
-      v.currentTime = target
-      return undefined
+    let cur = 0
+    let shown = -1
+    let wrote = -1
+    let w = 0
+    let h = 0
+
+    const seq = loadSequence(dir, () => {
+      shown = -1 // a better still for the current position may have just landed
+    })
+
+    // the phone frames the lift a little right of centre and higher up, the way
+    // the old object-position did, so it stays in shot on a tall narrow screen
+    const focus = window.innerWidth < 640 ? [0.56, 0.42] : [0.5, 0.5]
+
+    const size = () => {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2)
+      w = cv.clientWidth
+      h = cv.clientHeight
+      cv.width = Math.round(w * dpr)
+      cv.height = Math.round(h * dpr)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
+      shown = -1
     }
-    if (v.currentTime >= target - EPS) {
-      v.pause()
-      return undefined
+
+    /** the nearest still that has actually arrived, at or before `i` */
+    const nearest = (i) => {
+      for (let k = i; k >= 0; k--) if (seq.frames[k]) return seq.frames[k]
+      for (let k = i + 1; k < SEQ_COUNT; k++) if (seq.frames[k]) return seq.frames[k]
+      return null
+    }
+
+    const paint = (i) => {
+      const img = nearest(i)
+      if (!img || !w || !h) return
+      const r = Math.max(w / img.naturalWidth, h / img.naturalHeight)
+      const dw = img.naturalWidth * r
+      const dh = img.naturalHeight * r
+      ctx.drawImage(img, (w - dw) * focus[0], (h - dh) * focus[1], dw, dh)
     }
 
     const tick = () => {
-      if (v.currentTime >= target - EPS) {
-        v.pause()
-        v.currentTime = target
-        return
+      const r = el.getBoundingClientRect()
+      const vh = window.innerHeight
+      // off-screen: nothing to draw
+      if (r.bottom < 0 || r.top > vh) return
+
+      const p = clamp01(-r.top / Math.max(1, r.height - vh))
+      if (Math.abs(p - wrote) > 0.0005) {
+        wrote = p
+        el.style.setProperty('--p', p.toFixed(4))
+        // the type is transparent past this point; let its CTA go
+        el.classList.toggle('is-past', p > 0.26)
       }
-      rafRef.current = requestAnimationFrame(tick)
+
+      cur += (p - cur) * EASE
+      // the sequence runs over the middle of the runway; the ends hold a still
+      const at = clamp01((cur - LEAD) / (1 - LEAD - TAIL))
+      const i = Math.round(at * (SEQ_COUNT - 1))
+      if (i === shown) return
+      shown = i
+      paint(i)
     }
-    v.play()
-      .then(() => {
-        rafRef.current = requestAnimationFrame(tick)
-      })
-      .catch(() => {
-        /* autoplay refused — the poster stands in and the film waits for the next release */
-      })
 
-    return () => cancelAnimationFrame(rafRef.current)
-  }, [chapter, reduced, introGone, canPlay])
-
-  useEffect(() => () => cancelAnimationFrame(rafRef.current), [])
+    size()
+    gsap.ticker.add(tick)
+    window.addEventListener('resize', size)
+    return () => {
+      seq.stop()
+      gsap.ticker.remove(tick)
+      window.removeEventListener('resize', size)
+    }
+  }, [reduced, dir])
 
   return (
-    <section ref={ref} className="hero" aria-label="Zion Lifts">
+    <section ref={sectionRef} className="hero" aria-label="Zion Lifts">
       <div className="hero__stage">
-        <video
-          ref={videoRef}
-          className="hero__film"
-          src={src}
-          poster="/media/hero/hero-poster.jpg"
-          muted
-          playsInline
-          preload={reduced ? 'none' : 'auto'}
-          disablePictureInPicture
-          aria-hidden="true"
-          tabIndex={-1}
-          onCanPlay={() => setCanPlay(true)}
-        />
-        <div className="hero__grade" aria-hidden="true" style={{ opacity: 1 - fade * 0.45 }} />
-
-        <div className="shell hero__content" style={{ opacity: 1 - fade }}>
-          <Reveal variant="fade">
-            <p className="eyebrow">Vertical transportation · Hyderabad</p>
-          </Reveal>
-
-          <SplitLines
-            as="h1"
-            className="display hero__title"
-            lines={['Zion.', 'Engineered', 'to rise.']}
+        {reduced ? (
+          <img className="hero__film" src="/media/hero/hero-new-poster.jpg" alt="" aria-hidden="true" />
+        ) : (
+          <canvas
+            ref={canvasRef}
+            className={`hero__film ${introGone ? 'is-in' : ''}`}
+            aria-hidden="true"
           />
+        )}
+        <div className="hero__grade" aria-hidden="true" />
 
-          <Reveal delay={420}>
-            <p className="lead hero__lead">
-              Lifts designed, built, installed and maintained in Hyderabad — from a home elevator
-              behind a brass door to a stretcher lift that never stops. 1,750 installations since
-              2012.
-            </p>
-          </Reveal>
+        <div className={`hero__copy ${introGone || reduced ? 'is-in' : ''}`}>
+          <h1 className="hero__title">
+            <span className="hero__line" style={{ '--d': '60ms' }}>
+              More than movement.
+            </span>
+            <span className="hero__line hero__line--accent" style={{ '--d': '180ms' }}>
+              A higher standard.
+            </span>
+          </h1>
 
-          <Reveal delay={520}>
-            <div className="hero__actions">
-              <Link to="/lifts" className="btn btn--accent">
-                Explore the range <Arrow />
-              </Link>
-              <Link to="/projects" className="btn btn--ghost">
-                See the work <Arrow />
-              </Link>
-            </div>
-          </Reveal>
+          <p className="hero__lead" style={{ '--d': '320ms' }}>
+            Thoughtfully engineered lifts for homes, commercial spaces and specialised needs.
+            Built to perform. Designed to belong.
+          </p>
+
+          <Link to="/lifts" className="hero__cta" style={{ '--d': '420ms' }}>
+            <span className="hero__cta-label">Explore our range</span>
+            <span className="hero__cta-icon" aria-hidden="true">
+              <Arrow size={15} />
+            </span>
+          </Link>
         </div>
 
-        {/* the cue: a mouse, its wheel dropping through, the word beneath */}
-        <div className="hero__cue" aria-hidden="true" style={{ opacity: 1 - fade * 1.6 }}>
+        {/* the cue: a mouse, its wheel dropping through, the word beneath.
+            It is the only thing in the frame that moves of its own accord. */}
+        <div className="hero__cue" aria-hidden="true">
           <span className="hero__mouse">
             <span className="hero__wheel" />
           </span>
           <span className="hero__cue-label">Scroll</span>
         </div>
-
-        {/* the three stops */}
-        <ol className="hero__stops" aria-hidden="true">
-          {STOPS.map((s, i) => (
-            <li key={s} className={i <= chapter ? 'is-on' : ''} />
-          ))}
-        </ol>
       </div>
     </section>
   )

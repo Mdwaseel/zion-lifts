@@ -2,6 +2,8 @@ import { useState } from 'react'
 
 import { Arrow, Check } from '@/components/icons'
 import { post } from '@/lib/api'
+import { Bolt, Box, Calendar, Refresh } from '@/components/icons'
+import { AlertMark, ClockMark } from '@/components/place-marks'
 
 const KINDS = [
   ['maintenance', 'Maintenance / AMC'],
@@ -9,6 +11,20 @@ const KINDS = [
   ['modernisation', 'Modernisation'],
   ['spares', 'Spare parts'],
 ]
+
+const OPTION_ICONS = {
+  maintenance: Calendar,
+  breakdown: Bolt,
+  modernisation: Refresh,
+  spares: Box,
+  routine: ClockMark,
+  soon: Calendar,
+  urgent: AlertMark,
+}
+
+function OptionIcon({ icon: Icon }) {
+  return Icon ? <Icon size={17} className="chip__icon" aria-hidden="true" /> : null
+}
 
 const URGENCY = [
   ['routine', 'Routine'],
@@ -95,6 +111,7 @@ export default function ServiceForm() {
               onClick={() => set('kind', k)}
               aria-pressed={form.kind === k}
             >
+              <OptionIcon icon={OPTION_ICONS[k]} />
               {label}
             </button>
           ))}
@@ -112,6 +129,7 @@ export default function ServiceForm() {
               onClick={() => set('urgency', k)}
               aria-pressed={form.urgency === k}
             >
+              <OptionIcon icon={OPTION_ICONS[k]} />
               {label}
             </button>
           ))}

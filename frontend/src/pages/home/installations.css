@@ -1,0 +1,545 @@
+/* ==========================================================================
+   Home — every installation on the map. Paper ground; the map on the left,
+   the panel on the right (below it on a phone). Leaflet's own stylesheet is
+   fetched with the library; the few pieces of it that show are restyled here.
+   ========================================================================== */
+.inst {
+  position: relative;
+  padding: clamp(4.5rem, 3rem + 6vw, 9rem) var(--page-x) clamp(4rem, 3rem + 5vw, 8rem);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.inst__head {
+  display: grid;
+  gap: 1.5rem;
+  max-width: var(--maxw);
+  margin: 0 auto clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
+}
+
+@media (min-width: 900px) {
+  .inst__head {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 7rem);
+  }
+}
+
+.inst__title {
+  margin-top: 1rem;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 1.2rem + 3.8vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.inst__title em {
+  font-style: italic;
+  color: var(--teal);
+}
+
+.inst__lead {
+  max-width: 46ch;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--light-muted);
+}
+
+/* --- the map and the panel ----------------------------------------------- */
+.inst__body {
+  display: grid;
+  gap: 1.25rem;
+  max-width: var(--maxw);
+  margin: 0 auto;
+}
+
+@media (min-width: 1000px) {
+  .inst__body {
+    grid-template-columns: minmax(0, 1fr) clamp(20rem, 28vw, 25rem);
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+}
+
+.inst__map-wrap {
+  position: relative;
+  min-height: 24rem;
+  height: clamp(24rem, 66vh, 44rem);
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid var(--light-border);
+  background: #e9e7e2;
+  box-shadow: var(--light-shadow);
+}
+
+.inst__map {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  font-family: var(--font-sans);
+}
+
+.inst__state {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--light-muted);
+  pointer-events: none;
+}
+
+.inst__all {
+  position: absolute;
+  right: 0.75rem;
+  top: 0.75rem;
+  z-index: 500;
+  min-height: 2.4rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+  box-shadow: var(--light-shadow);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .inst__all:hover {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+}
+
+/* the site's base styles cap media at their parent's width; Leaflet's panes
+   have none, so its canvas, SVG and tiles must be let out of that */
+.inst__map canvas,
+.inst__map svg,
+.inst__map img {
+  max-width: none;
+}
+
+/* the street map, quietened to sit on paper */
+.inst__map .leaflet-tile-pane {
+  filter: grayscale(0.55) saturate(0.75) contrast(0.92) brightness(1.03);
+}
+
+/* Leaflet's furniture, in the site's hand */
+.inst__map .leaflet-control-zoom {
+  border: 1px solid var(--light-border);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: var(--light-shadow);
+}
+
+.inst__map .leaflet-control-zoom a {
+  width: 2.25rem;
+  height: 2.25rem;
+  line-height: 2.25rem;
+  border-bottom-color: var(--light-border);
+  color: var(--light-text);
+  background: #fff;
+  font-size: 1.1rem;
+}
+
+.inst__map .leaflet-control-attribution {
+  font-size: 0.625rem;
+  background: rgba(255, 255, 255, 0.75);
+  color: #6b6b6b;
+}
+
+.inst__map .leaflet-control-attribution a {
+  color: var(--teal);
+}
+
+.inst__map .leaflet-tooltip {
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--light-border);
+  border-radius: 6px;
+  box-shadow: var(--light-shadow);
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+}
+
+.inst__map .leaflet-container:focus {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+/* the pins */
+.inst-pin {
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.28));
+}
+
+/* the pressed pin's ring, and our office, and you */
+.inst-halo {
+  border: 2px solid var(--teal);
+  border-radius: 50%;
+  background: rgba(46, 201, 202, 0.16);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .inst-halo {
+    animation: inst-pulse 1.8s ease-out infinite;
+  }
+}
+
+@keyframes inst-pulse {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.4);
+    opacity: 0;
+  }
+}
+
+.inst-office {
+  display: grid;
+  place-items: center;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  background: var(--teal);
+  box-shadow: 0 4px 14px -4px rgba(0, 0, 0, 0.5);
+  font-family: var(--font-display);
+  font-size: 0.8rem;
+  font-weight: var(--w-bold);
+  color: #fff;
+}
+
+.inst-office span {
+  line-height: 1;
+}
+
+.inst-you {
+  border: 3px solid #fff;
+  border-radius: 50%;
+  background: var(--blue);
+  box-shadow: 0 0 0 4px rgba(19, 76, 158, 0.25);
+}
+
+/* --- the panel ------------------------------------------------------------- */
+.inst__panel {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr);
+  gap: 0.9rem;
+  min-height: 0;
+  max-height: clamp(24rem, 66vh, 44rem);
+  padding: 1.1rem;
+  border: 1px solid var(--light-border);
+  border-radius: 12px;
+  background: var(--light-card);
+  box-shadow: var(--light-shadow);
+}
+
+.inst__intro,
+.inst__card {
+  display: grid;
+  gap: 0.35rem;
+  padding-bottom: 0.9rem;
+  border-bottom: 1px solid var(--light-border);
+}
+
+.inst__count {
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--light-muted);
+}
+
+.inst__count strong {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: 1.6rem;
+  letter-spacing: -0.02em;
+  color: var(--light-text);
+}
+
+.inst__note {
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--light-muted);
+}
+
+.inst__card {
+  animation: inst-card-in 0.5s var(--ease-out) both;
+}
+
+@keyframes inst-card-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.inst__card-k {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal);
+}
+
+.inst__card-name {
+  margin: 0.2rem 0 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.6rem, 1.2rem + 1.2vw, 2.2rem);
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+
+.inst__card-city {
+  margin: 0;
+  font-size: var(--t-small);
+  color: var(--light-muted);
+}
+
+.inst__card-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem 1rem;
+  margin: 0.5rem 0 0;
+}
+
+.inst__card-facts dt {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--light-muted);
+}
+
+.inst__card-facts dd {
+  margin: 0.15rem 0 0;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  font-variant-numeric: tabular-nums;
+}
+
+.inst__card-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.inst__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--teal);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .inst__go:hover {
+    background: var(--teal-deep);
+  }
+}
+
+.inst__close {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px solid var(--light-border);
+  border-radius: 50%;
+  color: var(--light-text);
+  transition: border-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .inst__close:hover {
+    border-color: var(--light-text);
+  }
+}
+
+/* search and near me */
+.inst__tools {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.inst__search {
+  flex: 1;
+  min-width: 0;
+}
+
+.inst__search input {
+  width: 100%;
+  min-height: 2.6rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--light-border);
+  border-radius: 8px;
+  background: #fff;
+  font: inherit;
+  font-size: var(--t-small);
+  color: var(--light-text);
+}
+
+.inst__search input:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 1px;
+}
+
+.inst__near {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex: none;
+  min-height: 2.6rem;
+  padding: 0 0.85rem;
+  border: 1px solid var(--light-border);
+  border-radius: 8px;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+.inst__near svg {
+  color: var(--teal);
+}
+
+@media (hover: hover) {
+  .inst__near:hover:not(:disabled) {
+    border-color: var(--teal);
+    color: var(--teal);
+  }
+}
+
+.inst__near:disabled,
+.inst__search input:disabled {
+  opacity: 0.5;
+}
+
+.inst__geo {
+  margin: -0.4rem 0 0;
+  font-size: var(--t-micro);
+  color: var(--light-muted);
+}
+
+/* the areas */
+.inst__list {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+
+.inst__area {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    'name n'
+    'city n';
+  column-gap: 0.75rem;
+  width: 100%;
+  padding: 0.55rem 0.5rem;
+  border-radius: 6px;
+  text-align: left;
+  color: var(--light-text);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .inst__area:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+.inst__area.is-on {
+  background: rgba(6, 111, 112, 0.09);
+}
+
+.inst__area:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.inst__area-name {
+  grid-area: name;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+}
+
+.inst__area-city {
+  grid-area: city;
+  font-size: var(--t-micro);
+  color: var(--light-muted);
+}
+
+.inst__area-n {
+  grid-area: n;
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.08em;
+  color: var(--teal);
+  white-space: nowrap;
+}
+
+.inst__empty {
+  padding: 0.75rem 0.5rem;
+  font-size: var(--t-small);
+  color: var(--light-muted);
+}
+
+.inst__all:focus-visible,
+.inst__go:focus-visible,
+.inst__close:focus-visible,
+.inst__near:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+@media (max-width: 999px) {
+  .inst__map-wrap {
+    height: clamp(20rem, 56vh, 32rem);
+  }
+
+  .inst__panel {
+    max-height: none;
+    grid-template-rows: auto auto auto auto;
+  }
+
+  .inst__list {
+    max-height: 18rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .inst__card {
+    animation: none;
+  }
+}

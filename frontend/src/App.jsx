@@ -2,7 +2,7 @@ import { Suspense, lazy, useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import Layout from '@/components/Layout'
-import Preloader, { hasSeenIntro } from '@/components/Preloader'
+import Preloader, { hasSeenIntro, introForced } from '@/components/Preloader'
 import { prefetchCore } from '@/lib/api'
 import { useReducedMotion } from '@/lib/hooks'
 import { SiteProvider } from '@/lib/site'
@@ -17,6 +17,7 @@ const Projects = lazy(() => import('@/pages/Projects'))
 const ProjectDetail = lazy(() => import('@/pages/ProjectDetail'))
 const About = lazy(() => import('@/pages/About'))
 const Contact = lazy(() => import('@/pages/Contact'))
+const Service = lazy(() => import('@/pages/Service'))
 const Gallery = lazy(() => import('@/pages/Gallery'))
 const Faq = lazy(() => import('@/pages/Faq'))
 const Journal = lazy(() => import('@/pages/Journal'))
@@ -66,7 +67,7 @@ function useLenis(enabled) {
 }
 
 export default function App() {
-  const [intro, setIntro] = useState(() => !hasSeenIntro())
+  const [intro, setIntro] = useState(() => introForced() || !hasSeenIntro())
   useLenis(!intro)
 
   useEffect(() => {
@@ -86,6 +87,7 @@ export default function App() {
             <Route path="projects/:slug" element={<ProjectDetail />} />
             <Route path="about" element={<About />} />
             <Route path="contact" element={<Contact />} />
+            <Route path="service" element={<Service />} />
             <Route path="gallery" element={<Gallery />} />
             <Route path="faq" element={<Faq />} />
             <Route path="journal" element={<Journal />} />

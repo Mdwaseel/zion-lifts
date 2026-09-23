@@ -1,3 +1,16 @@
+/* Section 00 — the lockup holds, then launches.
+
+   The mark is a triangle standing on a curve, which is already the shape of a
+   nose cone, so the exit is the one the shape asks for: straight up, out of
+   frame, accelerating the whole way, with a trail opening under it. The ground
+   falls away while it is still climbing, so the launch reveals the page rather
+   than finishing against black and then cutting.
+
+   Two nested elements do the moving. The inner one arrives; the outer one
+   launches. On one element the launch transform would replace a running
+   animation inside the same style recalculation, and the browser drops the
+   transition and jumps straight to the end. */
+
 .preloader {
   position: fixed;
   inset: 0;
@@ -7,8 +20,8 @@
   place-items: center;
   overflow: hidden;
   transition:
-    opacity 0.8s var(--ease-out),
-    visibility 0s linear 0.9s;
+    opacity 0.42s var(--ease-out) 0.62s,
+    visibility 0s linear 1.15s;
 }
 
 .preloader.is-leaving {
@@ -16,91 +29,180 @@
   visibility: hidden;
 }
 
-/* the single vertical line, accelerating upward */
-.preloader__line {
-  position: absolute;
-  left: 50%;
-  top: 0;
-  width: 1px;
-  height: 100%;
-  background: linear-gradient(
-    to top,
-    transparent,
-    rgba(11, 176, 177, 0.06) 20%,
-    var(--teal-bright) 50%,
-    rgba(11, 176, 177, 0.06) 80%,
-    transparent
-  );
-  transform-origin: bottom;
-  animation: ascend 2.6s cubic-bezier(0.5, 0, 0.2, 1) infinite;
-}
-
-@keyframes ascend {
-  0% {
-    transform: translateY(105%) scaleY(0.35);
-    opacity: 0;
-  }
-  22% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-105%) scaleY(1);
-    opacity: 0;
-  }
-}
-
+/* --- the lockup ------------------------------------------------------------
+   Mark to the left, wordmark beside it, on one optical baseline. */
 .preloader__lockup {
   position: relative;
-  display: grid;
-  gap: 0.5rem;
-  justify-items: center;
-  text-align: center;
+  z-index: 2;
+}
+
+.preloader__rise {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.85rem, 2vw, 1.4rem);
+  animation: preArrive 0.9s var(--ease-out) both;
+}
+
+.preloader__ship {
+  position: relative;
+  display: block;
+  flex: none;
+}
+
+.preloader__mark {
+  display: block;
+  width: clamp(3.25rem, 7vw, 5rem);
+  height: auto;
 }
 
 .preloader__word {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 1rem + 2.4vw, 2.75rem);
   font-weight: 600;
-  letter-spacing: 0.22em;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: #f3f1ec;
-  padding-left: 0.22em;
+  line-height: 1;
+  padding-left: 0.2em; /* optical: the tracking leaves a gap after the last letter */
+  white-space: nowrap;
 }
 
-.preloader__sub {
-  font-size: var(--t-eyebrow);
-  letter-spacing: var(--tr-label);
-  text-transform: uppercase;
-  color: rgba(232, 230, 225, 0.42);
-  font-weight: var(--w-semibold);
-}
-
-.preloader__floor {
-  position: absolute;
-  bottom: clamp(1.75rem, 5vh, 3.5rem);
-  right: var(--page-x);
-  display: flex;
-  align-items: baseline;
-  gap: 0.5rem;
+/* the second word carries the accent, as it does in the nav */
+.preloader__word em {
+  font-style: normal;
   color: var(--teal-bright);
 }
 
-.preloader__num {
-  font-family: var(--font-mono);
-  font-size: clamp(2rem, 1.2rem + 3vw, 3.5rem);
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  line-height: 1;
+@keyframes preArrive {
+  from {
+    opacity: 0;
+    transform: translateY(0.9rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
-.preloader__arrow {
-  font-size: 1rem;
-  opacity: 0.7;
+/* --- the hold --------------------------------------------------------------
+   Nothing is drawn to report progress. The hold is a second and a half and the
+   mark is the whole frame; a bar underneath it only gave the eye somewhere
+   else to go. Instead the mark itself builds: a teal glow gathers under it and
+   is spent at the moment of release, so the wait reads as something charging
+   rather than something loading. */
+.preloader__ship::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 62%;
+  width: 190%;
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(46, 201, 202, 0.5), transparent 62%);
+  filter: blur(14px);
+  animation: preCharge 1.5s var(--ease-in-out) both;
+  pointer-events: none;
 }
 
+@keyframes preCharge {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* spent on release */
+.preloader.is-leaving .preloader__ship::before {
+  animation: none;
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.5);
+  transition:
+    opacity 0.42s var(--ease-out),
+    transform 0.42s var(--ease-out);
+}
+
+/* --- the launch ------------------------------------------------------------
+   Ease-IN, not out: a rocket is slowest at the moment it releases and fastest
+   as it leaves, so the curve loads its acceleration at the end. The wordmark
+   drops away first rather than riding up with the mark. */
+.preloader.is-leaving .preloader__word {
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 0.24s var(--ease-out),
+    transform 0.24s var(--ease-out);
+}
+
+.preloader.is-leaving .preloader__lockup {
+  transform: translateY(-125vh) scale(0.68);
+  transition: transform 1s cubic-bezier(0.6, 0, 0.9, 0.12) 0.14s;
+}
+
+/* the plume: it hangs from the base of the mark and opens downward as the mark
+   climbs, so it stays under it the whole way up */
+.preloader__trail {
+  position: absolute;
+  z-index: -1;
+  left: 50%;
+  top: 92%;
+  width: 2px;
+  height: 46vh;
+  margin-left: -1px;
+  background: linear-gradient(to bottom, var(--teal-bright), transparent);
+  transform-origin: top center;
+  transform: scaleY(0);
+  opacity: 0;
+}
+
+.preloader.is-leaving .preloader__trail {
+  animation: preTrail 0.94s cubic-bezier(0.5, 0, 0.9, 0.2) 0.14s both;
+}
+
+@keyframes preTrail {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.7;
+  }
+  60% {
+    transform: scaleY(1);
+    opacity: 0.45;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
+/* Stillness asked for: the lockup is simply there, and simply gone. */
 @media (prefers-reduced-motion: reduce) {
-  .preloader__line {
+  .preloader,
+  .preloader__rise,
+  .preloader__ship::before,
+  .preloader__trail {
     animation: none;
-    opacity: 0.35;
+    transition: none;
+  }
+
+  .preloader__ship::before {
+    display: none;
+  }
+
+  .preloader.is-leaving .preloader__lockup {
+    transform: none;
+    transition: none;
+  }
+
+  .preloader.is-leaving {
+    opacity: 0;
+    visibility: hidden;
   }
 }

@@ -1,336 +1,374 @@
-.nav {
+/* The header has two shapes. Over the head of a page it is a bar with no
+   ground. Once the page moves it draws in to a black tab hanging from the top
+   edge of the screen: square where it meets the edge, rounded underneath, with
+   the mark and the links spread evenly across it. */
+.hd {
   position: fixed;
   inset: 0 0 auto;
   z-index: var(--z-nav);
-  transition:
-    transform 0.5s var(--ease-out),
-    background 0.4s var(--ease-out),
-    border-color 0.4s var(--ease-out);
-  border-bottom: 1px solid transparent;
+  display: flex;
+  justify-content: center;
+  color: #f3f1ec;
+  pointer-events: none;
 }
 
-/* keeps the links legible over a bright hero before the bar has a background */
-.nav::before {
+/* keeps the links legible over a bright photograph while there is no ground */
+.hd::before {
   content: '';
   position: absolute;
   inset: 0 0 -2.5rem;
-  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.6), transparent);
+  z-index: -1;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.62), transparent);
   pointer-events: none;
-  transition: opacity var(--dur) var(--ease-out);
+  transition: opacity 0.4s var(--ease-out);
 }
 
-.nav.is-scrolled::before {
+.hd.is-tab::before {
   opacity: 0;
 }
 
-/* Once the page moves, the bar becomes a material the content passes beneath
-   rather than an opaque strip stacked on top of it. */
-.nav.is-scrolled {
-  background: var(--material);
-  -webkit-backdrop-filter: var(--material-blur);
-  backdrop-filter: var(--material-blur);
-  border-bottom-color: var(--material-edge);
-}
-
-@media (prefers-reduced-transparency: reduce) {
-  .nav.is-scrolled {
-    background: #000;
-  }
-}
-
-.nav.is-hidden {
-  transform: translateY(-100%);
-}
-
-.nav__inner {
-  position: relative; /* above the scrim pseudo-element */
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding: 0 var(--page-x);
-  height: var(--nav-h);
+/* the one place in the header a size is animated: the bar really does become a
+   narrower tab, and scaling it would squash the words inside */
+.hd__inner {
+  position: relative;
+  pointer-events: auto;
+  overflow: hidden;
   display: flex;
   align-items: center;
-  gap: var(--gap-l);
+  gap: clamp(1rem, 3vw, 3rem);
+  width: 100%;
+  max-width: var(--maxw);
+  height: var(--nav-h);
+  padding-inline: var(--page-x);
+  border-radius: 0;
+  background: transparent;
+  transition:
+    max-width 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    padding 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    gap 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    border-radius 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.4s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
 }
 
-/* --- brand -------------------------------------------------------------- */
-.nav__brand {
+.hd.is-tab .hd__inner {
+  max-width: 46rem;
+  height: 3.6rem;
+  gap: clamp(0.75rem, 2vw, 1.75rem);
+  padding-inline: clamp(1.25rem, 3vw, 2.25rem);
+  border-radius: 0 0 1.6rem 1.6rem;
+  background: #060708;
+  box-shadow: 0 22px 44px -26px rgba(0, 0, 0, 0.85);
+}
+
+/* --- brand ---------------------------------------------------------------- */
+.hd__brand {
   display: flex;
   align-items: center;
   gap: 0.65rem;
   flex: none;
 }
 
-.nav__mark {
+.hd__mark {
   width: 30px;
   height: auto;
   object-fit: contain;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav__wordmark {
+@media (hover: hover) {
+  .hd__brand:hover .hd__mark {
+    transform: translateY(-3px);
+  }
+}
+
+.hd__wordmark {
   font-family: var(--font-display);
   font-size: 1.05rem;
   font-weight: 500;
   letter-spacing: 0.01em;
-  color: #f3f1ec;
   line-height: 1;
 }
 
-.nav__wordmark span {
-  color: var(--teal-bright);
+.hd__wordmark span {
   margin-left: 0.28em;
   font-weight: 400;
+  color: var(--teal-bright);
 }
 
-/* --- links -------------------------------------------------------------- */
-.nav__links {
-  display: none;
-  gap: clamp(1.1rem, 2vw, 2.2rem);
+.hd__wordmark,
+.hd__actions {
+  max-width: 24rem;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    max-width 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 0.3s var(--ease-out);
+}
+
+.hd.is-tab .hd__wordmark,
+.hd.is-tab .hd__actions {
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hd.is-tab .hd__brand {
+  gap: 0;
+}
+
+/* --- links ---------------------------------------------------------------- */
+.hd__links {
+  display: flex;
+  gap: clamp(1.1rem, 2.2vw, 2.4rem);
   margin-inline: auto;
+  transition: gap 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav__link {
+/* in the tab the links take the whole width, evenly */
+.hd.is-tab .hd__links {
+  flex: 1;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin: 0;
+}
+
+.hd.is-tab .hd__link {
+  font-size: var(--t-body);
+  font-weight: 400;
+  letter-spacing: 0;
+  color: rgba(243, 241, 236, 0.82);
+}
+
+.hd__link {
   position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   font-size: var(--t-small);
   font-weight: 500;
   letter-spacing: 0.02em;
-  color: rgba(232, 230, 225, 0.72);
-  padding-block: 0.35rem;
+  color: rgba(243, 241, 236, 0.74);
   transition: color var(--dur-fast) var(--ease-out);
 }
 
-.nav__link::after {
-  content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--teal-bright);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--dur) var(--ease-out);
+/* the label sits in a window one line high; on hover the line beneath rolls
+   up into it */
+.hd__roll {
+  display: grid;
+  height: 1.3em;
+  overflow: hidden;
+  line-height: 1.3;
 }
 
-.nav__link:hover,
-.nav__link.is-active {
-  color: #fff;
+.hd__roll > span {
+  display: block;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.nav__link:hover::after,
-.nav__link.is-active::after {
-  transform: scaleX(1);
+.hd__roll > span + span {
+  color: var(--teal-bright);
 }
 
-/* --- actions ------------------------------------------------------------ */
-.nav__actions {
+@media (hover: hover) {
+  .hd__link:hover .hd__roll > span,
+  .hd__cta:hover .hd__roll > span {
+    transform: translateY(-100%);
+  }
+}
+
+/* where you are: the word itself takes the accent, the way a lit floor button
+   does. It used to be a dot under the word — the word carrying it is quieter
+   and reads at a glance without adding a second mark to the bar.
+
+   The scrolled bar has to be named too. `.hd.is-tab .hd__link` is three classes
+   and beats a two-class `.hd__link.is-active` whatever the order, which is why
+   the accent used to disappear the moment the bar drew in. */
+.hd__link.is-active,
+.hd.is-tab .hd__link.is-active {
+  color: var(--teal-bright);
+}
+
+.hd__link:focus-visible,
+.hd__brand:focus-visible,
+.hd__phone:focus-visible,
+.hd__cta:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+/* --- actions -------------------------------------------------------------- */
+.hd__actions {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: clamp(0.75rem, 1.6vw, 1.5rem);
   margin-left: auto;
 }
 
-.nav__phone {
+.hd__phone {
   display: none;
   font-family: var(--font-mono);
   font-size: var(--t-micro);
   letter-spacing: 0.04em;
-  color: rgba(232, 230, 225, 0.66);
+  color: rgba(243, 241, 236, 0.7);
   transition: color var(--dur-fast) var(--ease-out);
 }
 
-.nav__phone:hover {
-  color: var(--teal-bright);
-}
-
-.nav__cta {
-  display: none;
-}
-
-.nav__toggle {
-  width: 42px;
-  height: 42px;
-  display: grid;
-  place-content: center;
-  gap: 6px;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  border-radius: var(--radius);
-  transition: border-color var(--dur-fast) var(--ease-out);
-}
-
-.nav__toggle:hover {
-  border-color: rgba(255, 255, 255, 0.45);
-}
-
-.nav__bar {
-  display: block;
-  width: 18px;
-  height: 1px;
-  background: #f3f1ec;
-  transition: transform 0.45s var(--ease-out);
-}
-
-.nav__toggle.is-open .nav__bar:first-child {
-  transform: translateY(3.5px) rotate(45deg);
-}
-
-.nav__toggle.is-open .nav__bar:last-child {
-  transform: translateY(-3.5px) rotate(-45deg);
-}
-
-@media (min-width: 860px) {
-  .nav__links {
-    display: flex;
-  }
-  .nav__cta {
-    display: inline-flex;
+@media (hover: hover) {
+  .hd__phone:hover {
+    color: var(--teal-bright);
   }
 }
 
-@media (min-width: 1120px) {
-  .nav__phone {
+.hd__cta {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.4rem;
+  padding: 0 1.1rem;
+  border-radius: var(--radius-pill);
+  background: var(--teal);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+.hd__cta .hd__roll > span + span {
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .hd__cta:hover {
+    background: color-mix(in srgb, var(--teal) 82%, #fff);
+  }
+}
+
+@media (min-width: 1180px) {
+  .hd__phone {
     display: block;
   }
 }
 
-/* ==========================================================================
-   Full-screen menu — the panels part like doors
-   ========================================================================== */
-
-.menu {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-menu);
-  pointer-events: none;
-  visibility: hidden;
-  transition: visibility 0s linear 0.75s;
-}
-
-.menu.is-open {
-  pointer-events: auto;
-  visibility: visible;
-  transition-delay: 0s;
-}
-
-.menu__door {
+/* the page's progress, along the tab's lower edge */
+.hd__progress {
   position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50.5%;
-  background: var(--obsidian);
-  transition: transform 0.75s var(--ease-in-out);
-}
-
-.menu__door--l {
-  left: 0;
-  transform: translateX(-101%);
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-}
-
-.menu__door--r {
-  right: 0;
-  transform: translateX(101%);
-}
-
-.menu.is-open .menu__door {
-  transform: translateX(0);
-}
-
-.menu__body {
-  position: relative;
-  height: 100%;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding: calc(var(--nav-h) + 2.5rem) var(--page-x) 2.5rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: var(--gap-l);
-  overflow-y: auto;
+  inset: auto 0 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--teal), var(--teal-bright));
+  transform: scaleX(0);
+  transform-origin: 0 50%;
   opacity: 0;
   transition: opacity 0.4s var(--ease-out);
+  will-change: transform;
 }
 
-.menu.is-open .menu__body {
+.hd.is-tab .hd__progress {
   opacity: 1;
-  transition-delay: 0.42s;
 }
 
-.menu__grid {
-  display: grid;
-  gap: clamp(2rem, 4vw, 3.5rem);
-  grid-template-columns: 1fr;
-}
+/* the first arrival: the bar's parts come down one after the other */
+@media (prefers-reduced-motion: no-preference) {
+  .hd__brand,
+  .hd__link,
+  .hd__actions {
+    animation: hd-drop 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(0.15s + var(--i, 0) * 0.06s);
+  }
 
-@media (min-width: 640px) {
-  .menu__grid {
-    grid-template-columns: repeat(2, 1fr);
+  .hd__actions {
+    animation-delay: 0.5s;
   }
 }
 
-@media (min-width: 1000px) {
-  .menu__grid {
-    grid-template-columns: repeat(4, 1fr);
+@keyframes hd-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
 
-.menu__title {
-  font-size: var(--t-eyebrow);
-  letter-spacing: var(--tr-label);
-  text-transform: uppercase;
-  color: var(--teal-bright);
-  padding-bottom: 0.9rem;
-  margin-bottom: 1.1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  font-weight: var(--w-semibold);
+/* On a small screen the bar is two rows — brand and the ask, then the links —
+   and the tab is just the row of links, hung from the top edge. */
+@media (max-width: 859px) {
+  .hd__inner {
+    flex-wrap: wrap;
+    align-content: flex-start;
+    row-gap: 0;
+    height: 6.1rem;
+    padding-top: 0.45rem;
+  }
+
+  .hd__brand,
+  .hd__actions {
+    height: 2.75rem;
+  }
+
+  .hd__brand {
+    transition:
+      height 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.3s var(--ease-out);
+  }
+
+  .hd__links {
+    order: 3;
+    flex: 0 0 100%;
+    justify-content: space-between;
+    gap: 0;
+    margin: 0;
+  }
+
+  .hd.is-tab .hd__inner {
+    max-width: calc(100% - 1.5rem);
+    height: 3.25rem;
+    padding-top: 0;
+    padding-inline: 1.1rem;
+    border-radius: 0 0 1.35rem 1.35rem;
+  }
+
+  .hd.is-tab .hd__brand,
+  .hd.is-tab .hd__actions {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+
+  .hd.is-tab .hd__links {
+    flex: 0 0 100%;
+    align-self: center;
+  }
+
+  .hd.is-tab .hd__inner {
+    align-content: center;
+  }
+
+  .hd.is-tab .hd__link {
+    font-size: var(--t-small);
+  }
+
 }
 
-.menu__list {
-  display: grid;
-  gap: 0.55rem;
-}
-
-.menu__link {
-  display: inline-block;
-  font-family: var(--font-display);
-  font-size: clamp(1.05rem, 0.9rem + 0.6vw, 1.45rem);
-  font-weight: 600;
-  color: rgba(232, 230, 225, 0.82);
-  transition:
-    color var(--dur-fast) var(--ease-out),
-    transform var(--dur-fast) var(--ease-out);
-}
-
-.menu__link:hover {
-  color: #fff;
-  transform: translateX(6px);
-}
-
-.menu__foot {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--gap);
-  align-items: flex-end;
-  justify-content: space-between;
-  padding-top: 1.75rem;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.menu__phone {
-  display: block;
-  font-family: var(--font-display);
-  font-size: clamp(1.35rem, 1rem + 1.5vw, 2.25rem);
-  font-weight: 600;
-  color: #fff;
-  margin-top: 0.35rem;
-}
-
-.menu__phone:hover {
-  color: var(--teal-bright);
+@media (max-width: 400px) {
+  .hd__link {
+    font-size: 0.8rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .menu__door {
-    transition-duration: 0.001ms;
+  .hd,
+  .hd__inner,
+  .hd__links,
+  .hd__wordmark,
+  .hd__actions,
+  .hd__brand,
+  .hd__roll > span,
+  .hd__mark {
+    transition-duration: 0.01ms;
   }
 }

@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Shared by a lift's own page and the collection: the quiet type parts and the
+   word-by-word headline. Serif is kept for the moments that earn it.
+   ========================================================================== */
+
+/* --- shared quiet parts --------------------------------------------------- */
+.ld-h2 {
+  font-size: var(--t-h3);
+  font-weight: var(--w-semibold);
+  line-height: 1.12;
+  letter-spacing: var(--tr-h3);
+  text-wrap: balance;
+  max-width: 22ch;
+}
+
+.ld-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.ld-note {
+  margin-top: 0.85rem;
+  max-width: 52ch;
+  font-size: var(--t-small);
+  line-height: 1.55;
+  color: var(--fg-dim);
+}
+
+/* each word rises out of its own line */
+.ld-word {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.ld-word__in {
+  display: inline-block;
+}
+
+/* a line that rises when it comes on screen */
+@media (prefers-reduced-motion: no-preference) {
+  .ld-rise .ld-word__in {
+    transform: translateY(112%);
+    transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: calc(var(--i) * 0.07s);
+  }
+
+  .ld-rise.is-in .ld-word__in,
+  .is-open .ld-rise .ld-word__in {
+    transform: none;
+  }
+}
+
+/* words that are read into focus */
+.ld-w {
+  will-change: opacity, filter;
+}

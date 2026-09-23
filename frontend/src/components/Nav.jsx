@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
-import { Link, NavLink, useLocation } from 'react-router-dom'
+import { useEffect, useRef, useState } from 'react'
+import { Link, NavLink } from 'react-router-dom'
 
-import { useEscape, useScrollLock } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
@@ -15,153 +14,84 @@ const PRIMARY = [
   { to: '/contact', label: 'Contact' },
 ]
 
-const MENU_GROUPS = [
-  {
-    title: 'The range',
-    links: [
-      { to: '/lifts', label: 'All lift systems' },
-      { to: '/lifts/home-elevator', label: 'Home elevators' },
-      { to: '/lifts/capsule-elevator', label: 'Capsule elevators' },
-      { to: '/lifts/mrl-traction', label: 'MRL traction' },
-      { to: '/lifts/hospital-elevator', label: 'Hospital elevators' },
-      { to: '/lifts/goods-elevator', label: 'Goods & freight' },
-    ],
-  },
-  {
-    title: 'Proof',
-    links: [
-      { to: '/projects', label: 'All projects' },
-      { to: '/gallery', label: 'Gallery' },
-      { to: '/about', label: 'About Zion' },
-    ],
-  },
-  {
-    title: 'Knowledge',
-    links: [
-      { to: '/journal', label: 'Journal' },
-      { to: '/faq', label: 'Questions, answered' },
-    ],
-  },
-  {
-    title: 'Talk to us',
-    links: [
-      { to: '/contact', label: 'Start a project enquiry' },
-      { to: '/contact#service', label: 'Service & breakdown' },
-      { to: '/contact#visit', label: 'Arrange a visit' },
-    ],
-  },
-]
+/* The header has two shapes. Over the top of a page it is a plain bar with no
+   ground: brand, links, the ask. Once the page moves it draws in to a black tab
+   hanging from the top edge of the screen — square where it meets the edge,
+   rounded underneath — carrying the mark and the links spread evenly across
+   it. There is one menu at every width; nothing opens.
 
+   While it is a bar, the right end carries the one lift-shaped thing in it: a
+   position indicator, an arrow for the direction of travel and the page's
+   height in floors. */
 export default function Nav() {
-  const [open, setOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const [hidden, setHidden] = useState(false)
-  const location = useLocation()
+  const [atTop, setAtTop] = useState(true)
+  const barRef = useRef(null)
   const site = useSite()
 
-  useScrollLock(open)
-  useEscape(() => setOpen(false), open)
-
-  useEffect(() => setOpen(false), [location.pathname, location.hash])
-
   useEffect(() => {
-    let last = window.scrollY
-    const onScroll = () => {
+    let frame = 0
+    const update = () => {
+      frame = 0
       const y = window.scrollY
-      setScrolled(y > 40)
-      // hide going down past the fold, reveal on any upward movement
-      setHidden(y > 320 && y > last + 4)
-      last = y
+      setAtTop(y < 24)
+      const doc = document.documentElement
+      const max = doc.scrollHeight - doc.clientHeight
+      const p = max > 0 ? Math.min(1, Math.max(0, y / max)) : 0
+      if (barRef.current) barRef.current.style.transform = `scaleX(${p})`
     }
-    onScroll()
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
     window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      if (frame) cancelAnimationFrame(frame)
+    }
   }, [])
 
   return (
-    <>
-      <header className={`nav ${scrolled ? 'is-scrolled' : ''} ${hidden && !open ? 'is-hidden' : ''}`}>
-        <div className="nav__inner">
-          <Link to="/" className="nav__brand" aria-label="Zion Lifts — home">
-            <img src="/media/brand/mark.png" alt="" className="nav__mark" width="30" height="32" />
-            <span className="nav__wordmark">
-              Zion<span>Lifts</span>
+    <header className={`hd ${atTop ? 'is-top' : 'is-tab'}`}>
+      <div className="hd__inner">
+        <Link to="/" className="hd__brand" aria-label="Zion Lifts — home">
+          <img src="/media/brand/mark.png" alt="" className="hd__mark" width="30" height="32" />
+          <span className="hd__wordmark">
+            Zion<span>Lifts</span>
+          </span>
+        </Link>
+
+        <nav className="hd__links" aria-label="Primary">
+          {PRIMARY.map((l, i) => (
+            <NavLink
+              key={l.to}
+              to={l.to}
+              style={{ '--i': i }}
+              className={({ isActive }) => `hd__link ${isActive ? 'is-active' : ''}`}
+            >
+              {/* the label twice: the second copy rolls up into place on hover */}
+              <span className="hd__roll">
+                <span>{l.label}</span>
+                <span aria-hidden="true">{l.label}</span>
+              </span>
+            </NavLink>
+          ))}
+        </nav>
+
+        <div className="hd__actions">
+          {site?.phone && (
+            <a className="hd__phone" href={telHref(site.phone)}>
+              {site.phone}
+            </a>
+          )}
+          <Link to="/contact" className="hd__cta">
+            <span className="hd__roll">
+              <span>Get a quote</span>
+              <span aria-hidden="true">Get a quote</span>
             </span>
           </Link>
-
-          <nav className="nav__links" aria-label="Primary">
-            {PRIMARY.map((l) => (
-              <NavLink
-                key={l.to}
-                to={l.to}
-                className={({ isActive }) => `nav__link ${isActive ? 'is-active' : ''}`}
-              >
-                {l.label}
-              </NavLink>
-            ))}
-          </nav>
-
-          <div className="nav__actions">
-            {site?.phone && (
-              <a className="nav__phone" href={telHref(site.phone)}>
-                {site.phone}
-              </a>
-            )}
-            <Link to="/contact" className="btn btn--accent btn--sm nav__cta">
-              Get a quote
-            </Link>
-            <button
-              type="button"
-              className={`nav__toggle ${open ? 'is-open' : ''}`}
-              onClick={() => setOpen((o) => !o)}
-              aria-expanded={open}
-              aria-controls="site-menu"
-            >
-              <span className="sr-only">{open ? 'Close menu' : 'Open menu'}</span>
-              <span className="nav__bar" />
-              <span className="nav__bar" />
-            </button>
-          </div>
         </div>
-      </header>
-
-      {/* The menu parts like a pair of lift doors rather than dropping down. */}
-      <div id="site-menu" className={`menu ${open ? 'is-open' : ''}`} aria-hidden={!open}>
-        <div className="menu__door menu__door--l" />
-        <div className="menu__door menu__door--r" />
-        <div className="menu__body">
-          <div className="menu__grid">
-            {MENU_GROUPS.map((group, gi) => (
-              <div className="menu__group" key={group.title} style={{ '--gi': gi }}>
-                <p className="menu__title">{group.title}</p>
-                <ul className="menu__list">
-                  {group.links.map((l) => (
-                    <li key={l.to + l.label}>
-                      <Link to={l.to} className="menu__link">
-                        {l.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div className="menu__foot">
-            <div>
-              <p className="mono">Speak to an engineer</p>
-              {site?.phone && (
-                <a className="menu__phone" href={telHref(site.phone)}>
-                  {site.phone}
-                </a>
-              )}
-            </div>
-            <p className="small">
-              {site?.city ?? 'Hyderabad'}, {site?.country ?? 'India'} — since{' '}
-              {site?.founded_year ?? 2012}
-            </p>
-          </div>
-        </div>
+        <span className="hd__progress" ref={barRef} aria-hidden="true" />
       </div>
-    </>
+    </header>
   )
 }

@@ -1,0 +1,2273 @@
+{
+"source": "Zion Lifts installation register (Google Sheet 16LRappMeg2N4TCif4dEAE9zTzey9LvZt34p8_CBWgnk)",
+"fetched": "2026-09-22",
+"office": {
+"name": "Zion Lifts, head office",
+"lat": 17.458693,
+"lng": 78.478792
+},
+"items": [
+{
+"area": "Shivaji Nagar",
+"city": "Secunderabad",
+"lat": 17.435267,
+"lng": 78.502816
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.505876,
+"lng": 78.478551
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.320445,
+"lng": 78.652195
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.505996,
+"lng": 78.478432
+},
+{
+"area": "Shadnagar",
+"city": "Hyderabad",
+"lat": 17.068701,
+"lng": 78.200082
+},
+{
+"area": "Tukaram Gate",
+"city": "Secunderabad",
+"lat": 17.441995,
+"lng": 78.525211
+},
+{
+"area": "Chilkalguda",
+"city": "Secunderabad",
+"lat": 17.430454,
+"lng": 78.511442
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.419966,
+"lng": 78.447024
+},
+{
+"area": "West Maredpally",
+"city": "Secunderabad",
+"lat": 17.436899,
+"lng": 78.489424
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.52839,
+"lng": 78.482766
+},
+{
+"area": "Gowliguda",
+"city": "Hyderabad",
+"lat": 17.378951,
+"lng": 78.479
+},
+{
+"area": "A.S Rao Nagar",
+"city": "Secunderabad",
+"lat": 17.480352,
+"lng": 78.556271
+},
+{
+"area": "Kondapur",
+"city": "Hyderabad",
+"lat": 17.465081,
+"lng": 78.342618
+},
+{
+"area": "Kondapur",
+"city": "Hyderabad",
+"lat": 17.471405,
+"lng": 78.688137
+},
+{
+"area": "Bowenpally",
+"city": "Secunderabad",
+"lat": 17.460212,
+"lng": 78.477316
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.373854,
+"lng": 78.552144
+},
+{
+"area": "Shivaji Nagar",
+"city": "Hyderabad",
+"lat": 17.433976,
+"lng": 78.49492
+},
+{
+"area": "Moula Ali",
+"city": "Secunderabad",
+"lat": 17.464402,
+"lng": 78.558584
+},
+{
+"area": "Balanagar",
+"city": "Hyderabad",
+"lat": 17.473138,
+"lng": 78.450208
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.403801,
+"lng": 78.478813
+},
+{
+"area": "Narsingi",
+"city": "Hyderabad",
+"lat": 17.385919,
+"lng": 78.330273
+},
+{
+"area": "New Santoshnagar",
+"city": "Hyderabad",
+"lat": 17.346222,
+"lng": 78.507949
+},
+{
+"area": "Khayyam Nagar",
+"city": "Hyderabad",
+"lat": 17.356669,
+"lng": 78.423713
+},
+{
+"area": "Abids",
+"city": "Hyderabad",
+"lat": 17.392272,
+"lng": 78.476008
+},
+{
+"area": "Nampally",
+"city": "Hyderabad",
+"lat": 17.394847,
+"lng": 78.471327
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.399465,
+"lng": 78.480813
+},
+{
+"area": "Pathergatti",
+"city": "Hyderabad",
+"lat": 17.365249,
+"lng": 78.474787
+},
+{
+"area": "West Marredpally",
+"city": "Hyderabad",
+"lat": 17.456679,
+"lng": 78.50509
+},
+{
+"area": "Kavadiguda",
+"city": "Hyderabad",
+"lat": 17.410365,
+"lng": 78.488583
+},
+{
+"area": "Attapur",
+"city": "Hyderabad",
+"lat": 17.370087,
+"lng": 78.426276
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.436082,
+"lng": 78.419174
+},
+{
+"area": "Char Kaman",
+"city": "Hyderabad",
+"lat": 17.363587,
+"lng": 78.474676
+},
+{
+"area": "Budwel",
+"city": "Hyderabad",
+"lat": 17.331095,
+"lng": 78.407408
+},
+{
+"area": "Warasiguda",
+"city": "Hyderabad",
+"lat": 17.419,
+"lng": 78.511476
+},
+{
+"area": "Shamirpet",
+"city": "Secunderabad",
+"lat": 17.57242,
+"lng": 78.557109
+},
+{
+"area": "Bahadurpura West",
+"city": "Hyderabad",
+"lat": 17.357799,
+"lng": 78.454642
+},
+{
+"area": "Patancheruvu",
+"city": "Hyderabad",
+"lat": 17.526218,
+"lng": 78.263984
+},
+{
+"area": "Shamshabad",
+"city": "Hyderabad",
+"lat": 17.259769,
+"lng": 78.401514
+},
+{
+"area": "Erragadda",
+"city": "Hyderabad",
+"lat": 17.454272,
+"lng": 78.433303
+},
+{
+"area": "Moula Ali",
+"city": "Secunderabad",
+"lat": 17.464411,
+"lng": 78.558584
+},
+{
+"area": "Kalasiguda",
+"city": "Hyderabad",
+"lat": 17.439713,
+"lng": 78.488639
+},
+{
+"area": "Meerpet",
+"city": "Hyderabad",
+"lat": 17.319441,
+"lng": 78.524353
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.443938,
+"lng": 78.363244
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.429317,
+"lng": 78.412319
+},
+{
+"area": "L.B Nagar",
+"city": "Hyderabad",
+"lat": 17.348305,
+"lng": 78.549509
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.36087,
+"lng": 78.543239
+},
+{
+"area": "Cherlapalli",
+"city": "Hyderabad",
+"lat": 17.457702,
+"lng": 78.610201
+},
+{
+"area": "Miyapur",
+"city": "Hyderabad",
+"lat": 17.497084,
+"lng": 78.363071
+},
+{
+"area": "Sainikipuri",
+"city": "Secunderabad",
+"lat": 17.486338,
+"lng": 78.53505
+},
+{
+"area": "Gachibowl",
+"city": "Hyderabad",
+"lat": 17.444047,
+"lng": 78.363855
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.376052,
+"lng": 78.538952
+},
+{
+"area": "Gandipet",
+"city": "Hyderabad",
+"lat": 17.38614,
+"lng": 78.334996
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.402168,
+"lng": 78.482611
+},
+{
+"area": "Gurudwara",
+"city": "Hyderabad",
+"lat": 17.332921,
+"lng": 78.573154
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.436535,
+"lng": 78.447695
+},
+{
+"area": "Vikaspuri",
+"city": "Hyderabad",
+"lat": 17.448075,
+"lng": 78.431469
+},
+{
+"area": "Vanasthalipuram",
+"city": "Hyderabad",
+"lat": 17.332978,
+"lng": 78.573156
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.539514,
+"lng": 78.487922
+},
+{
+"area": "Pashambanda",
+"city": "Hyderabad",
+"lat": 17.266668,
+"lng": 78.40034
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.535104,
+"lng": 78.480677
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.407846,
+"lng": 78.477786
+},
+{
+"area": "Thumukunta",
+"city": "Secunderabad",
+"lat": 17.567841,
+"lng": 78.552206
+},
+{
+"area": "Erragadda",
+"city": "Hyderabad",
+"lat": 17.451828,
+"lng": 78.435661
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.416421,
+"lng": 78.438773
+},
+{
+"area": "Auto nagar",
+"city": "Hyderabad",
+"lat": 17.345327,
+"lng": 78.579963
+},
+{
+"area": "Sainikipuri",
+"city": "Secunderabad",
+"lat": 17.503279,
+"lng": 78.574554
+},
+{
+"area": "Hitech city",
+"city": "Hyderabad",
+"lat": 17.441488,
+"lng": 78.375963
+},
+{
+"area": "Tolichowki",
+"city": "Hyderabad",
+"lat": 17.406769,
+"lng": 78.41001
+},
+{
+"area": "dammaiguda",
+"city": "Hyderabad",
+"lat": 17.49538,
+"lng": 78.584876
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.364349,
+"lng": 78.555017
+},
+{
+"area": "Old Bowenpally",
+"city": "Secunderabad",
+"lat": 17.484885,
+"lng": 78.478353
+},
+{
+"area": "Quthbullapur Mandal",
+"city": "Hyderabad",
+"lat": 17.522805,
+"lng": 78.491925
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.442209,
+"lng": 78.411475
+},
+{
+"area": "Habsiguda",
+"city": "Hyderabad",
+"lat": 17.407489,
+"lng": 78.540566
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.525601,
+"lng": 78.448079
+},
+{
+"area": "Gowlidoddi",
+"city": "Hyderabad",
+"lat": 17.434643,
+"lng": 78.3117
+},
+{
+"area": "Shakar Bazaar",
+"city": "Hyderabad",
+"lat": 17.372543,
+"lng": 78.467383
+},
+{
+"area": "Meerpet",
+"city": "Hyderabad",
+"lat": 17.319477,
+"lng": 78.524329
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.433859,
+"lng": 78.417114
+},
+{
+"area": "Basheer Azghar Arcade",
+"city": "Hyderabad",
+"lat": 17.406819,
+"lng": 78.41004
+},
+{
+"area": "Pathar Gatti",
+"city": "Hyderabad",
+"lat": 17.36794,
+"lng": 78.482759
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.454582,
+"lng": 78.396028
+},
+{
+"area": "Kompally",
+"city": "Secunderabad",
+"lat": 17.515127,
+"lng": 78.48047
+},
+{
+"area": "Nampally",
+"city": "Hyderabad",
+"lat": 17.383679,
+"lng": 78.466988
+},
+{
+"area": "Kalasiguda",
+"city": "Secunderabad",
+"lat": 17.438754,
+"lng": 78.492576
+},
+{
+"area": "Santosh Nagar",
+"city": "Hyderabad",
+"lat": 17.347001,
+"lng": 78.494919
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.441802,
+"lng": 78.39678
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.396859,
+"lng": 78.512541
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.600398,
+"lng": 78.468458
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.434697,
+"lng": 78.413329
+},
+{
+"area": "Moinabad",
+"city": "Hyderabad",
+"lat": 17.303748,
+"lng": 78.300767
+},
+{
+"area": "Vanasthalipuram",
+"city": "Hyderabad",
+"lat": 17.335239,
+"lng": 78.574557
+},
+{
+"area": "Auto nagar",
+"city": "Hyderabad",
+"lat": 17.345172,
+"lng": 78.579894
+},
+{
+"area": "Koti",
+"city": "Hyderabad",
+"lat": 17.38326,
+"lng": 78.488568
+},
+{
+"area": "Adikmet",
+"city": "Hyderabad",
+"lat": 17.408188,
+"lng": 78.511502
+},
+{
+"area": "Moinabad",
+"city": "Hyderabad",
+"lat": 17.331729,
+"lng": 78.312829
+},
+{
+"area": "Begumpet",
+"city": "Hyderabad",
+"lat": 17.444782,
+"lng": 78.481187
+},
+{
+"area": "Cherlapalli",
+"city": "Hyderabad",
+"lat": 17.472386,
+"lng": 78.606298
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.422764,
+"lng": 78.435669
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.406886,
+"lng": 78.436538
+},
+{
+"area": "Shadnagar",
+"city": "Hyderabad",
+"lat": 17.0639,
+"lng": 78.206756
+},
+{
+"area": "Adikmet",
+"city": "Hyderabad",
+"lat": 17.40206,
+"lng": 78.510283
+},
+{
+"area": "Ramanthapur",
+"city": "Hyderabad",
+"lat": 17.38471,
+"lng": 78.552697
+},
+{
+"area": "Chintalmet",
+"city": "Hyderabad",
+"lat": 17.339958,
+"lng": 78.426171
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.416115,
+"lng": 78.404508
+},
+{
+"area": "Kapra",
+"city": "Secunderabad",
+"lat": 17.484704,
+"lng": 78.564116
+},
+{
+"area": "Osman Nagar",
+"city": "Hyderabad",
+"lat": 17.437945,
+"lng": 78.283159
+},
+{
+"area": "Osman Nagar",
+"city": "Hyderabad",
+"lat": 17.438512,
+"lng": 78.284194
+},
+{
+"area": "Shaikpet",
+"city": "Hyderabad",
+"lat": 17.407248,
+"lng": 78.406614
+},
+{
+"area": "Ramnas Pura",
+"city": "Hyderabad",
+"lat": 17.351545,
+"lng": 78.458577
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.447616,
+"lng": 78.360158
+},
+{
+"area": "Toli Chowk",
+"city": "Hyderabad",
+"lat": 17.401553,
+"lng": 78.411174
+},
+{
+"area": "Habsiguda",
+"city": "Hyderabad",
+"lat": 17.416511,
+"lng": 78.538396
+},
+{
+"area": "Mouli Ali",
+"city": "Hyderabad",
+"lat": 17.468107,
+"lng": 78.560962
+},
+{
+"area": "West Marredpally",
+"city": "Secunderabad",
+"lat": 17.44685,
+"lng": 78.507538
+},
+{
+"area": "Santosh Nagar",
+"city": "Hyderabad",
+"lat": 17.341791,
+"lng": 78.502372
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.522344,
+"lng": 78.491973
+},
+{
+"area": "West Marredpally",
+"city": "Hyderabad",
+"lat": 17.445029,
+"lng": 78.507003
+},
+{
+"area": "Sainikipuri",
+"city": "Secunderabad",
+"lat": 17.499898,
+"lng": 78.566831
+},
+{
+"area": "Adikmet",
+"city": "Hyderabad",
+"lat": 17.40218,
+"lng": 78.508901
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.39693,
+"lng": 78.512424
+},
+{
+"area": "Rajendranagar",
+"city": "Hyderabad",
+"lat": 17.309543,
+"lng": 78.388672
+},
+{
+"area": "cherlapalli",
+"city": "Secunderabad",
+"lat": 17.472878,
+"lng": 78.60719
+},
+{
+"area": "Nallagandla",
+"city": "Hyderabad",
+"lat": 17.477482,
+"lng": 78.306775
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.430593,
+"lng": 78.324535
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.546827,
+"lng": 78.491456
+},
+{
+"area": "Aghapura",
+"city": "Hyderabad",
+"lat": 17.381281,
+"lng": 78.464271
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.552276,
+"lng": 78.503241
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.514896,
+"lng": 78.487178
+},
+{
+"area": "New Malakpet",
+"city": "Hyderabad",
+"lat": 17.369219,
+"lng": 78.505751
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.429999,
+"lng": 78.540389
+},
+{
+"area": "Chandrayangutta",
+"city": "Hyderabad",
+"lat": 17.31035,
+"lng": 78.459433
+},
+{
+"area": "Alwal",
+"city": "Secunderabad",
+"lat": 17.5017,
+"lng": 78.507183
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.448545,
+"lng": 78.389558
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.41651,
+"lng": 78.538398
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.361493,
+"lng": 78.538429
+},
+{
+"area": "Kapra",
+"city": "Hyderabad",
+"lat": 17.480578,
+"lng": 78.585266
+},
+{
+"area": "Quthbullapur",
+"city": "Hyderabad",
+"lat": 17.543608,
+"lng": 78.47504
+},
+{
+"area": "Narsingi",
+"city": "Hyderabad",
+"lat": 17.374949,
+"lng": 78.363936
+},
+{
+"area": "yenkapally",
+"city": "Hyderabad",
+"lat": 17.318596,
+"lng": 78.323837
+},
+{
+"area": "Uppal",
+"city": "Hyderabad",
+"lat": 17.414429,
+"lng": 78.561062
+},
+{
+"area": "Tarnaka",
+"city": "Hyderabad",
+"lat": 17.430025,
+"lng": 78.54042
+},
+{
+"area": "Toli Chowk",
+"city": "Hyderabad",
+"lat": 17.401764,
+"lng": 78.411101
+},
+{
+"area": "kavadiguda",
+"city": "Hyderabad",
+"lat": 17.424015,
+"lng": 78.49254
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.418403,
+"lng": 78.433655
+},
+{
+"area": "Toli Chowk",
+"city": "Hyderabad",
+"lat": 17.395721,
+"lng": 78.423366
+},
+{
+"area": "MBD Complex",
+"city": "Hyderabad",
+"lat": 17.423014,
+"lng": 78.547403
+},
+{
+"area": "Miyapur",
+"city": "Hyderabad",
+"lat": 17.526338,
+"lng": 78.3191
+},
+{
+"area": "Upperpally",
+"city": "Hyderabad",
+"lat": 17.347137,
+"lng": 78.411079
+},
+{
+"area": "Yakhutpura",
+"city": "Hyderabad",
+"lat": 17.355728,
+"lng": 78.490676
+},
+{
+"area": "New Malakpet",
+"city": "Hyderabad",
+"lat": 17.361297,
+"lng": 78.518866
+},
+{
+"area": "west Marredpally",
+"city": "Secunderabad",
+"lat": 17.456401,
+"lng": 78.507679
+},
+{
+"area": "Karkhana",
+"city": "Secunderabad",
+"lat": 17.456314,
+"lng": 78.497308
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.418279,
+"lng": 78.43383
+},
+{
+"area": "mouli Ali",
+"city": "Hyderabad",
+"lat": 17.468117,
+"lng": 78.5609
+},
+{
+"area": "koti",
+"city": "Hyderabad",
+"lat": 17.387274,
+"lng": 78.484956
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.513276,
+"lng": 78.4893
+},
+{
+"area": "Kapra",
+"city": "Secunderabad",
+"lat": 17.495248,
+"lng": 78.583638
+},
+{
+"area": "Yapral",
+"city": "Secunderabad",
+"lat": 17.510522,
+"lng": 78.540002
+},
+{
+"area": "Sainikipuri",
+"city": "Hyderabad",
+"lat": 17.491167,
+"lng": 78.540077
+},
+{
+"area": "Mokila",
+"city": "Hyderabad",
+"lat": 17.433134,
+"lng": 78.201833
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.406202,
+"lng": 78.479849
+},
+{
+"area": "Sainikipuri",
+"city": "Hyderabad",
+"lat": 17.482023,
+"lng": 78.535282
+},
+{
+"area": "Shahliband",
+"city": "Hyderabad",
+"lat": 17.355941,
+"lng": 78.473647
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.405692,
+"lng": 78.484994
+},
+{
+"area": "Shivaji Nagar",
+"city": "Secunderabad",
+"lat": 17.43867,
+"lng": 78.496323
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.43019,
+"lng": 78.401648
+},
+{
+"area": "Thumukunta",
+"city": "Secunderabad",
+"lat": 17.567839,
+"lng": 78.552203
+},
+{
+"area": "Shilpa Hills",
+"city": "Hyderabad",
+"lat": 17.465337,
+"lng": 78.368498
+},
+{
+"area": "cherlapalli",
+"city": "Secunderabad",
+"lat": 17.477438,
+"lng": 78.590959
+},
+{
+"area": "Alwal",
+"city": "Secunderabad",
+"lat": 17.500128,
+"lng": 78.50745
+},
+{
+"area": "Alwal",
+"city": "Secunderabad",
+"lat": 17.498905,
+"lng": 78.505374
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.406308,
+"lng": 78.428709
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.366695,
+"lng": 78.544794
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.429705,
+"lng": 78.427527
+},
+{
+"area": "New Bowenpally",
+"city": "Secunderabad",
+"lat": 17.466338,
+"lng": 78.476926
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.424493,
+"lng": 78.410352
+},
+{
+"area": "Mokila",
+"city": "Hyderabad",
+"lat": 17.433085,
+"lng": 78.200773
+},
+{
+"area": "Dilsukhnagar",
+"city": "Hyderabad",
+"lat": 17.363692,
+"lng": 78.522765
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.544272,
+"lng": 78.47543
+},
+{
+"area": "uppal",
+"city": "Hyderabad",
+"lat": 17.416309,
+"lng": 78.558347
+},
+{
+"area": "Chandrayangutta",
+"city": "Hyderabad",
+"lat": 17.330582,
+"lng": 78.482747
+},
+{
+"area": "Upperpally",
+"city": "Hyderabad",
+"lat": 17.34987,
+"lng": 78.411311
+},
+{
+"area": "Bandlaguda Jagir",
+"city": "Hyderabad",
+"lat": 17.357272,
+"lng": 78.403023
+},
+{
+"area": "Thumukunta",
+"city": "Secunderabad",
+"lat": 17.56785,
+"lng": 78.552205
+},
+{
+"area": "Attapur",
+"city": "Hyderabad",
+"lat": 17.366343,
+"lng": 78.417698
+},
+{
+"area": "Wellington Rd",
+"city": "Secunderabad",
+"lat": 17.45492,
+"lng": 78.502447
+},
+{
+"area": "New Bowenpally",
+"city": "Secunderabad",
+"lat": 17.466326,
+"lng": 78.476751
+},
+{
+"area": "Ranigunj",
+"city": "Secunderabad",
+"lat": 17.429843,
+"lng": 78.489833
+},
+{
+"area": "Shilpa Hills",
+"city": "Hyderabad",
+"lat": 17.465327,
+"lng": 78.368484
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.403008,
+"lng": 78.478687
+},
+{
+"area": "Toli Chowk",
+"city": "Hyderabad",
+"lat": 17.406803,
+"lng": 78.410096
+},
+{
+"area": "Bandam Kommu",
+"city": "Hyderabad",
+"lat": 17.506539,
+"lng": 78.327981
+},
+{
+"area": "Toli Chowk",
+"city": "Hyderabad",
+"lat": 17.395898,
+"lng": 78.423802
+},
+{
+"area": "TCS Rd",
+"city": "Hyderabad",
+"lat": 17.235946,
+"lng": 78.541214
+},
+{
+"area": "Yousufguda",
+"city": "Hyderabad",
+"lat": 17.431795,
+"lng": 78.434607
+},
+{
+"area": "Vijaya Nagar Colony",
+"city": "Hyderabad",
+"lat": 17.393089,
+"lng": 78.452909
+},
+{
+"area": "Puppalguda",
+"city": "Hyderabad",
+"lat": 17.394371,
+"lng": 78.374923
+},
+{
+"area": "Budwel",
+"city": "Hyderabad",
+"lat": 17.331092,
+"lng": 78.407408
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.546683,
+"lng": 78.491537
+},
+{
+"area": "Jeedimetla",
+"city": "Secunderabad",
+"lat": 17.510813,
+"lng": 78.483487
+},
+{
+"area": "Jeedimetla",
+"city": "Secunderabad",
+"lat": 17.508439,
+"lng": 78.465894
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.440352,
+"lng": 78.411461
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.443517,
+"lng": 78.399582
+},
+{
+"area": "Monappagutta",
+"city": "Mahbubnagar",
+"lat": 16.747101,
+"lng": 77.987725
+},
+{
+"area": "Kukatpally",
+"city": "Hyderabad",
+"lat": 17.494679,
+"lng": 78.38339
+},
+{
+"area": "Santosh Nagar",
+"city": "Hyderabad",
+"lat": 17.349623,
+"lng": 78.505576
+},
+{
+"area": "mouli Ali",
+"city": "Secunderabad",
+"lat": 17.469474,
+"lng": 78.564954
+},
+{
+"area": "Gandhi Nagar",
+"city": "Hyderabad",
+"lat": 17.413006,
+"lng": 78.491568
+},
+{
+"area": "Miyapur",
+"city": "Hyderabad",
+"lat": 17.51424,
+"lng": 78.37238
+},
+{
+"area": "Shivaji Nagar",
+"city": "Secunderabad",
+"lat": 17.437294,
+"lng": 78.500854
+},
+{
+"area": "Alwal",
+"city": "Secunderabad",
+"lat": 17.501684,
+"lng": 78.510641
+},
+{
+"area": "New Bowenpally",
+"city": "Secunderabad",
+"lat": 17.467054,
+"lng": 78.47642
+},
+{
+"area": "uppal",
+"city": "Secunderabad",
+"lat": 17.493758,
+"lng": 78.515861
+},
+{
+"area": "Chintalmet",
+"city": "Hyderabad",
+"lat": 17.339543,
+"lng": 78.426748
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.564973,
+"lng": 78.48719
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.468799,
+"lng": 78.354719
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.436039,
+"lng": 78.413916
+},
+{
+"area": "Vijaya Nagar Colony",
+"city": "Shadnagar",
+"lat": 17.06376,
+"lng": 78.206964
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.422358,
+"lng": 78.408892
+},
+{
+"area": "Khaja Pahadi",
+"city": "Hyderabad",
+"lat": 17.341898,
+"lng": 78.450595
+},
+{
+"area": "Sainikipuri",
+"city": "Secunderabad",
+"lat": 17.488371,
+"lng": 78.549453
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.434598,
+"lng": 78.413389
+},
+{
+"area": "Old Bowenpally",
+"city": "Secunderabad",
+"lat": 17.477988,
+"lng": 78.483565
+},
+{
+"area": "Kachiguda",
+"city": "Hyderabad",
+"lat": 17.391566,
+"lng": 78.496617
+},
+{
+"area": "Erragadda",
+"city": "Hyderabad",
+"lat": 17.454281,
+"lng": 78.433304
+},
+{
+"area": "West Marredpally",
+"city": "Secunderabad",
+"lat": 17.44956,
+"lng": 78.503804
+},
+{
+"area": "Old Malakpet",
+"city": "Hyderabad",
+"lat": 17.377332,
+"lng": 78.500508
+},
+{
+"area": "Mehdipatnam",
+"city": "Hyderabad",
+"lat": 17.395073,
+"lng": 78.44203
+},
+{
+"area": "Jubilee Hills",
+"city": "Hyderabad",
+"lat": 17.435982,
+"lng": 78.413887
+},
+{
+"area": "Shivaji Nagar",
+"city": "Hyderabad",
+"lat": 17.437377,
+"lng": 78.49416
+},
+{
+"area": "New Hafeezpet",
+"city": "Hyderabad",
+"lat": 17.473147,
+"lng": 78.363112
+},
+{
+"area": "Gagillapur",
+"city": "Hyderabad",
+"lat": 17.610469,
+"lng": 78.385048
+},
+{
+"area": "Amarnath Residency",
+"city": "Hyderabad",
+"lat": 17.38104,
+"lng": 78.473663
+},
+{
+"area": "Amberpet",
+"city": "Hyderabad",
+"lat": 17.393142,
+"lng": 78.520119
+},
+{
+"area": "Indra Nagar",
+"city": "Hyderabad",
+"lat": 17.442969,
+"lng": 78.362617
+},
+{
+"area": "Kakatiya Nagar",
+"city": "Hyderabad",
+"lat": 17.395897,
+"lng": 78.423805
+},
+{
+"area": "Boddula Residency",
+"city": "Hyderabad",
+"lat": 17.489846,
+"lng": 78.547337
+},
+{
+"area": "Burgul",
+"city": "Hyderabad",
+"lat": 16.97558,
+"lng": 78.198734
+},
+{
+"area": "Gokul Nagar",
+"city": "Secunderabad",
+"lat": 17.428948,
+"lng": 78.538238
+},
+{
+"area": "Ashok Nagar",
+"city": "Hyderabad",
+"lat": 17.4057,
+"lng": 78.484992
+},
+{
+"area": "Tamanna Pride",
+"city": "Hyderabad",
+"lat": 17.510524,
+"lng": 78.540004
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.545557,
+"lng": 78.492468
+},
+{
+"area": "Adibatla",
+"city": "Hyderabad",
+"lat": 17.235951,
+"lng": 78.541214
+},
+{
+"area": "Plam County",
+"city": "Hyderabad",
+"lat": 17.410679,
+"lng": 78.393483
+},
+{
+"area": "Kavadiguda",
+"city": "Secunderabad",
+"lat": 17.411015,
+"lng": 78.496259
+},
+{
+"area": "Maruthi Nagar",
+"city": "Hyderabad",
+"lat": 17.495425,
+"lng": 78.508937
+},
+{
+"area": "Prasanthi Nagar",
+"city": "Hyderabad",
+"lat": 17.396692,
+"lng": 78.512528
+},
+{
+"area": "Almasguda",
+"city": "Hyderabad",
+"lat": 17.207774,
+"lng": 78.459761
+},
+{
+"area": "Shanakar Nagar",
+"city": "Hyderabad",
+"lat": 17.399255,
+"lng": 78.586981
+},
+{
+"area": "Ace Anata",
+"city": "Hyderabad",
+"lat": 17.362488,
+"lng": 78.607142
+},
+{
+"area": "Syed Nagar",
+"city": "Secunderabad",
+"lat": 17.406898,
+"lng": 78.436538
+},
+{
+"area": "HI Tech City",
+"city": "Hyderabad",
+"lat": 17.44149,
+"lng": 78.375961
+},
+{
+"area": "Shanakar Nagar",
+"city": "Hyderabad",
+"lat": 17.399254,
+"lng": 78.586981
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.454587,
+"lng": 78.396026
+},
+{
+"area": "Bhupal Towers",
+"city": "Hyderabad",
+"lat": 17.423546,
+"lng": 78.460229
+},
+{
+"area": "Moinabad",
+"city": "Hyderabad",
+"lat": 17.303101,
+"lng": 78.303657
+},
+{
+"area": "Kakatiya Hills",
+"city": "Secunderabad",
+"lat": 17.443766,
+"lng": 78.399954
+},
+{
+"area": "Bapuji Nagar",
+"city": "Hyderabad",
+"lat": 17.468338,
+"lng": 78.484962
+},
+{
+"area": "Teachers Colony",
+"city": "Hyderabad",
+"lat": 17.480765,
+"lng": 78.502991
+},
+{
+"area": "Basheerbagh",
+"city": "Hyderabad",
+"lat": 17.402956,
+"lng": 78.478309
+},
+{
+"area": "CBI Colony",
+"city": "Hyderabad",
+"lat": 17.430171,
+"lng": 78.40158
+},
+{
+"area": "ECIL Road",
+"city": "Hyderabad",
+"lat": 17.486829,
+"lng": 78.544125
+},
+{
+"area": "Sainikuri",
+"city": "Hyderabad",
+"lat": 17.502095,
+"lng": 78.550241
+},
+{
+"area": "Upperpally",
+"city": "Secunderabad",
+"lat": 17.360161,
+"lng": 78.423003
+},
+{
+"area": "Sri Rama Colony",
+"city": "Hyderabad",
+"lat": 17.442386,
+"lng": 78.396467
+},
+{
+"area": "Raidurga",
+"city": "Hyderabad",
+"lat": 17.428704,
+"lng": 78.38042
+},
+{
+"area": "Vidhya Nagar",
+"city": "Hyderabad",
+"lat": 17.402065,
+"lng": 78.510281
+},
+{
+"area": "Vayupuri",
+"city": "Hyderabad",
+"lat": 17.484138,
+"lng": 78.543836
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.531266,
+"lng": 78.487376
+},
+{
+"area": "Ressala Bazar",
+"city": "Secunderabad",
+"lat": 17.527426,
+"lng": 78.516289
+},
+{
+"area": "Madhapur",
+"city": "Hyderabad",
+"lat": 17.434081,
+"lng": 78.40126
+},
+{
+"area": "Maruthi Nagar",
+"city": "Hyderabad",
+"lat": 18.4282,
+"lng": 79.136702
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.42218,
+"lng": 78.431842
+},
+{
+"area": "Ramgopalpet",
+"city": "Hyderabad",
+"lat": 17.433722,
+"lng": 78.486892
+},
+{
+"area": "Jonnabanda",
+"city": "Hyderabad",
+"lat": 17.518575,
+"lng": 78.500891
+},
+{
+"area": "Gagillapur",
+"city": "Hyderabad",
+"lat": 17.603855,
+"lng": 78.39672
+},
+{
+"area": "Sri Nagar Colony",
+"city": "Hyderabad",
+"lat": 17.429412,
+"lng": 78.427597
+},
+{
+"area": "Hanuman Nagar",
+"city": "Secunderabad",
+"lat": 17.465368,
+"lng": 78.368515
+},
+{
+"area": "Surya Nagar",
+"city": "Hyderabad",
+"lat": 17.466889,
+"lng": 78.494194
+},
+{
+"area": "Padmarao Nagar",
+"city": "Hyderabad",
+"lat": 17.421329,
+"lng": 78.516044
+},
+{
+"area": "Ranga Nagar",
+"city": "Hyderabad",
+"lat": 17.423007,
+"lng": 78.492477
+},
+{
+"area": "NTR Nagar",
+"city": "Hyderabad",
+"lat": 17.434732,
+"lng": 78.311794
+},
+{
+"area": "Himayatnagar",
+"city": "Hyderabad",
+"lat": 17.399825,
+"lng": 78.491597
+},
+{
+"area": "Pragathi Colony",
+"city": "Hyderabad",
+"lat": 17.316328,
+"lng": 78.442162
+},
+{
+"area": "Gaddiannaram",
+"city": "Hyderabad",
+"lat": 17.363696,
+"lng": 78.522767
+},
+{
+"area": "Happy Homes Colony",
+"city": "Hyderabad",
+"lat": 17.348593,
+"lng": 78.417985
+},
+{
+"area": "Pista House",
+"city": "Secunderabad",
+"lat": 17.431464,
+"lng": 78.373989
+},
+{
+"area": "SDR Complex",
+"city": "Hyderabad",
+"lat": 17.369484,
+"lng": 78.503387
+},
+{
+"area": "Vivekananda Nagar",
+"city": "Hyderabad",
+"lat": 17.331399,
+"lng": 78.427665
+},
+{
+"area": "Ankushapur",
+"city": "Hyderabad",
+"lat": 17.457161,
+"lng": 78.723167
+},
+{
+"area": "Machanpalle",
+"city": "Hyderabad",
+"lat": 17.208947,
+"lng": 78.179221
+},
+{
+"area": "Ganesh Nagar",
+"city": "Hyderabad",
+"lat": 17.471319,
+"lng": 78.554675
+},
+{
+"area": "Bagrang Nagar",
+"city": "Secunderabad",
+"lat": 17.510396,
+"lng": 78.548629
+},
+{
+"area": "Tarnaka",
+"city": "Hyderabad",
+"lat": 17.427178,
+"lng": 78.532378
+},
+{
+"area": "Durga Vihar Colony",
+"city": "Hyderabad",
+"lat": 17.474627,
+"lng": 78.502411
+},
+{
+"area": "Dimond Colony",
+"city": "Hyderabad",
+"lat": 17.432878,
+"lng": 78.370049
+},
+{
+"area": "AL-Jubail Colony",
+"city": "Hyderabad",
+"lat": 17.326366,
+"lng": 78.477776
+},
+{
+"area": "Ramoji Film City",
+"city": "Hyderabad",
+"lat": 17.310247,
+"lng": 78.683423
+},
+{
+"area": "Mustafa Residency",
+"city": "Hyderabad",
+"lat": 17.395378,
+"lng": 78.421181
+},
+{
+"area": "CBI Colony",
+"city": "Hyderabad",
+"lat": 17.429069,
+"lng": 78.403418
+},
+{
+"area": "Financial District",
+"city": "Hyderabad",
+"lat": 17.412526,
+"lng": 78.337677
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.553654,
+"lng": 78.480546
+},
+{
+"area": "Ramgopalpet",
+"city": "Secunderabad",
+"lat": 17.438418,
+"lng": 78.482351
+},
+{
+"area": "Domalguda",
+"city": "Secunderabad",
+"lat": 17.405679,
+"lng": 78.484961
+},
+{
+"area": "Dundigal",
+"city": "Secunderabad",
+"lat": 17.603808,
+"lng": 78.396269
+},
+{
+"area": "Gowlidoddi",
+"city": "Secunderabad",
+"lat": 17.434647,
+"lng": 78.311698
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.420084,
+"lng": 78.447144
+},
+{
+"area": "Tirumalagiri",
+"city": "Hyderabad",
+"lat": 17.474251,
+"lng": 78.502063
+},
+{
+"area": "Ramgopalpet",
+"city": "Hyderabad",
+"lat": 17.438563,
+"lng": 78.481827
+},
+{
+"area": "Daksha Infinity",
+"city": "Secunderabad",
+"lat": 17.376054,
+"lng": 78.538949
+},
+{
+"area": "Lingampally",
+"city": "Hyderabad",
+"lat": 17.394219,
+"lng": 78.493788
+},
+{
+"area": "Upperpally",
+"city": "Hyderabad",
+"lat": 17.360502,
+"lng": 78.423194
+},
+{
+"area": "Kothapet",
+"city": "Hyderabad",
+"lat": 17.362323,
+"lng": 78.549993
+},
+{
+"area": "Salesh Nagar",
+"city": "Hyderabad",
+"lat": 17.426835,
+"lng": 78.430381
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.510817,
+"lng": 78.483488
+},
+{
+"area": "Gunrock Enclave",
+"city": "Hyderabad",
+"lat": 17.458174,
+"lng": 78.495109
+},
+{
+"area": "Madhapur",
+"city": "Secunderabad",
+"lat": 17.453944,
+"lng": 78.390769
+},
+{
+"area": "Gunrock Enclave",
+"city": "Secunderabad",
+"lat": 17.466545,
+"lng": 78.494774
+},
+{
+"area": "Vanasthalipuram",
+"city": "Secunderabad",
+"lat": 17.332922,
+"lng": 78.573158
+},
+{
+"area": "Vinayak Nagar",
+"city": "Hyderabad",
+"lat": 17.44092,
+"lng": 78.357277
+},
+{
+"area": "Nandi Nagar",
+"city": "Hyderabad",
+"lat": 17.418252,
+"lng": 78.43366
+},
+{
+"area": "Sri Shyam Nagar",
+"city": "Hyderabad",
+"lat": 17.432561,
+"lng": 78.366386
+},
+{
+"area": "Keshavaram",
+"city": "Hyderabad",
+"lat": 17.640747,
+"lng": 78.663635
+},
+{
+"area": "Marredpally",
+"city": "Secunderabad",
+"lat": 17.44647,
+"lng": 78.50763
+},
+{
+"area": "Raidurga",
+"city": "Secunderabad",
+"lat": 17.418081,
+"lng": 78.378859
+},
+{
+"area": "Sainikuri",
+"city": "Secunderabad",
+"lat": 17.49065,
+"lng": 78.551361
+},
+{
+"area": "Kalasiguda",
+"city": "Hyderabad",
+"lat": 17.440967,
+"lng": 78.490555
+},
+{
+"area": "Shadnagar",
+"city": "Hyderabad",
+"lat": 17.08156,
+"lng": 78.141555
+},
+{
+"area": "CMC Enclave",
+"city": "Hyderabad",
+"lat": 17.462989,
+"lng": 78.346272
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.536517,
+"lng": 78.481243
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.442241,
+"lng": 78.331737
+},
+{
+"area": "Karimnagar",
+"city": "Hyderabad",
+"lat": 18.446007,
+"lng": 79.119835
+},
+{
+"area": "Vidhya Nagar",
+"city": "Hyderabad",
+"lat": 17.40809,
+"lng": 78.511481
+},
+{
+"area": "Surya Nagar",
+"city": "Hyderabad",
+"lat": 17.465836,
+"lng": 78.499772
+},
+{
+"area": "Jeedimetla",
+"city": "Secunderabad",
+"lat": 17.52281,
+"lng": 78.491927
+},
+{
+"area": "Moula Ali",
+"city": "Secunderabad",
+"lat": 17.458676,
+"lng": 78.558576
+},
+{
+"area": "Upperpally",
+"city": "Secunderabad",
+"lat": 17.360059,
+"lng": 78.422843
+},
+{
+"area": "Kompally",
+"city": "Secunderabad",
+"lat": 17.553111,
+"lng": 78.492771
+},
+{
+"area": "Panjagutta",
+"city": "Secunderabad",
+"lat": 17.432704,
+"lng": 78.449646
+},
+{
+"area": "Vivekananda Nagar",
+"city": "Secunderabad",
+"lat": 17.404897,
+"lng": 78.389828
+},
+{
+"area": "Sai Nagar Colony",
+"city": "Hyderabad",
+"lat": 17.411251,
+"lng": 78.444725
+},
+{
+"area": "Mangapuram Colony",
+"city": "Secunderabad",
+"lat": 17.508608,
+"lng": 78.48938
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.462994,
+"lng": 78.346442
+},
+{
+"area": "Jubliee Hills",
+"city": "Hyderabad",
+"lat": 17.423251,
+"lng": 78.397398
+},
+{
+"area": "Shanakarapally",
+"city": "Hyderabad",
+"lat": 17.433249,
+"lng": 78.201223
+},
+{
+"area": "Banjara Hills",
+"city": "Hyderabad",
+"lat": 17.424301,
+"lng": 78.43743
+},
+{
+"area": "Bhavani Colony",
+"city": "Hyderabad",
+"lat": 17.324417,
+"lng": 78.419594
+},
+{
+"area": "Laxmi Nagar",
+"city": "Hyderabad",
+"lat": 17.561351,
+"lng": 78.488934
+},
+{
+"area": "Laad Bazar",
+"city": "Hyderabad",
+"lat": 17.363536,
+"lng": 78.474557
+},
+{
+"area": "Jeedimetla",
+"city": "Hyderabad",
+"lat": 17.511751,
+"lng": 78.482704
+},
+{
+"area": "Bashirabad",
+"city": "Hyderabad",
+"lat": 17.51492,
+"lng": 78.480499
+},
+{
+"area": "Brundavan Colony",
+"city": "Hyderabad",
+"lat": 17.524613,
+"lng": 78.49159
+},
+{
+"area": "Rajendranagar",
+"city": "Hyderabad",
+"lat": 17.316279,
+"lng": 78.441684
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.534886,
+"lng": 78.480569
+},
+{
+"area": "Mokila",
+"city": "Hyderabad",
+"lat": 17.433271,
+"lng": 78.201224
+},
+{
+"area": "Gundlapally",
+"city": "Hyderabad",
+"lat": 17.571981,
+"lng": 78.949073
+},
+{
+"area": "Kompally",
+"city": "Hyderabad",
+"lat": 17.515886,
+"lng": 78.487175
+},
+{
+"area": "Alwal",
+"city": "Hyderabad",
+"lat": 17.515886,
+"lng": 78.487174
+},
+{
+"area": "Lalitha Nagar",
+"city": "Hyderabad",
+"lat": 17.40824,
+"lng": 78.511595
+},
+{
+"area": "Patancheruvu",
+"city": "Hyderabad",
+"lat": 17.526741,
+"lng": 78.270996
+},
+{
+"area": "Jubliee Hills",
+"city": "Hyderabad",
+"lat": 17.425223,
+"lng": 78.404999
+},
+{
+"area": "Santosh Nagar",
+"city": "Hyderabad",
+"lat": 17.393902,
+"lng": 78.439384
+},
+{
+"area": "Padmarao Nagar",
+"city": "Hyderabad",
+"lat": 17.425313,
+"lng": 78.519194
+},
+{
+"area": "Bandlaguda",
+"city": "Hyderabad",
+"lat": 17.310805,
+"lng": 78.456297
+},
+{
+"area": "Anand Basthi",
+"city": "Hyderabad",
+"lat": 17.356661,
+"lng": 78.468383
+},
+{
+"area": "Gachibowli",
+"city": "Hyderabad",
+"lat": 17.442996,
+"lng": 78.34449
+},
+{
+"area": "Jubliee Hills",
+"city": "Hyderabad",
+"lat": 17.433868,
+"lng": 78.417114
+},
+{
+"area": "Mallepally",
+"city": "Secunderabad",
+"lat": 17.389894,
+"lng": 78.457818
+},
+{
+"area": "Dayanad Nagar",
+"city": "Secunderabad",
+"lat": 17.369485,
+"lng": 78.503388
+},
+{
+"area": "Bansilapet",
+"city": "Hyderabad",
+"lat": 17.425849,
+"lng": 78.493911
+},
+{
+"area": "Yakhutpura",
+"city": "Secunderabad",
+"lat": 17.361566,
+"lng": 78.482444
+},
+{
+"area": "Shanti Nagar",
+"city": "Secunderabad",
+"lat": 17.401463,
+"lng": 78.455582
+},
+{
+"area": "Shanti Nagar",
+"city": "Secunderabad",
+"lat": 17.399144,
+"lng": 78.452087
+},
+{
+"area": "Charminar",
+"city": "Hyderabad",
+"lat": 17.365,
+"lng": 78.473821
+},
+{
+"area": "Masab Tank",
+"city": "Hyderabad",
+"lat": 17.400524,
+"lng": 78.451972
+},
+{
+"area": "Kokapet",
+"city": "Hyderabad",
+"lat": 17.390574,
+"lng": 78.32482
+}
+]
+}

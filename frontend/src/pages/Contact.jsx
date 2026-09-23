@@ -1,17 +1,20 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
-import Reveal, { RevealGroup } from '@/components/Reveal'
-import { Accordion, SectionHead } from '@/components/sections'
+import { Accordion } from '@/components/sections'
 import { Arrow, Chat, Mail, Phone, Pin, Wrench } from '@/components/icons'
-import { useApi } from '@/lib/hooks'
+import { gsap } from '@/lib/gsap'
+import { useApi, useReducedMotion } from '@/lib/hooks'
 import { telHref, whatsappHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
 import EnquiryForm, { ProjectSummary } from './contact/EnquiryForm'
-import ServiceForm from './contact/ServiceForm'
+import { Rise, RiseIn, clamp01, useScrollVar, whenIntroDone } from './lift/shared'
+
 import './contact.css'
+import './projects-index.css'
+import './contact-index.css'
 
 const NEXT_STEPS = [
   ['01', 'We review', 'Your drawings and brief go to an engineer, not a mailbox.'],
@@ -19,6 +22,222 @@ const NEXT_STEPS = [
   ['03', 'We recommend', 'A system, with the reasons for it and the alternatives we ruled out.'],
   ['04', 'We quote', 'A written quotation against that recommendation, valid for 30 days.'],
 ]
+
+/* --- a section's head: label, a line that rises, and what it is for -------- */
+
+function Head({ label, title, lead, action }) {
+  return (
+    <div className="ct-head">
+      <div>
+        <p className="ld-label">{label}</p>
+        <RiseIn as="h2" className="ct-h2" text={title} />
+      </div>
+      {(lead || action) && (
+        <div className="ct-head__side">
+          {lead && <p className="ct-lead">{lead}</p>}
+          {action}
+        </div>
+      )}
+    </div>
+  )
+}
+
+/* --- the opening: the hall station ------------------------------------------
+   There are two reasons to write to a lift company, and a landing already has
+   a control for exactly that: a plate with an up button and a down button. Up
+   is a new lift; down is one that needs attention. Resting on either lights
+   its ring and brings its photograph up behind the page. */
+
+const CALLS = [
+  {
+    key: 'up',
+    href: '/contact#enquiry',
+    label: 'New lift',
+    title: 'I’m planning an installation',
+    desc: 'New build, retrofit or replacement. Goes to our engineering team.',
+    go: 'Start a project enquiry',
+    src: '/media/frames/lekha-hall.jpg',
+  },
+  {
+    key: 'down',
+    href: '/service',
+    label: 'Existing lift',
+    title: 'I need service or support',
+    desc: 'Maintenance, a breakdown or modernisation. Goes to the 24/7 service desk.',
+    go: 'Get service support',
+    src: '/media/frames/kashi-machine.jpg',
+  },
+]
+
+function Opening({ site }) {
+  const ref = useRef(null)
+  const reduced = useReducedMotion()
+  const [shown, setShown] = useState(false)
+  const [hot, setHot] = useState('up')
+
+  useEffect(() => whenIntroDone(() => setShown(true)), [])
+
+  useEffect(() => {
+    if (reduced) return undefined
+    const el = ref.current
+    let last = -1
+    const tick = () => {
+      const p = clamp01(window.scrollY / window.innerHeight)
+      if (Math.abs(p - last) < 0.001) return
+      last = p
+      el.style.setProperty('--x', p.toFixed(4))
+    }
+    gsap.ticker.add(tick)
+    return () => gsap.ticker.remove(tick)
+  }, [reduced])
+
+  const direct = [
+    { Icon: Phone, label: 'Call', value: site.phone, href: telHref(site.phone) },
+    site.whatsapp && {
+      Icon: Chat,
+      label: 'WhatsApp',
+      value: 'Start a chat',
+      href: whatsappHref(site.whatsapp, "Hello Zion Lifts — I'd like to discuss a project."),
+      external: true,
+    },
+    { Icon: Mail, label: 'Email', value: site.email, href: `mailto:${site.email}` },
+    { Icon: Wrench, label: 'Service · 24/7', value: site.phone_service || site.phone, href: telHref(site.phone_service || site.phone) },
+  ].filter(Boolean)
+
+  return (
+    <header ref={ref} className={`ct-hero ${shown ? 'is-in' : ''}`} data-hot={hot}>
+      <div className="ct-hero__scene" aria-hidden="true">
+        {CALLS.map((c) => (
+          <div className={`ct-hero__img ct-hero__img--${c.key}`} key={c.key}>
+            <Img src={c.src} alt="" priority sizes="100vw" />
+          </div>
+        ))}
+      </div>
+      <div className="ct-hero__grade" aria-hidden="true" />
+
+      <div className="ct-hero__main">
+        <div className="ct-hero__copy">
+          <p className="ld-label ct-hero__label">Contact</p>
+          <h1 className="ct-hero__title">
+            <Rise text="Discuss your project." />
+          </h1>
+          <p className="ct-hero__lead">
+            Two different conversations, and they should not share a form. Press the one this is.
+          </p>
+        </div>
+
+        <nav className="ct-station" aria-label="What this is about">
+          <p className="ct-station__brand">
+            <span>Zion</span>
+            <span>Hall call</span>
+          </p>
+          {CALLS.map((c, i) => (
+            <Link
+              key={c.key}
+              to={c.href}
+              className={`ct-call ${hot === c.key ? 'is-hot' : ''}`}
+              style={{ '--i': i }}
+              onPointerEnter={() => setHot(c.key)}
+              onFocus={() => setHot(c.key)}
+            >
+              <span className="ct-call__btn">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d={c.key === 'up' ? 'M12 6.5 19 17H5Z' : 'M12 17.5 5 7h14Z'} />
+                </svg>
+              </span>
+              <span className="ct-call__copy">
+                <span className="ct-call__label">{c.label}</span>
+                <strong className="ct-call__title">{c.title}</strong>
+                <span className="ct-call__desc">{c.desc}</span>
+                <span className="ct-call__go">
+                  {c.go} <Arrow size={13} />
+                </span>
+              </span>
+            </Link>
+          ))}
+          {['tl', 'tr', 'bl', 'br'].map((k) => (
+            <i className={`ct-station__screw ct-station__screw--${k}`} key={k} aria-hidden="true" />
+          ))}
+        </nav>
+      </div>
+
+      <div className="ct-hero__foot">
+        {direct.map((d, i) => (
+          <a
+            key={d.label}
+            href={d.href}
+            className="ct-direct"
+            style={{ '--i': i }}
+            {...(d.external ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
+          >
+            <d.Icon className="ct-direct__icon" />
+            <span className="ct-direct__label">{d.label}</span>
+            <strong className="ct-direct__value">{d.value}</strong>
+          </a>
+        ))}
+      </div>
+    </header>
+  )
+}
+
+/* --- what happens next: a line that is drawn as you read along it ----------- */
+
+function NextSteps() {
+  const ref = useRef(null)
+  useScrollVar(ref, { from: 0.85, to: 0.3 })
+
+  return (
+    <section className="ct-next">
+      <Head label="After you send it" title="What happens next." />
+      <ol ref={ref} className="ct-next__row">
+        {NEXT_STEPS.map(([n, title, body], i) => (
+          <li className="ct-next__step" key={n} style={{ '--i': i }}>
+            <span className="ct-next__dot" aria-hidden="true" />
+            <p className="ct-next__n">{n}</p>
+            <h3 className="ct-next__title">{title}</h3>
+            <p className="ct-next__body">{body}</p>
+          </li>
+        ))}
+      </ol>
+    </section>
+  )
+}
+
+/* --- the facility: a frame that opens --------------------------------------- */
+
+function Facility() {
+  const wrap = useRef(null)
+  useScrollVar(wrap, { from: 1, to: 0.15 })
+
+  return (
+    <div ref={wrap} className="pr-invite-wrap">
+      <section className="pr-invite">
+        <div className="pr-invite__scene">
+          <Img src="/media/process/process-structure.jpg" alt="" sizes="100vw" />
+        </div>
+        <div className="pr-invite__copy">
+          <p className="ld-label">The facility</p>
+          <h2 className="pr-invite__title ld-rise">
+            <Rise text="See where Zion is built." />
+          </h2>
+          <p className="pr-invite__lead">
+            Fabrication, assembly and load testing all happen at our own unit in Jeedimetla. Watching a lift get
+            loaded to 125% of its rating tells you more about a manufacturer than any brochure. Visits are by
+            appointment.
+          </p>
+          <div className="pr-invite__actions">
+            <a href="#enquiry" className="pr-go">
+              <span>Arrange a facility visit</span>
+              <span className="pr-go__ring">
+                <Arrow size={16} />
+              </span>
+            </a>
+          </div>
+        </div>
+      </section>
+    </div>
+  )
+}
 
 export default function Contact() {
   const site = useSite()
@@ -37,299 +256,131 @@ export default function Contact() {
   const contactFaqs = (faqCats ?? []).flatMap((c) => c.questions ?? [])
 
   return (
-    <>
-      {/* --- 01 · HERO, splitting intent immediately --- */}
-      <header className="chero">
-        <div className="chero__bg">
-          <Img src="/media/frames/lekha-hall.jpg" alt="" priority sizes="100vw" />
-          <div className="chero__veil" aria-hidden="true" />
-        </div>
-        <div className="shell chero__inner">
-          <Reveal variant="fade">
-            <p className="eyebrow">Contact</p>
-          </Reveal>
-          <Reveal delay={70}>
-            <h1 className="display chero__title">Discuss your project.</h1>
-          </Reveal>
-          <Reveal delay={140}>
-            <p className="lead chero__lead">
-              Two different conversations, and they should not share a form. Tell us which one this
-              is.
-            </p>
-          </Reveal>
-          <RevealGroup className="chero__split" step={90}>
-            <a href="#enquiry" className="intent">
-              <span className="intent__eyebrow mono">New lift</span>
-              <span className="intent__title">I&rsquo;m planning an installation</span>
-              <span className="intent__desc">
-                New build, retrofit or replacement. Goes to our engineering team.
-              </span>
-              <span className="intent__go">
-                Start a project enquiry <Arrow size={14} />
-              </span>
-            </a>
-            <a href="#service" className="intent intent--service">
-              <span className="intent__eyebrow mono">Existing lift</span>
-              <span className="intent__title">I need service or support</span>
-              <span className="intent__desc">
-                Maintenance, a breakdown or modernisation. Goes to the 24/7 service desk.
-              </span>
-              <span className="intent__go">
-                Get service support <Arrow size={14} />
-              </span>
-            </a>
-          </RevealGroup>
-        </div>
-      </header>
+    <div className="ct">
+      <Opening site={site} />
 
-      {/* --- 02 · DIRECT CONTACT --- */}
-      <section className="section section--tight">
-        <div className="shell">
-          <RevealGroup className="direct" step={70}>
-            <a className="direct__card" href={telHref(site.phone)}>
-              <Phone className="direct__icon" />
-              <span className="direct__label mono">Call</span>
-              <strong className="direct__value">{site.phone}</strong>
-              <span className="direct__note">Speak with our team</span>
-            </a>
-            {site.whatsapp && (
-              <a
-                className="direct__card"
-                href={whatsappHref(site.whatsapp, "Hello Zion Lifts — I'd like to discuss a project.")}
-                target="_blank"
-                rel="noreferrer noopener"
-              >
-                <Chat className="direct__icon" />
-                <span className="direct__label mono">WhatsApp</span>
-                <strong className="direct__value">Start a chat</strong>
-                <span className="direct__note">Fastest for a quick question</span>
-              </a>
-            )}
-            <a className="direct__card" href={`mailto:${site.email}`}>
-              <Mail className="direct__icon" />
-              <span className="direct__label mono">Email</span>
-              <strong className="direct__value">{site.email}</strong>
-              <span className="direct__note">Send drawings and a brief</span>
-            </a>
-            <a className="direct__card direct__card--service" href="#service">
-              <Wrench className="direct__icon" />
-              <span className="direct__label mono">Service — 24/7</span>
-              <strong className="direct__value">{site.phone_service || site.phone}</strong>
-              <span className="direct__note">Breakdowns and entrapments first</span>
-            </a>
-          </RevealGroup>
-        </div>
-      </section>
-
-      {/* --- 03/04 · PROJECT ENQUIRY + LIVE SUMMARY --- */}
-      <section className="section on-stone" id="enquiry">
-        <div className="shell">
-          <SectionHead
-            index="03"
-            eyebrow="Project enquiry"
-            title="Three steps, then an engineer reads it."
-            lead="Nothing here is compulsory except how to reach you. The more you can tell us, the more useful the first call is."
-          />
-          <div className="enquiryrow">
-            <div className="enquiryrow__form">
-              <EnquiryForm lifts={lifts ?? []} onSnapshot={setSnapshot} />
-            </div>
-            <ProjectSummary form={snapshot.form} files={snapshot.files} lifts={lifts ?? []} />
+      {/* --- project enquiry + live summary --- */}
+      <section className="ct-sec on-stone" id="enquiry">
+        <Head
+          label="Project enquiry"
+          title="Three steps, then an engineer reads it."
+          lead="Nothing here is compulsory except how to reach you. The more you can tell us, the more useful the first call is."
+        />
+        <div className="ct-shell enquiryrow">
+          <div className="enquiryrow__form">
+            <EnquiryForm lifts={lifts ?? []} onSnapshot={setSnapshot} />
           </div>
+          <ProjectSummary form={snapshot.form} files={snapshot.files} lifts={lifts ?? []} />
         </div>
       </section>
 
-      {/* --- 05 · WHAT HAPPENS NEXT --- */}
-      <section className="section section--tight">
-        <div className="shell">
-          <SectionHead index="05" eyebrow="After you send it" title="What happens next." split={false} />
-          <RevealGroup className="nextsteps" step={80}>
-            {NEXT_STEPS.map(([n, title, body]) => (
-              <div className="nextsteps__step" key={n}>
-                <span className="index-num">{n}</span>
-                <h3 className="nextsteps__title">{title}</h3>
-                <p className="nextsteps__body">{body}</p>
-              </div>
+      <NextSteps />
+
+      {/* --- visit + map --- */}
+      <section className="ct-sec on-paper" id="visit">
+        <Head
+          label="Come see us"
+          title="Two addresses."
+          lead="The head office for design conversations; the factory if you want to watch a lift being built and load-tested."
+        />
+        <div className="ct-shell visit">
+          <div className="visit__toggle" role="tablist" aria-label="Locations">
+            {offices.map((o) => (
+              <button
+                key={o.kind}
+                type="button"
+                role="tab"
+                aria-selected={office === o.kind}
+                className={`visit__tab ${office === o.kind ? 'is-on' : ''}`}
+                onClick={() => setOffice(o.kind)}
+              >
+                {o.kind_display}
+              </button>
             ))}
-          </RevealGroup>
-        </div>
-      </section>
+          </div>
 
-      {/* --- 06/07 · VISIT + MAP --- */}
-      <section className="section" id="visit">
-        <div className="shell">
-          <SectionHead
-            index="06"
-            eyebrow="Come see us"
-            title="Two addresses."
-            lead="The head office for design conversations; the factory if you want to watch a lift being built and load-tested."
-          />
-          <div className="visit">
-            <div className="visit__toggle" role="tablist" aria-label="Locations">
-              {offices.map((o) => (
-                <button
-                  key={o.kind}
-                  type="button"
-                  role="tab"
-                  aria-selected={office === o.kind}
-                  className={`visit__tab ${office === o.kind ? 'is-on' : ''}`}
-                  onClick={() => setOffice(o.kind)}
-                >
-                  {o.kind_display}
-                </button>
-              ))}
-            </div>
-
-            {current && (
-              <div className="visit__body">
-                <div className="visit__panel">
-                  <Pin className="visit__icon" />
-                  <h3 className="visit__name">{current.name}</h3>
-                  <address className="visit__address">
-                    {current.address.split('\n').map((l) => (
-                      <span key={l}>{l}</span>
-                    ))}
-                    <span>
-                      {current.city}, {current.state} {current.postcode}
-                    </span>
-                  </address>
-                  <dl className="visit__meta">
-                    {current.phone && (
-                      <div>
-                        <dt>Phone</dt>
-                        <dd>
-                          <a href={telHref(current.phone)}>{current.phone}</a>
-                        </dd>
-                      </div>
-                    )}
-                    {current.email && (
-                      <div>
-                        <dt>Email</dt>
-                        <dd>
-                          <a href={`mailto:${current.email}`}>{current.email}</a>
-                        </dd>
-                      </div>
-                    )}
-                    {current.hours && (
-                      <div>
-                        <dt>Hours</dt>
-                        <dd>{current.hours}</dd>
-                      </div>
-                    )}
-                  </dl>
-                  {current.note && <p className="visit__note">{current.note}</p>}
-                  {current.directions_url && (
-                    <a
-                      className="btn btn--accent btn--sm"
-                      href={current.directions_url}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      Get directions <Arrow size={14} />
-                    </a>
-                  )}
-                </div>
-                <div className="visit__map">
-                  {current.map_embed_url ? (
-                    <iframe
-                      title={`Map of ${current.name}`}
-                      src={current.map_embed_url}
-                      loading="lazy"
-                      referrerPolicy="no-referrer-when-downgrade"
-                    />
-                  ) : (
-                    <div className="visit__map-fallback">
-                      <p className="mono">Map unavailable</p>
+          {current && (
+            <div className="visit__body ct-visit" key={current.kind}>
+              <div className="visit__panel">
+                <Pin className="visit__icon" />
+                <h3 className="visit__name">{current.name}</h3>
+                <address className="visit__address">
+                  {current.address.split('\n').map((l) => (
+                    <span key={l}>{l}</span>
+                  ))}
+                  <span>
+                    {current.city}, {current.state} {current.postcode}
+                  </span>
+                </address>
+                <dl className="visit__meta">
+                  {current.phone && (
+                    <div>
+                      <dt>Phone</dt>
+                      <dd>
+                        <a href={telHref(current.phone)}>{current.phone}</a>
+                      </dd>
                     </div>
                   )}
-                </div>
+                  {current.email && (
+                    <div>
+                      <dt>Email</dt>
+                      <dd>
+                        <a href={`mailto:${current.email}`}>{current.email}</a>
+                      </dd>
+                    </div>
+                  )}
+                  {current.hours && (
+                    <div>
+                      <dt>Hours</dt>
+                      <dd>{current.hours}</dd>
+                    </div>
+                  )}
+                </dl>
+                {current.note && <p className="visit__note">{current.note}</p>}
+                {current.directions_url && (
+                  <a className="btn btn--accent btn--sm" href={current.directions_url} target="_blank" rel="noreferrer noopener">
+                    Get directions <Arrow size={14} />
+                  </a>
+                )}
               </div>
-            )}
-          </div>
+              <div className="visit__map">
+                {current.map_embed_url ? (
+                  <iframe
+                    title={`Map of ${current.name}`}
+                    src={current.map_embed_url}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                ) : (
+                  <div className="visit__map-fallback">
+                    <p className="mono">Map unavailable</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* --- 08 · FACILITY --- */}
-      <section className="section on-paper section--tight">
-        <div className="shell facility">
-          <Reveal variant="wipe" className="facility__media">
-            <Img
-              src="/media/sourced/factory-machining.jpg"
-              alt="Machining on the factory floor"
-              ratio="16 / 10"
-              sizes="(min-width: 900px) 48vw, 100vw"
-            />
-          </Reveal>
-          <div className="facility__copy">
-            <Reveal variant="fade">
-              <p className="eyebrow">
-                <span className="index-num">08</span> The facility
-              </p>
-            </Reveal>
-            <Reveal delay={70}>
-              <h2 className="h2">See where Zion is built.</h2>
-            </Reveal>
-            <Reveal delay={130}>
-              <p className="body">
-                Fabrication, assembly and load testing all happen at our own unit in Jeedimetla.
-                Watching a lift get loaded to 125% of its rating tells you more about a manufacturer
-                than any brochure. Visits are by appointment.
-              </p>
-            </Reveal>
-            <Reveal delay={190}>
-              <a href="#enquiry" className="link">
-                Arrange a facility visit <Arrow size={14} />
-              </a>
-            </Reveal>
-          </div>
-        </div>
-      </section>
+      <Facility />
 
-      {/* --- 09 · SERVICE --- */}
-      <section className="section service" id="service">
-        <div className="shell">
-          <SectionHead
-            index="09"
-            eyebrow="Existing lift · 24/7"
-            title="Already have a Zion lift?"
-            lead="This reaches the service desk directly. We also take on lifts we did not install, subject to a survey."
-          />
-          <div className="servicerow">
-            <ServiceForm />
-            <aside className="servicenote">
-              <p className="servicenote__title">If someone is trapped</p>
-              <p className="servicenote__body">
-                Press the alarm in the lift — it connects to a battery-backed intercom that reaches
-                us directly, independent of the building&rsquo;s power. Then call the number below.
-                Entrapments are prioritised above every other call.
-              </p>
-              <a className="servicenote__phone" href={telHref(site.phone_service || site.phone)}>
-                {site.phone_service || site.phone}
-              </a>
-              <p className="mono">Answered 24 hours, every day of the year</p>
-            </aside>
-          </div>
-        </div>
-      </section>
-
-      {/* --- 10 · CONTACT FAQ --- */}
+      {/* --- contact FAQ --- */}
       {contactFaqs.length > 0 && (
-        <section className="section on-stone">
-          <div className="shell shell--text">
-            <SectionHead
-              index="10"
-              eyebrow="Before you ask"
-              title="Contacting us, in questions."
-              action={
-                <Link to="/faq" className="link">
-                  Every question <Arrow size={14} />
-                </Link>
-              }
-            />
+        <section className="ct-sec on-stone">
+          <Head
+            label="Before you ask"
+            title="Contacting us, in questions."
+            action={
+              <Link to="/faq" className="link">
+                Every question <Arrow size={14} />
+              </Link>
+            }
+          />
+          <div className="ct-shell ct-shell--text">
             <Accordion items={contactFaqs} defaultOpen={0} />
           </div>
         </section>
       )}
-    </>
+    </div>
   )
 }

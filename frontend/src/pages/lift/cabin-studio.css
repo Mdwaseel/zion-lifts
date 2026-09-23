@@ -1,0 +1,530 @@
+/* ==========================================================================
+   The cabin studio — a hand of five render plates in perspective
+   ========================================================================== */
+
+.cs {
+  --p: 1;
+  --ink: #07080a;
+  --fg: var(--dark-text);
+  --fg-dim: var(--dark-muted);
+  --fg-faint: #86868b;
+  --rule: rgba(255, 255, 255, 0.14);
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  padding-block: var(--section-y) clamp(3rem, 2rem + 4vw, 6rem);
+  background: var(--ink);
+  color: var(--fg);
+}
+
+/* a showroom light from above, and the floor catching a little of it */
+.cs__glow {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(52rem 30rem at 50% 38%, rgba(46, 201, 202, 0.13), rgba(46, 201, 202, 0) 70%),
+    radial-gradient(70rem 22rem at 50% 78%, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.cs__head {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  padding-inline: var(--page-x);
+  text-align: center;
+}
+
+.cs__title {
+  max-width: 14em;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(2.3rem, 1.2rem + 4.2vw, 5.25rem);
+  line-height: 1.02;
+  letter-spacing: -0.028em;
+  text-wrap: balance;
+}
+
+.cs__title em {
+  font-style: italic;
+  color: var(--teal-bright);
+}
+
+.cs__lead {
+  max-width: 46ch;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--fg-dim);
+  text-wrap: balance;
+}
+
+/* --- the hand ------------------------------------------------------------ */
+.cs__deck {
+  --tx: 0;
+  --ty: 0;
+  --w: clamp(12rem, 18vw, 17.5rem);
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: calc(var(--w) * 1.42 + 5.5rem);
+  margin-top: clamp(1rem, 3vh, 2.5rem);
+  perspective: 1700px;
+  perspective-origin: 50% 40%;
+  touch-action: pan-y;
+  user-select: none;
+}
+
+/* dealt by the scroll: lying back as one stack, then stood up and fanned */
+.cs__hand {
+  position: relative;
+  width: var(--w);
+  height: calc(var(--w) * 1.42);
+  transform-style: preserve-3d;
+  transform: rotateX(calc((1 - var(--p)) * 52deg + var(--tx) * 1deg)) rotateY(calc(var(--ty) * 1deg))
+    scale(calc(0.82 + var(--p) * 0.18));
+  transform-origin: 50% 100%;
+  will-change: transform;
+}
+
+.cs__plate {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  border-radius: 14px;
+  color: var(--fg);
+  transform-style: preserve-3d;
+  transform: translate3d(calc(var(--d) * var(--p) * 96%), 0, calc(var(--a) * var(--p) * -130px))
+    rotateY(calc(var(--d) * var(--p) * -20deg));
+  transition: transform 0.95s cubic-bezier(0.2, 0.7, 0.2, 1);
+  cursor: pointer;
+}
+
+.cs__plate.is-on {
+  transform: translate3d(0, calc(var(--p) * -2%), calc(var(--p) * 90px));
+}
+
+.cs__plate-in {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: inherit;
+  background: #0d0f12;
+  box-shadow: 0 40px 70px -30px rgba(0, 0, 0, 0.9);
+  filter: brightness(calc(1 - var(--a) * 0.2)) saturate(calc(1 - var(--a) * 0.12));
+  transition:
+    filter 0.7s var(--ease-out),
+    border-color 0.5s var(--ease-out),
+    box-shadow 0.7s var(--ease-out);
+}
+
+.cs__plate.is-on .cs__plate-in {
+  border-color: rgba(46, 201, 202, 0.55);
+  box-shadow:
+    0 0 0 1px rgba(46, 201, 202, 0.18),
+    0 50px 90px -30px rgba(0, 0, 0, 0.95),
+    0 0 70px -18px rgba(46, 201, 202, 0.35);
+}
+
+/* the chosen render arrives from below, like a car at a landing */
+.cs__shot {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0s linear 1s;
+}
+
+.cs__shot.is-on {
+  z-index: 1;
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.95s cubic-bezier(0.65, 0, 0.2, 1);
+}
+
+.cs__shot .media {
+  position: absolute;
+  inset: 0;
+  background: #0d0f12;
+}
+
+.cs__shot.is-on .media {
+  animation: cs-settle 1.5s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes cs-settle {
+  from {
+    transform: scale(1.14);
+  }
+}
+
+/* a line of light crosses the plate whenever its finish changes */
+.cs__sheen {
+  position: absolute;
+  inset: -20% -60%;
+  z-index: 2;
+  background: linear-gradient(105deg, rgba(255, 255, 255, 0) 42%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 58%);
+  transform: translateX(-70%);
+  animation: cs-sheen 1.3s var(--ease-out) 0.25s both;
+  pointer-events: none;
+}
+
+@keyframes cs-sheen {
+  to {
+    transform: translateX(70%);
+  }
+}
+
+.cs__plate-in::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  background: linear-gradient(0deg, rgba(7, 8, 10, 0.88) 0%, rgba(7, 8, 10, 0) 38%, rgba(7, 8, 10, 0) 78%, rgba(7, 8, 10, 0.5) 100%);
+  pointer-events: none;
+}
+
+.cs__plate-top,
+.cs__plate-foot {
+  position: absolute;
+  left: 1.1rem;
+  right: 1.1rem;
+  z-index: 3;
+}
+
+.cs__plate-top {
+  top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  color: rgba(245, 245, 242, 0.8);
+}
+
+.cs__plate.is-on .cs__plate-top {
+  color: var(--teal-bright);
+}
+
+.cs__plate-foot {
+  bottom: 1.1rem;
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.cs__plate-foot em {
+  font-style: normal;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.62);
+}
+
+.cs__plate-foot strong {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.15rem, 0.9rem + 0.8vw, 1.6rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  animation: cs-name 0.7s var(--ease-out) both;
+}
+
+@keyframes cs-name {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+
+.cs__plate:focus-visible {
+  outline: none;
+}
+
+.cs__plate:focus-visible .cs__plate-in {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 3px;
+}
+
+/* --- the controls -------------------------------------------------------- */
+.cs__controls {
+  display: grid;
+  justify-items: center;
+  gap: clamp(1.25rem, 3vh, 2rem);
+  padding-inline: var(--page-x);
+  opacity: clamp(0, (var(--p) - 0.55) * 2.6, 1);
+  transform: translate3d(0, calc((1 - clamp(0, (var(--p) - 0.55) * 2.6, 1)) * 2.5rem), 0);
+}
+
+.cs__tabs {
+  display: flex;
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0.3rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.cs__tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.cs__tab {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0 1.1rem;
+  border-radius: var(--radius-pill);
+  font-size: var(--t-small);
+  font-weight: var(--w-medium);
+  color: var(--fg-dim);
+  white-space: nowrap;
+  transition:
+    background var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
+}
+
+.cs__tab.is-on {
+  background: var(--teal-bright);
+  color: #04191a;
+}
+
+.cs__tab:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 2px;
+}
+
+.cs__opts {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  max-width: 62rem;
+  min-height: 3.25rem;
+}
+
+.cs__opt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 3.25rem;
+  padding: 0.35rem 1.15rem 0.35rem 0.4rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.03);
+  font-size: var(--t-small);
+  color: var(--fg);
+  animation: cs-opt 0.6s var(--ease-out) calc(var(--i) * 0.05s) both;
+  transition:
+    border-color var(--dur) var(--ease-out),
+    background var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+@keyframes cs-opt {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+.cs__opt.is-on {
+  border-color: var(--teal-bright);
+  background: rgba(46, 201, 202, 0.1);
+}
+
+.cs__swatch {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.22),
+    inset 0 -6px 10px rgba(0, 0, 0, 0.25);
+  color: #fff;
+}
+
+.cs__swatch svg {
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.7));
+}
+
+.cs__tier {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--teal-bright);
+}
+
+@media (hover: hover) {
+  .cs__opt:not(.is-on):hover {
+    border-color: rgba(255, 255, 255, 0.4);
+    transform: translateY(-2px);
+  }
+
+  .cs__tab:not(.is-on):hover {
+    color: var(--fg);
+  }
+}
+
+.cs__opt:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 2px;
+}
+
+/* the specification, carried along the bottom as one glass bar */
+.cs__bar {
+  display: grid;
+  gap: 1.25rem;
+  width: min(100%, 70rem);
+  margin-top: clamp(0.5rem, 2vh, 1.5rem);
+  padding: 1.25rem;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-l);
+  background: rgba(255, 255, 255, 0.04);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+}
+
+.cs__spec {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.cs__spec li {
+  display: grid;
+  gap: 0.2rem;
+  padding-left: 0.85rem;
+  border-left: 1px solid var(--rule);
+  transition: border-color var(--dur) var(--ease-out);
+}
+
+.cs__spec li.is-on {
+  border-left-color: var(--teal-bright);
+}
+
+.cs__spec span {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.cs__spec strong {
+  font-size: var(--t-small);
+  font-weight: var(--w-medium);
+  line-height: 1.3;
+  animation: cs-name 0.6s var(--ease-out) both;
+}
+
+.cs__cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--dark-text);
+  color: #0a0b0d;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  white-space: nowrap;
+}
+
+.cs__cta-ring {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .cs__cta:hover .cs__cta-ring {
+    transform: rotate(-45deg);
+  }
+}
+
+.cs__cta:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 4px;
+}
+
+@media (min-width: 900px) {
+  .cs__bar {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 1rem 1rem 1rem 1.75rem;
+    border-radius: var(--radius-pill);
+  }
+
+  .cs__spec {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 899px) {
+  .cs__deck {
+    --w: clamp(12rem, 58vw, 17rem);
+  }
+
+  /* on a narrow screen the neighbours only need to peek */
+  .cs__plate {
+    transform: translate3d(calc(var(--d) * var(--p) * 70%), 0, calc(var(--a) * var(--p) * -160px))
+      rotateY(calc(var(--d) * var(--p) * -28deg));
+  }
+
+  .cs__tab span {
+    display: none;
+  }
+
+  .cs__tab {
+    padding: 0 0.95rem;
+  }
+
+  .cs__tab.is-on span {
+    display: inline;
+  }
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .cs__bar {
+    background: #111418;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs__plate,
+  .cs__plate-in,
+  .cs__shot,
+  .cs__shot.is-on {
+    transition: none;
+  }
+
+  .cs__shot.is-on .media,
+  .cs__sheen,
+  .cs__plate-foot strong,
+  .cs__spec strong,
+  .cs__opt {
+    animation: none;
+  }
+
+  .cs__sheen {
+    display: none;
+  }
+}

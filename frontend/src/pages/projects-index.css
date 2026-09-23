@@ -1,0 +1,796 @@
+/* ==========================================================================
+   /projects — proof of delivery
+   the gallery's taste: a tilted drifting wall of every case-study photograph
+   (gallery-index.css) → the case studies, one strip a sector, moved by hand
+   (paper) → on film: the seven site reels, one on a screen at a time → dark
+   invitation. The shared parts (.pr-h2, .pr-lead, .pr-go, .pr-invite*) are
+   also used by /gallery and /contact.
+   ========================================================================== */
+
+.pr {
+  --ink: #07080a;
+  --serif: var(--font-serif);
+  overflow-x: clip;
+  background: var(--ink);
+}
+
+.pr-h2 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.2rem, 1.2rem + 3.8vw, 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+  margin-top: 1rem;
+}
+
+.pr-h2 em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.pr-lead {
+  max-width: 46ch;
+  font-size: var(--t-body);
+  line-height: 1.55;
+  color: var(--fg-dim);
+}
+
+/* the pill with a ring that turns */
+.pr-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--dark-text);
+  color: #0a0b0d;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+}
+
+.pr-go__ring {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: var(--teal);
+  color: #fff;
+  transition: transform var(--dur) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .pr-go:hover .pr-go__ring {
+    transform: rotate(-45deg);
+  }
+}
+
+.pr-go:focus-visible,
+.pr-invite__alt:focus-visible,
+.pf__take:focus-visible,
+.pf__go:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 4px;
+}
+
+/* --- the buildings, held --------------------------------------------------------
+   Built in the language the home page already speaks (`.world` in home.css):
+   photography running the full frame, one held and the next crossfading in
+   under the scroll, typography sitting on the dark side of a horizontal
+   gradient, a specification strip along the foot and a rail down the right the
+   visitor can move by hand. Nothing here is boxed except that strip.
+
+   What separates it from the home page's version: there the title is fixed and
+   the contexts change beneath it; here the headline IS the building, set in the
+   editorial serif and changing with the photograph, because the building is the
+   subject rather than an example of one. The rail is grouped by sector, so a
+   sector holding one case study is one line on it — which is what this replaced,
+   a drag rail wrapped around a single card that could not move. */
+
+.pw {
+  position: relative;
+  background: #050607;
+}
+
+.pw__pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  overflow: hidden;
+}
+
+/* ~86svh of travel per building across the seven */
+.pw__runway {
+  height: 600svh;
+}
+
+.pw__stage {
+  position: absolute;
+  inset: 0;
+}
+
+.pw__layer {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  will-change: opacity, transform;
+}
+
+.pw__layer .media,
+.pw__layer .media__img {
+  height: 100%;
+}
+
+.pw__layer .media__img {
+  object-fit: cover;
+  /* a touch brighter than the home page's contexts: several of these are
+     interiors shot dark, and the veil already protects the type */
+  filter: contrast(1.05) saturate(0.93) brightness(0.9);
+}
+
+/* the photograph dissolves into the page on the left rather than ending at a
+   visible edge, so the name can sit across the boundary */
+.pw__veil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      100deg,
+      rgba(5, 6, 7, 0.97) 0%,
+      rgba(5, 6, 7, 0.92) 26%,
+      rgba(5, 6, 7, 0.52) 47%,
+      rgba(5, 6, 7, 0.1) 67%,
+      rgba(5, 6, 7, 0.38) 100%
+    ),
+    radial-gradient(120% 80% at 50% 0%, transparent 40%, rgba(5, 6, 7, 0.55) 100%);
+}
+
+.pw__floor {
+  position: absolute;
+  inset: auto 0 0;
+  height: 48%;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(5, 6, 7, 0.8) 62%, rgba(5, 6, 7, 0.95));
+}
+
+.pw__content {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: start;
+  padding-top: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem));
+  padding-bottom: clamp(1.5rem, 5vh, 3rem);
+}
+
+.pw__kicker {
+  color: rgba(245, 245, 242, 0.5);
+}
+
+/* --- the building ---------------------------------------------------------- */
+.pw__now {
+  margin-top: clamp(1.75rem, 6vh, 4rem);
+  display: grid;
+  gap: 0.5rem;
+  justify-items: start;
+  max-width: 22ch;
+}
+
+.pw__sector {
+  display: flex;
+  align-items: baseline;
+  gap: 0.7rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.5);
+}
+
+.pw__sector-n {
+  color: var(--teal-bright);
+}
+
+/* the name is the headline: the building is the subject here */
+.pw__name {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(2.5rem, 1.6rem + 3.4vw, 5rem);
+  line-height: 1;
+  letter-spacing: -0.024em;
+  color: #f5f5f2;
+}
+
+.pw__line {
+  max-width: 30ch;
+  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.25rem);
+  line-height: 1.45;
+  letter-spacing: -0.01em;
+  color: rgba(245, 245, 242, 0.66);
+}
+
+/* a text action, not a button — the frame already carries enough weight */
+.pw__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+  color: var(--teal-bright);
+}
+
+.pw__cta svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.pw__cta:hover svg {
+  transform: translateX(3px);
+}
+
+.pw__cta:hover,
+.pw__cta:focus-visible {
+  text-decoration: underline;
+  text-underline-offset: 0.24em;
+  text-decoration-thickness: 1px;
+}
+
+/* --- specification strip ---------------------------------------------------- */
+.pw__spec {
+  position: absolute;
+  left: var(--page-x);
+  bottom: clamp(1.5rem, 6vh, 3.25rem);
+  margin: 0;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  max-width: min(44rem, 52vw);
+  min-height: 5rem;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 3px;
+  background: rgba(5, 6, 7, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+
+.pw__spec > div {
+  padding: 0.9rem 1.05rem;
+}
+
+.pw__spec > div + div {
+  border-left: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.pw__spec dt {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.45);
+}
+
+.pw__spec dd {
+  margin: 0.4rem 0 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  color: #f5f5f2;
+}
+
+/* --- the rail ---------------------------------------------------------------
+   A pool of shade rather than a panel, grouped by sector. */
+.pw__rail {
+  position: absolute;
+  right: var(--page-x);
+  top: 50%;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 1.1rem;
+  padding: 1.4rem 1.5rem;
+  border-radius: 999px;
+  /* the rail sits over whatever the photograph is doing, including a bright
+     sky, so the pool has to carry the labels on its own */
+  background: radial-gradient(64% 54% at 50% 50%, rgba(5, 6, 7, 0.82), rgba(5, 6, 7, 0.35) 62%, transparent 78%);
+}
+
+.pw__rail-sector {
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.5);
+  margin: 0 0 0.5rem;
+  text-align: right;
+}
+
+.pw__rail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.pw__rail button {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  width: 100%;
+  padding: 0.28rem 0;
+  background: none;
+  border: 0;
+  cursor: pointer;
+  text-align: right;
+  color: rgba(245, 245, 242, 0.56);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.pw__rail-n {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  opacity: 0.7;
+}
+
+.pw__rail-name {
+  font-size: 0.875rem;
+  letter-spacing: -0.006em;
+  white-space: nowrap;
+}
+
+.pw__rail li.is-on button {
+  color: #f5f5f2;
+}
+
+.pw__rail li.is-on .pw__rail-n {
+  color: var(--teal-bright);
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .pw__rail button:hover {
+    color: rgba(245, 245, 242, 0.8);
+  }
+}
+
+.pw__rail button:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* --- narrow ------------------------------------------------------------------
+   The rail moves to the foot as a single row and loses its sector headings;
+   the specification strip drops to two columns above it. */
+@media (max-width: 1100px) {
+  .pw__rail {
+    top: auto;
+    bottom: clamp(0.75rem, 3vh, 1.5rem);
+    right: 0;
+    left: 0;
+    transform: none;
+    display: flex;
+    gap: 0;
+    justify-content: center;
+    padding: 0.75rem var(--page-x);
+    border-radius: 0;
+    background: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pw__rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pw__rail-sector {
+    display: none;
+  }
+
+  .pw__rail ol {
+    grid-auto-flow: column;
+    gap: 0;
+  }
+
+  .pw__rail button {
+    justify-content: center;
+    padding: 0.3rem 0.55rem;
+  }
+
+  .pw__rail-name {
+    display: none;
+  }
+
+  .pw__rail-n {
+    font-size: 0.6875rem;
+  }
+
+  .pw__spec {
+    max-width: none;
+    right: var(--page-x);
+    bottom: clamp(3.25rem, 9vh, 4.5rem);
+    grid-auto-flow: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    min-height: 0;
+  }
+
+  .pw__spec > div + div {
+    border-left: 0;
+  }
+
+  .pw__spec > div:nth-child(even) {
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .pw__spec > div:nth-child(n + 3) {
+    border-top: 1px solid rgba(255, 255, 255, 0.09);
+  }
+
+  .pw__now {
+    max-width: 18ch;
+  }
+}
+
+@media (max-width: 640px) {
+  .pw__now {
+    max-width: none;
+  }
+
+  .pw__line {
+    max-width: 32ch;
+    font-size: 1rem;
+  }
+}
+
+/* Stillness asked for: the runway collapses and the rail drives the stage. */
+@media (prefers-reduced-motion: reduce) {
+  .pw__runway {
+    height: 0;
+  }
+
+  .pw__pin {
+    position: relative;
+    height: auto;
+    min-height: 100svh;
+  }
+}
+
+/* --- on film ------------------------------------------------------------------ */
+.pf {
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: clamp(4rem, 3rem + 5vw, 8rem) var(--page-x) clamp(4rem, 3rem + 5vw, 8rem);
+  color: var(--dark-text);
+}
+
+.pf__head {
+  display: grid;
+  gap: 1.75rem;
+}
+
+@media (min-width: 900px) {
+  .pf__head {
+    grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 7rem);
+  }
+}
+
+/* the screen: the reel centred on a wash of its own poster */
+.pf__stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  height: clamp(22rem, 76vh, 52rem);
+  margin-top: clamp(2rem, 4vh, 3rem);
+  border-radius: 8px;
+  background: #050607;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  animation: pf-cut 0.7s var(--ease-out) both;
+}
+
+@keyframes pf-cut {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pf__back {
+  position: absolute;
+  inset: -10%;
+  filter: blur(36px) brightness(0.32) saturate(1.3);
+  transform: scale(1.1);
+}
+
+.pf__back .media {
+  position: absolute;
+  inset: 0;
+}
+
+.pf__player {
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+}
+
+/* the reel takes the stage's height, or its width when that is the tighter of the two */
+.pf__stage {
+  container-type: size;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.pf__stage.is-tall .pf__player {
+  height: min(100cqh, calc(100cqw * 16 / 9));
+}
+
+.pf__stage.is-wide .pf__player {
+  width: min(100cqw, calc(100cqh * 16 / 9));
+}
+
+.pf__player .videoplayer {
+  height: 100%;
+  border-radius: 0;
+}
+
+.pf__foot {
+  display: grid;
+  gap: 2rem;
+  margin-top: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+@media (min-width: 900px) {
+  .pf__foot {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: clamp(2rem, 5vw, 6rem);
+  }
+}
+
+.pf__acct {
+  display: grid;
+  justify-items: start;
+  gap: 0.6rem;
+  max-width: 40rem;
+  animation: pf-cut 0.6s var(--ease-out) both;
+}
+
+.pf__kicker {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.62);
+}
+
+.pf__kicker span {
+  margin-right: 0.6em;
+  color: var(--teal-bright);
+}
+
+.pf__name {
+  margin: 0;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.8rem, 1.1rem + 2.4vw, 3.4rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.pf__line {
+  margin: 0;
+  max-width: 46ch;
+  font-size: var(--t-body);
+  line-height: 1.5;
+  color: var(--fg-dim);
+}
+
+.pf__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.3rem;
+  padding-block: 0.3rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  transition:
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .pf__go:hover {
+    border-color: var(--teal-bright);
+    color: var(--teal-bright);
+  }
+}
+
+/* the rack of reels */
+.pf__strip {
+  display: flex;
+  gap: 0.6rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pf__strip::-webkit-scrollbar {
+  display: none;
+}
+
+.pf__strip li {
+  flex: none;
+}
+
+.pf__take {
+  position: relative;
+  display: block;
+  width: clamp(4.5rem, 6.5vw, 6.25rem);
+  color: inherit;
+  text-align: left;
+}
+
+.pf__take-img {
+  display: block;
+  overflow: hidden;
+  border-radius: 3px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  opacity: 0.5;
+  filter: saturate(0.6);
+  transition:
+    opacity var(--dur) var(--ease-out),
+    filter var(--dur) var(--ease-out),
+    box-shadow var(--dur) var(--ease-out),
+    transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pf__take-n {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 0.5625rem;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.7);
+}
+
+@media (hover: hover) {
+  .pf__take:hover .pf__take-img {
+    opacity: 0.85;
+    transform: translateY(-3px);
+  }
+}
+
+.pf__take.is-on .pf__take-img {
+  opacity: 1;
+  filter: none;
+  box-shadow: 0 0 0 2px var(--teal-bright);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pw-frame__in,
+  .pw-frame__link,
+  .pw-frame__ring,
+  .pf__take-img {
+    transition-duration: 0.01ms;
+  }
+
+  .pw-frame__float {
+    animation: none;
+  }
+
+  .pf__stage,
+  .pf__acct {
+    animation: none;
+  }
+}
+
+/* --- the invitation: a frame that opens ----------------------------------- */
+.pr-invite-wrap {
+  --p: 1;
+  --ink: #07080a;
+  --serif: var(--font-serif);
+  background: var(--ink);
+}
+
+.pr-invite {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+  min-height: 100svh;
+  padding: clamp(3rem, 2rem + 5vw, 7rem) var(--page-x);
+  color: var(--dark-text);
+  clip-path: inset(
+    calc((1 - var(--p)) * 10%) calc((1 - var(--p)) * 16%) calc((1 - var(--p)) * 10%) calc((1 - var(--p)) * 16%) round
+      calc((1 - var(--p)) * 32px)
+  );
+}
+
+.pr-invite__scene {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  transform: scale(calc(1.3 - var(--p) * 0.3));
+  will-change: transform;
+}
+
+.pr-invite__scene .media {
+  position: absolute;
+  inset: 0;
+}
+
+.pr-invite__scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(7, 8, 10, 0.92) 0%, rgba(7, 8, 10, 0.4) 50%, rgba(7, 8, 10, 0.5) 100%);
+}
+
+.pr-invite__copy {
+  --t: clamp(0, (var(--p) - 0.55) * 2.6, 1);
+  display: grid;
+  justify-items: start;
+  gap: clamp(1rem, 2.4vh, 1.75rem);
+  max-width: 60rem;
+  opacity: var(--t);
+  transform: translate3d(0, calc((1 - var(--t)) * 2.5rem), 0);
+}
+
+.pr-invite__copy .ld-label {
+  color: rgba(245, 245, 242, 0.66);
+}
+
+.pr-invite__title {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(2.8rem, 1.3rem + 7vw, 8.5rem);
+  line-height: 0.97;
+  letter-spacing: -0.03em;
+}
+
+.pr-invite__title em {
+  font-style: italic;
+  color: var(--teal-bright);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-invite .ld-rise .ld-word__in {
+    transform: translateY(calc((1 - clamp(0, (var(--p) - 0.6) * 3, 1)) * 112%));
+    transition: none;
+  }
+}
+
+.pr-invite__lead {
+  max-width: 46ch;
+  font-size: var(--t-lead);
+  line-height: 1.42;
+  letter-spacing: var(--tr-lead);
+  color: rgba(245, 245, 242, 0.8);
+}
+
+.pr-invite__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.pr-invite__alt {
+  padding-block: 0.4rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  font-size: var(--t-body);
+  color: rgba(245, 245, 242, 0.9);
+}

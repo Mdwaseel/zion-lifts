@@ -3,6 +3,22 @@ import { useSearchParams } from 'react-router-dom'
 
 import { Arrow, Check, Close } from '@/components/icons'
 import { post } from '@/lib/api'
+import { CogMark, Plus, Refresh } from '@/components/icons'
+import {
+  ApartmentMark,
+  CivicMark,
+  CraneMark,
+  DraftMark,
+  FactoryMark,
+  HelpMark,
+  HospitalMark,
+  HotelMark,
+  KeyMark,
+  LiftMark,
+  OfficeMark,
+  ShopMark,
+  VillaMark,
+} from '@/components/place-marks'
 
 const PROPERTY_TYPES = [
   ['villa', 'Villa / house'],
@@ -28,6 +44,48 @@ const INSTALL_KINDS = [
   ['replacement', 'Replacement'],
   ['modernisation', 'Modernisation'],
 ]
+
+/* one mark to an option, so a choice can be found by its shape */
+const OPTION_ICONS = {
+  villa: VillaMark,
+  apartment: ApartmentMark,
+  office: OfficeMark,
+  hotel: HotelMark,
+  hospital: HospitalMark,
+  institutional: CivicMark,
+  industrial: FactoryMark,
+  retail: ShopMark,
+  other: Plus,
+  planning: DraftMark,
+  construction: CraneMark,
+  ready: KeyMark,
+  replacement: Refresh,
+  new: Plus,
+  modernisation: CogMark,
+}
+
+/* the lift systems use Zion's own icon set (supplied as filled artwork, so it
+   is painted through a mask and takes the chip's colour like the line marks) */
+const LIFT_ICONS = new Set([
+  'home-elevator',
+  'capsule-elevator',
+  'mrl-traction',
+  'hydraulic-elevator',
+  'passenger-elevator',
+  'hospital-elevator',
+  'goods-elevator',
+  'dumbwaiter',
+  'car-stacker',
+])
+
+function LiftIcon({ slug }) {
+  if (!LIFT_ICONS.has(slug)) return <LiftMark size={17} className="chip__icon" aria-hidden="true" />
+  return <span className="chip__mark" style={{ '--mark': `url(/media/lift-icons/${slug}.svg)` }} aria-hidden="true" />
+}
+
+function OptionIcon({ icon: Icon }) {
+  return Icon ? <Icon size={17} className="chip__icon" aria-hidden="true" /> : null
+}
 
 const STEPS = ['Project', 'Configuration', 'Brief']
 const MAX_FILES = 6
@@ -243,6 +301,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
                 onClick={() => set('property_type', k)}
                 aria-pressed={form.property_type === k}
               >
+                <OptionIcon icon={OPTION_ICONS[k]} />
                 {label}
               </button>
             ))}
@@ -260,6 +319,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
                 onClick={() => set('project_stage', k)}
                 aria-pressed={form.project_stage === k}
               >
+                <OptionIcon icon={OPTION_ICONS[k]} />
                 {label}
               </button>
             ))}
@@ -303,6 +363,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
                 onClick={() => set('lift_type', l.id)}
                 aria-pressed={String(liftId) === String(l.id)}
               >
+                <LiftIcon slug={l.slug} />
                 {l.short_name || l.name}
               </button>
             ))}
@@ -312,6 +373,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
               onClick={() => set('lift_type', '')}
               aria-pressed={!liftId}
             >
+              <OptionIcon icon={HelpMark} />
               Not sure yet
             </button>
           </div>
@@ -352,6 +414,7 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
                 onClick={() => set('installation_kind', k)}
                 aria-pressed={form.installation_kind === k}
               >
+                <OptionIcon icon={OPTION_ICONS[k]} />
                 {label}
               </button>
             ))}

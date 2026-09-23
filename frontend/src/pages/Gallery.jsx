@@ -1,209 +1,136 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
-import Reveal from '@/components/Reveal'
-import { CtaBand, PageHero, SectionHead } from '@/components/sections'
-import { Arrow, Close } from '@/components/icons'
-import { useApi, useEscape, useScrollLock } from '@/lib/hooks'
-import { srcSet } from '@/lib/media'
+import { Arrow } from '@/components/icons'
+import { useApi } from '@/lib/hooks'
+
+import { Rise, useScrollVar } from './lift/shared'
+import { Lightbox, Strip, WallHero } from './gallery/pieces'
 
 import './gallery.css'
+import './projects-index.css'
+import './gallery-index.css'
 
-const LABELS = {
-  all: 'All',
-  residential: 'Residential',
-  commercial: 'Commercial',
-  institutional: 'Institutional',
-  interiors: 'Interiors',
-  installation: 'Installation',
-  factory: 'Factory',
-  people: 'People',
-  awards: 'Awards',
-}
+const pad = (n) => String(n).padStart(2, '0')
 
-function Lightbox({ items, index, onClose, onMove }) {
-  useScrollLock(true)
-  useEscape(onClose)
+/* the order the page walks the archive in, and a line on each */
+const ROWS = [
+  ['residential', 'Residential', 'Villas and family houses, from the gate to the top landing.'],
+  ['interiors', 'Interiors', 'Cabins, lobbies and the finishes people actually touch.'],
+  ['commercial', 'Commercial', 'Restaurants and retail, where the lift is part of the front of house.'],
+  ['institutional', 'Institutional', 'Hospitals and public buildings, specified for beds and for queues.'],
+  ['installation', 'Installation', 'The work before the finishes go on: structure, rails, machine.'],
+]
 
-  const onKey = useCallback(
-    (e) => {
-      if (e.key === 'ArrowRight') onMove(1)
-      if (e.key === 'ArrowLeft') onMove(-1)
-    },
-    [onMove],
-  )
+/* --- the ask: a frame that opens ------------------------------------------ */
 
-  useEffect(() => {
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onKey])
-
-  const item = items[index]
-  if (!item) return null
+function Invitation() {
+  const wrap = useRef(null)
+  useScrollVar(wrap, { from: 1, to: 0.15 })
 
   return (
-    <div className="lightbox" role="dialog" aria-modal="true" aria-label={item.title || 'Image'}>
-      <button type="button" className="lightbox__scrim" onClick={onClose} aria-label="Close" />
-      <button type="button" className="lightbox__close" onClick={onClose}>
-        <Close size={20} />
-        <span className="sr-only">Close</span>
-      </button>
-
-      <button
-        type="button"
-        className="lightbox__nav lightbox__nav--prev"
-        onClick={() => onMove(-1)}
-        aria-label="Previous image"
-      >
-        <Arrow size={20} style={{ transform: 'rotate(180deg)' }} />
-      </button>
-
-      <figure className="lightbox__fig">
-        <img src={item.src} srcSet={srcSet(item.src)} sizes="90vw" alt={item.title || ''} />
-        <figcaption className="lightbox__cap">
-          <span className="lightbox__title">{item.title}</span>
-          {item.meta && <span className="lightbox__meta">{item.meta}</span>}
-          <span className="lightbox__count mono">
-            {index + 1} / {items.length}
-          </span>
-          {item.project_slug && (
-            <Link to={`/projects/${item.project_slug}`} className="link">
-              View the project <Arrow size={13} />
+    <div ref={wrap} className="pr-invite-wrap">
+      <section className="pr-invite">
+        <div className="pr-invite__scene">
+          <Img src="/media/frames/lekha-hall.jpg" alt="" sizes="100vw" />
+        </div>
+        <div className="pr-invite__copy">
+          <p className="ld-label">Next step</p>
+          <h2 className="pr-invite__title ld-rise">
+            <Rise text="Seen something you like?" />
+          </h2>
+          <p className="pr-invite__lead">
+            Any of these can be specified for your building. Tell us which one and what it has to fit into.
+          </p>
+          <div className="pr-invite__actions">
+            <Link to="/contact" className="pr-go">
+              <span>Get a quote</span>
+              <span className="pr-go__ring">
+                <Arrow size={16} />
+              </span>
             </Link>
-          )}
-        </figcaption>
-      </figure>
-
-      <button
-        type="button"
-        className="lightbox__nav lightbox__nav--next"
-        onClick={() => onMove(1)}
-        aria-label="Next image"
-      >
-        <Arrow size={20} />
-      </button>
+            <Link to="/projects" className="pr-invite__alt">
+              See the projects
+            </Link>
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
 
+/* --- page ----------------------------------------------------------------- */
+
 export default function Gallery() {
   const { data: items } = useApi('gallery/')
-  const [category, setCategory] = useState('all')
   const [open, setOpen] = useState(null)
 
   useEffect(() => {
     document.title = 'Gallery — Zion Lifts'
   }, [])
 
-  const all = items ?? []
+  const all = useMemo(() => items ?? [], [items])
 
-  const categories = useMemo(() => {
-    const counts = new Map()
-    for (const i of all) counts.set(i.category, (counts.get(i.category) ?? 0) + 1)
-    return [['all', all.length], ...[...counts.entries()].sort((a, b) => b[1] - a[1])]
+  const groups = useMemo(() => {
+    const known = ROWS.map(([key, name, line]) => ({ key, name, line, items: all.filter((i) => i.category === key) }))
+    const rest = all.filter((i) => !ROWS.some(([key]) => key === i.category))
+    if (rest.length) known.push({ key: 'more', name: 'More', line: 'Everything else in the archive.', items: rest })
+    return known.filter((g) => g.items.length)
   }, [all])
 
-  const filtered = useMemo(
-    () => (category === 'all' ? all : all.filter((i) => i.category === category)),
-    [all, category],
-  )
-
-  const featured = all.find((i) => i.is_featured)
-
+  // the lightbox walks the whole archive, in the order the page shows it
+  const ordered = useMemo(() => groups.flatMap((g) => g.items), [groups])
   const move = useCallback(
-    (delta) => setOpen((i) => (i === null ? null : (i + delta + filtered.length) % filtered.length)),
-    [filtered.length],
+    (delta) => setOpen((i) => (i === null ? null : (i + delta + ordered.length) % ordered.length)),
+    [ordered.length],
   )
 
   return (
-    <>
-      <PageHero
-        eyebrow="Zion in motion"
+    <div className="ga">
+      <WallHero
+        items={all}
+        index={groups.map((g) => ({ key: g.key, name: g.name, count: g.items.length }))}
+        label="Zion in motion"
         title="Built. Installed. Experienced."
         lead="Every image here is of a lift Zion made. Cabins, doors, shafts, control panels, buildings — and the installations behind them."
-        crumbs={[{ label: 'Home', to: '/' }, { label: 'Gallery' }]}
-        image="/media/frames/chilkuru-atrium.jpg"
+        cueHref={groups[0] ? `#${groups[0].key}` : '#'}
+        cueLabel="Scroll to the photographs"
       />
-
-      {featured && (
-        <section className="section section--tight">
-          <div className="shell">
-            <Reveal variant="wipe" className="gfeature">
-              <Img
-                src={featured.src}
-                alt={featured.title}
-                ratio="21 / 9"
-                sizes="100vw"
-                parallax={30}
-              />
-              <div className="gfeature__cap">
-                <p className="mono">{featured.meta}</p>
-                <h2 className="gfeature__title">{featured.title}</h2>
-                {featured.project_slug && (
-                  <Link to={`/projects/${featured.project_slug}`} className="link">
-                    View the project <Arrow size={14} />
-                  </Link>
-                )}
-              </div>
-            </Reveal>
-          </div>
-        </section>
-      )}
-
-      <section className="section">
-        <div className="shell">
-          <SectionHead eyebrow="The archive" title="Browse everything." split={false} />
-
-          <div className="filters gfilters">
-            {categories.map(([key, count]) => (
-              <button
-                key={key}
-                type="button"
-                className={`filters__btn ${category === key ? 'is-on' : ''}`}
-                onClick={() => setCategory(key)}
-              >
-                {LABELS[key] ?? key}
-                <sup>{count}</sup>
-              </button>
-            ))}
-          </div>
-
-          <div className="masonry">
-            {filtered.map((item, i) => (
+      <div className="ga-rows on-paper">
+        {groups.map((g, i) => (
+          <Strip
+            key={g.key}
+            id={g.key}
+            index={i}
+            total={groups.length}
+            name={g.name}
+            line={g.line}
+            count={`${pad(g.items.length)} photographs · select one to open it`}
+            items={g.items}
+            prevLabel={`Earlier ${g.name} photographs`}
+            nextLabel={`More ${g.name} photographs`}
+            renderItem={(item) => (
               <button
                 type="button"
-                className={`masonry__cell ${item.aspect < 0.85 ? 'is-tall' : ''}`}
-                key={item.id}
-                onClick={() => setOpen(i)}
+                className="ga-cell"
+                style={{ aspectRatio: `${item.width} / ${item.height}` }}
+                onClick={() => setOpen(ordered.findIndex((x) => x.id === item.id))}
+                aria-label={`${item.title} — open`}
               >
-                <Img
-                  src={item.src}
-                  alt={item.title}
-                  ratio={`${item.width} / ${item.height}`}
-                  sizes="(min-width: 1200px) 24vw, (min-width: 800px) 32vw, (min-width: 500px) 48vw, 92vw"
-                />
-                <span className="masonry__hover">
-                  <span className="masonry__title">{item.title}</span>
-                  {item.meta && <span className="masonry__meta">{item.meta}</span>}
+                <Img src={item.src} alt={item.title} sizes="(min-width: 900px) 36vw, 78vw" draggable={false} />
+                <span className="ga-cell__cap">
+                  <span className="ga-cell__title">{item.title}</span>
+                  {item.meta && <span className="ga-cell__meta">{item.meta}</span>}
                 </span>
               </button>
-            ))}
-          </div>
-        </div>
-      </section>
+            )}
+          />
+        ))}
+      </div>
+      <Invitation />
 
-      {open !== null && (
-        <Lightbox items={filtered} index={open} onClose={() => setOpen(null)} onMove={move} />
-      )}
-
-      <CtaBand
-        eyebrow="Next step"
-        title="Seen something you like?"
-        lead="Any of these can be specified for your building. Tell us which one and what it has to fit into."
-        primary={{ to: '/contact', label: 'Get a quote' }}
-        secondary={{ to: '/projects', label: 'See the projects' }}
-      />
-    </>
+      {open !== null && <Lightbox items={ordered} index={open} onClose={() => setOpen(null)} onMove={move} />}
+    </div>
   )
 }
