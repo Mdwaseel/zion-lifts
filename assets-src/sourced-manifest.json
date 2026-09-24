@@ -303,5 +303,173 @@
     ],
     "replace_with_real_shoot": false,
     "used_for": "Home 16 - Hyderabad skyline"
+  },
+  "place-villa": {
+    "title": "White modern house with a swimming pool",
+    "creator": "Alejandra Cifre Gonz\u00e1lez",
+    "creator_url": "",
+    "license": "Unsplash",
+    "license_version": "",
+    "license_url": "https://unsplash.com/license",
+    "source": "unsplash",
+    "foreign_landing_url": "https://unsplash.com/photos/ylyn5r4vxcA",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      2400,
+      3279
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: villas"
+  },
+  "place-apartment": {
+    "title": "White residential towers under a blue sky",
+    "creator": "Malcolm Shadrach",
+    "creator_url": "",
+    "license": "Unsplash",
+    "license_version": "",
+    "license_url": "https://unsplash.com/license",
+    "source": "unsplash",
+    "foreign_landing_url": "https://unsplash.com/photos/_r80LCluvVM",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      2400,
+      4260
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: apartments"
+  },
+  "place-hotel": {
+    "title": "Interior of the lobby coffee and drinks at The Fullerton Bay Hotel Singapore.jpg",
+    "creator": "Basile Morin",
+    "creator_url": "",
+    "license": "BY-SA",
+    "license_version": "4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:Interior_of_the_lobby_coffee_and_drinks_at_The_Fullerton_Bay_Hotel_Singapore.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      3840,
+      2560
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: hotels"
+  },
+  "place-office": {
+    "title": "Fukuoka Daimy\u014d Garden City Tower the office lobby on the 3rd floor Ch\u016b\u014d-ku Fukuoka 20250619.jpg",
+    "creator": "Hirho",
+    "creator_url": "",
+    "license": "BY-SA",
+    "license_version": "4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:Fukuoka_Daimy%C5%8D_Garden_City_Tower_the_office_lobby_on_the_3rd_floor_Ch%C5%AB%C5%8D-ku_Fukuoka_20250619.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      3840,
+      2159
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: offices & retail"
+  },
+  "place-hospital": {
+    "title": "HK CWB \u9285\u947c\u7063 Causeway Bay \u8056\u4fdd\u797f\u91ab\u9662 Saint Paul's Hospital lobby hall interior escalators July 2018 LGM 01.jpg",
+    "creator": "\u50b7\u98a8\u611f\u5192\u6709\u5c11\u5c11\u75f0\u60f3\u54b301",
+    "creator_url": "",
+    "license": "BY-SA",
+    "license_version": "4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:HK_CWB_%E9%8A%85%E9%91%BC%E7%81%A3_Causeway_Bay_%E8%81%96%E4%BF%9D%E7%A5%BF%E9%86%AB%E9%99%A2_Saint_Paul%27s_Hospital_lobby_hall_interior_escalators_July_2018_LGM_01.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      3840,
+      2880
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: hospitals"
+  },
+  "place-institutional": {
+    "title": "Graz University-Library reading-room.jpg",
+    "creator": "Dr. Marcus Gossler",
+    "creator_url": "",
+    "license": "BY-SA",
+    "license_version": "3.0",
+    "license_url": "http://creativecommons.org/licenses/by-sa/3.0/",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:Graz_University-Library_reading-room.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      1600,
+      1200
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: government & education"
+  },
+  "place-industrial": {
+    "title": "649th Munitions Squadron 121030-F-RN544-010.jpg",
+    "creator": "Airman 1st Class Justyn Freeman",
+    "creator_url": "",
+    "license": "PDM",
+    "license_version": "",
+    "license_url": "",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:649th_Munitions_Squadron_121030-F-RN544-010.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      3840,
+      2743
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: factories & warehouses"
+  },
+  "place-parking": {
+    "title": "Multi-Level-Stack-Parking-in-NYC.jpg",
+    "creator": "Rajesh Natraj",
+    "creator_url": "",
+    "license": "CC0",
+    "license_version": "1.0",
+    "license_url": "http://creativecommons.org/publicdomain/zero/1.0/deed.en",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:Multi-Level-Stack-Parking-in-NYC.jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      2560,
+      1920
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "Lifts - where they go: parking"
   }
 }

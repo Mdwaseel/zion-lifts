@@ -30,6 +30,15 @@ KEEP = {
     "blueprint-technical": "Home 08 - blueprint stage",
     "skyline-city":       "Home 16 - final ascent plate",
     "skyline-hyderabad":  "Home 16 - Hyderabad skyline",
+    # the /lifts "where these lifts go" tiles: real buildings, not renders
+    "place-villa":         "Lifts - where they go: villas",
+    "place-apartment":     "Lifts - where they go: apartments",
+    "place-hotel":         "Lifts - where they go: hotels",
+    "place-office":        "Lifts - where they go: offices & retail",
+    "place-hospital":      "Lifts - where they go: hospitals",
+    "place-institutional": "Lifts - where they go: government & education",
+    "place-industrial":    "Lifts - where they go: factories & warehouses",
+    "place-parking":       "Lifts - where they go: parking",
 }
 
 LICENCE_URL = {
@@ -37,6 +46,7 @@ LICENCE_URL = {
     "PDM": "https://creativecommons.org/publicdomain/mark/1.0/",
     "BY": "https://creativecommons.org/licenses/by/4.0/",
     "BY-SA": "https://creativecommons.org/licenses/by-sa/4.0/",
+    "Unsplash": "https://unsplash.com/license",
 }
 
 
@@ -62,7 +72,9 @@ def main():
         "Zion's own. The images below are Creative Commons stand-ins used only in the",
         "factory, component-macro and people sections, where Zion has not yet supplied a",
         "shoot. **All of them should be replaced with real Zion photography before launch** —",
-        "the brief explicitly calls for authentic footage in these sections.",
+        "the brief explicitly calls for authentic footage in these sections. The `place-*`",
+        "images are real buildings behind the building-type tiles on /lifts; they stand for",
+        "a kind of building, not a Zion installation, and can stay.",
         "",
         "| Asset | Used for | Creator | Licence | Source |",
         "| --- | --- | --- | --- | --- |",
@@ -71,7 +83,7 @@ def main():
         lic = m.get("license", "")
         ver = m.get("license_version", "")
         url = m.get("license_url") or LICENCE_URL.get(lic, "")
-        label = f"CC {lic} {ver}".strip() if lic not in ("CC0", "PDM") else lic
+        label = f"CC {lic} {ver}".strip() if lic not in ("CC0", "PDM", "Unsplash") else lic
         licence_cell = f"[{label}]({url})" if url else label
         creator = m.get("creator") or "Unknown"
         if m.get("creator_url"):

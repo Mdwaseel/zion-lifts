@@ -105,12 +105,12 @@ export const ClockMark = mark(['M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Z', 'M12 7.2
 export const AlertMark = mark(['M12 3.8 21 19.5H3Z', 'M12 9.6v4.6', 'M12 16.9v.2'])
 
 export const PLACES = {
-  villa: { Icon: VillaMark, src: '/media/contexts/context-villa.jpg' },
-  apartment: { Icon: ApartmentMark, src: '/media/contexts/context-apartment.jpg' },
-  hotel: { Icon: HotelMark, src: '/media/contexts/context-hotel.jpg' },
-  office: { Icon: OfficeMark, src: '/media/contexts/context-office.jpg' },
-  industrial: { Icon: FactoryMark, src: '/media/contexts/context-industrial.jpg' },
-  parking: { Icon: ParkingMark, src: '/media/products/car-stacker-01.jpg' },
-  hospital: { Icon: HospitalMark, src: '/media/contexts/context-hospital.jpg' },
-  institutional: { Icon: CivicMark, src: '/media/frames/owaisi-lobby.jpg' },
+  villa: { Icon: VillaMark, src: '/media/sourced/place-villa.jpg' },
+  apartment: { Icon: ApartmentMark, src: '/media/sourced/place-apartment.jpg' },
+  hotel: { Icon: HotelMark, src: '/media/sourced/place-hotel.jpg' },
+  office: { Icon: OfficeMark, src: '/media/sourced/place-office.jpg' },
+  industrial: { Icon: FactoryMark, src: '/media/sourced/place-industrial.jpg' },
+  parking: { Icon: ParkingMark, src: '/media/sourced/place-parking.jpg' },
+  hospital: { Icon: HospitalMark, src: '/media/sourced/place-hospital.jpg' },
+  institutional: { Icon: CivicMark, src: '/media/sourced/place-institutional.jpg' },
 }
