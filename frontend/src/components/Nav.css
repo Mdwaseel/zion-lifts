@@ -372,3 +372,41 @@
     transition-duration: 0.01ms;
   }
 }
+
+/* Over a flat opening (a page puts .hero-flat or, on ivory, .hero-light on
+   <html> while its hero is mounted) the bar has no scrim; on ivory its type
+   turns to ink too. The tab is unchanged: once it draws in it is black on
+   every page. */
+.hero-light .hd.is-top {
+  color: var(--light-text);
+}
+
+.hero-light .hd.is-top::before,
+.hero-flat .hd.is-top::before {
+  opacity: 0;
+}
+
+.hero-light .hd.is-top .hd__link,
+.hero-light .hd.is-top .hd__phone {
+  color: rgba(21, 21, 21, 0.72);
+}
+
+.hero-light .hd.is-top .hd__wordmark span,
+.hero-light .hd.is-top .hd__link.is-active,
+.hero-light .hd.is-top .hd__roll > span + span {
+  color: var(--teal);
+}
+
+.hero-light .hd.is-top .hd__cta .hd__roll > span + span {
+  color: #fff;
+}
+
+/* on the teal service ground the teal button would vanish into it */
+.hero-flat .hd.is-top .hd__cta {
+  background: #fff;
+  color: var(--teal-deep);
+}
+
+.hero-flat .hd.is-top .hd__cta .hd__roll > span + span {
+  color: var(--teal-deep);
+}

@@ -25,15 +25,36 @@ function query(params) {
   ).toString()
 }
 
+/** Where a read lives in the frozen snapshot — the layout snapshot-api.mjs writes. */
+function snapshotUrl(path, params) {
+  const clean = `/api/${String(path).replace(/^\/+/, '')}`
+  const dir = clean.endsWith('/') ? clean : `${clean}/`
+  const qs = query(params)
+  return qs ? `${dir}_q/${qs}.json` : `${dir}index.json`
+}
+
 function url(path, params) {
+  if (STATIC) return snapshotUrl(path, params)
   const clean = `${BASE}/${String(path).replace(/^\/+/, '')}`
   const qs = query(params)
-  if (STATIC) {
-    // mirrors the layout snapshot-api.mjs writes
-    const dir = clean.endsWith('/') ? clean : `${clean}/`
-    return qs ? `${dir}_q/${qs}.json` : `${dir}index.json`
-  }
   return qs ? `${clean}?${qs}` : clean
+}
+
+/* In dev, a Django that is not running shows up as the proxy's 502 (or a
+   refused connection). Rather than leave every page empty, reads fall back to
+   the snapshot in public/api — the same files the static site serves — and
+   say so once in the console. Real 4xx answers from the API are not masked. */
+let warned = false
+const unreachable = (err) => !err.status || err.status >= 500
+
+async function fetchJson(key, signal) {
+  const res = await fetch(key, { signal, headers: { Accept: 'application/json' } })
+  if (!res.ok) {
+    const err = new Error(`${res.status} ${res.statusText} — ${key}`)
+    err.status = res.status
+    throw err
+  }
+  return unwrap(await res.json())
 }
 
 /** Unwraps DRF pagination so callers always receive a plain array. */
@@ -47,14 +68,14 @@ export async function get(path, params, { signal } = {}) {
   const key = url(path, params)
   if (cache.has(key)) return cache.get(key)
 
-  const promise = fetch(key, { signal, headers: { Accept: 'application/json' } })
-    .then(async (res) => {
-      if (!res.ok) {
-        const err = new Error(`${res.status} ${res.statusText} — ${key}`)
-        err.status = res.status
-        throw err
+  const promise = fetchJson(key, signal)
+    .catch((err) => {
+      if (STATIC || !import.meta.env.DEV || err.name === 'AbortError' || !unreachable(err)) throw err
+      if (!warned) {
+        warned = true
+        console.warn('[api] The API is not answering — showing the snapshot in public/api. Start Django with dev.ps1.')
       }
-      return unwrap(await res.json())
+      return fetchJson(snapshotUrl(path, params), signal)
     })
     .catch((err) => {
       cache.delete(key) // never memoise a failure

@@ -1,0 +1,18 @@
+{
+  "name": "zion-motion",
+  "private": true,
+  "description": "Motion graphics for the site, written as Remotion compositions and rendered to MP4 loops in frontend/public/media/motion.",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.jsx",
+    "render": "node render.mjs"
+  },
+  "dependencies": {
+    "@remotion/bundler": "4.0.380",
+    "@remotion/cli": "4.0.380",
+    "@remotion/renderer": "4.0.380",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.380"
+  }
+}

@@ -5,7 +5,8 @@ import path from 'node:path'
 // The RAG service sits behind an X-API-Key. This config runs in Node, never in
 // the browser, so the key is attached here on the way through and the bundle
 // stays free of it — which is the whole reason the assistant talks to /ai
-const BACKEND_TARGET = process.env.BACKEND_URL ?? 'http://127.0.0.1:8002'
+// Django's address — :8000 is where dev.ps1 and the README start it
+const BACKEND_TARGET = process.env.BACKEND_URL ?? 'http://127.0.0.1:8000'
 const AI_TARGET = process.env.AI_SERVICE_URL ?? 'http://127.0.0.1:8080'
 const AI_KEY = process.env.AI_SERVICE_API_KEY ?? ''
 
@@ -18,7 +19,13 @@ export default defineConfig({
     port: 5173,
     proxy: {
       // the Django API and its uploaded media, so the app is same-origin in dev
-      '/api': { target: BACKEND_TARGET, changeOrigin: true },
+      '/api': {
+        target: BACKEND_TARGET,
+        changeOrigin: true,
+        // the snapshot's own files (public/api/**/index.json, /_q/*.json) are
+        // what src/lib/api.js falls back to when Django is not running
+        bypass: (req) => (/\/(index|_q\/[^/]+)\.json$/.test(req.url.split('?')[0]) ? req.url : undefined),
+      },
       '/uploads': { target: BACKEND_TARGET, changeOrigin: true },
       // /login redirects a signed-in staff user here; proxying keeps the whole
       // flow on one origin in dev, which is what makes SameSite=Lax cookies work.

@@ -75,7 +75,8 @@
 /* --- article -------------------------------------------------------------- */
 .jhero {
   padding-top: calc(var(--nav-h) + clamp(3rem, 2rem + 4vw, 6rem));
-  background: var(--obsidian);
+  background: var(--bg);
+  color: var(--fg);
 }
 
 .jhero__inner {

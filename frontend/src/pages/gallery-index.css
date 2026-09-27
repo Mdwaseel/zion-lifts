@@ -1,544 +1,494 @@
 /* ==========================================================================
    /gallery — the archive
-   dark opening behind a tilted, drifting wall of every photograph → paper rows,
-   one category to a strip the visitor drags, swipes or steps through → dark
-   invitation. The lightbox keeps its own styles in gallery.css.
+   ivory opening, a mosaic whose tiles keep turning over to more of the
+   archive → paper archive, every photograph at its own shape in a masonry
+   wall the visitor sorts → the invitation over a photograph. The lightbox
+   keeps its own styles in gallery.css.
    ========================================================================== */
 
 .ga {
   --ink: #07080a;
   --serif: var(--font-serif);
   overflow-x: clip;
-  background: var(--ink);
+  background: var(--light-bg);
 }
 
-/* --- the opening: the wall -------------------------------------------------- */
+/* --- the opening: the archive, never still ---------------------------------- */
 .ga-hero {
-  --x: 0;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
+  padding: calc(var(--nav-h) + clamp(1.5rem, 4vh, 2.5rem)) var(--page-x) clamp(2rem, 5vh, 3.5rem);
+  background: var(--light-bg);
+  color: var(--light-text);
+}
+
+/* six columns, three rows; the headline takes the top-left block */
+.ga-mosaic {
   display: grid;
-  grid-template-rows: 1fr auto;
-  min-height: 100svh;
-  padding: calc(var(--nav-h) + 2rem) var(--page-x) clamp(1.25rem, 3vh, 2.25rem);
-  background: var(--ink);
-  color: var(--dark-text);
-}
-
-.ga-wall {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-  perspective: 1400px;
-  perspective-origin: 60% 40%;
-  opacity: calc(1 - var(--x) * 0.7);
-}
-
-/* the wall leans back and away; leaving, it leans further and lifts */
-.ga-wall__plane {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 150vw;
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: clamp(0.6rem, 1.1vw, 1.25rem);
-  transform: translate3d(-42%, -50%, 0) rotateX(calc(24deg + var(--x) * 14deg)) rotateZ(-12deg)
-    translate3d(0, calc(var(--x) * -12%), 0);
-  transform-origin: 50% 50%;
-  will-change: transform;
-}
-
-.ga-wall__col {
-  display: grid;
-  gap: clamp(0.6rem, 1.1vw, 1.25rem);
-  align-content: start;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .ga-wall__col {
-    animation: ga-drift var(--dur) linear infinite;
-  }
-
-  .ga-wall__col:nth-child(even) {
-    animation-direction: reverse;
-  }
-}
-
-@keyframes ga-drift {
-  from {
-    transform: translate3d(0, 0, 0);
-  }
-  to {
-    /* half the column is the second copy of the list */
-    transform: translate3d(0, -50%, 0);
-  }
-}
-
-.ga-wall__cell {
-  position: relative;
-  overflow: hidden;
-  border-radius: 8px;
-  background: #0d0f12;
-}
-
-.ga-wall__cell .media {
-  position: absolute;
-  inset: 0;
-  background: #0d0f12;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .ga-wall__cell {
-    opacity: 0;
-    transition: opacity 1.4s var(--ease-out);
-    transition-delay: calc(var(--c, 0) * 0.12s);
-  }
-
-  .ga-hero.is-in .ga-wall__cell {
-    opacity: 1;
-  }
-}
-
-.ga-hero__grade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(90deg, rgba(7, 8, 10, 0.92) 0%, rgba(7, 8, 10, 0.66) 42%, rgba(7, 8, 10, 0.18) 80%),
-    linear-gradient(0deg, rgba(7, 8, 10, 0.96) 0%, rgba(7, 8, 10, 0.45) 36%, rgba(7, 8, 10, 0) 60%),
-    linear-gradient(180deg, rgba(7, 8, 10, 0.7) 0%, rgba(7, 8, 10, 0) 26%);
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  /* each row is a third of the screen at least, and grows if the headline
+     needs more — the copy must never be taller than the cells it sits in */
+  grid-template-rows: repeat(3, minmax(max(9rem, calc((100svh - var(--nav-h) - 8rem) / 3)), auto));
+  gap: clamp(0.5rem, 0.9vw, 0.9rem);
 }
 
 .ga-hero__copy {
-  align-self: end;
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 2;
   display: grid;
-  gap: clamp(1rem, 2.2vh, 1.6rem);
-  max-width: 64rem;
-  padding-bottom: clamp(2rem, 5vh, 4rem);
-  transform: translate3d(0, calc(var(--x) * -70px), 0);
-  opacity: calc(1 - var(--x) * 1.9);
-}
-
-.ga-hero__label {
-  color: rgba(245, 245, 242, 0.66);
+  align-content: end;
+  justify-items: start;
+  gap: clamp(1rem, 2.2vh, 1.5rem);
+  padding: clamp(0.5rem, 1.5vw, 1.5rem) clamp(0.5rem, 2vw, 2rem) clamp(0.75rem, 2vw, 1.75rem) 0;
 }
 
 .ga-hero__title {
   font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(2.9rem, 1.3rem + 7vw, 8.5rem);
-  line-height: 0.97;
-  letter-spacing: -0.03em;
-}
-
-.ga-hero__title em {
-  font-style: italic;
-  color: var(--teal-bright);
+  font-size: clamp(3rem, 1.4rem + 3.6vw, 6rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
 .ga-hero__lead {
-  max-width: 54ch;
+  max-width: 44ch;
   font-size: var(--t-lead);
-  line-height: 1.4;
-  letter-spacing: var(--tr-lead);
-  color: rgba(245, 245, 242, 0.78);
+  line-height: 1.45;
+  color: rgba(21, 21, 21, 0.72);
   text-wrap: pretty;
 }
 
-.ga-hero__foot {
-  display: flex;
-  align-items: end;
-  gap: 2rem;
-  padding-top: clamp(1rem, 2.4vh, 1.5rem);
-  border-top: 1px solid rgba(255, 255, 255, 0.16);
-  opacity: calc(1 - var(--x) * 2.6);
-}
-
+/* the sections, each a way down to its strip */
 .ga-hero__index {
-  flex: 1;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem clamp(1.25rem, 3vw, 3rem);
+  gap: 0.5rem;
 }
 
 .ga-hero__index a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.45rem 0.5rem 0.45rem 0.95rem;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--light-shadow);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+.ga-hero__index a span {
   display: grid;
-  gap: 0.35rem;
-  min-height: 2.75rem;
-}
-
-.ga-hero__index strong {
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(1.5rem, 1.1rem + 1.2vw, 2.4rem);
-  line-height: 1;
-  letter-spacing: -0.025em;
-}
-
-.ga-hero__index span {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.6);
-  transition: color var(--dur-fast) var(--ease-out);
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding-inline: 0.3rem;
+  border-radius: 999px;
+  background: rgba(6, 111, 112, 0.1);
+  font-size: var(--t-micro);
+  color: var(--teal);
 }
 
 @media (hover: hover) {
-  .ga-hero__index a:hover span {
-    color: var(--teal-bright);
+  .ga-hero__index a:hover {
+    background: var(--paper);
   }
 }
 
 .ga-hero__index a:focus-visible,
-.ga-hero__cue:focus-visible {
-  outline: 2px solid var(--teal-bright);
-  outline-offset: 4px;
+.ga-tile:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
 }
 
-.ga-hero__cue {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 50%;
-  color: var(--dark-text);
+/* a tile: the picture it is showing, over the one it has just turned from */
+.ga-tile {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--paper-3);
+  box-shadow: var(--light-shadow);
+  isolation: isolate;
+  cursor: zoom-in;
+}
+
+.ga-tile__layer {
+  position: absolute;
+  inset: 0;
+}
+
+.ga-tile__layer .media {
+  position: absolute;
+  inset: 0;
+}
+
+/* the new picture wipes up over the old one, the way a door leaf slides */
+@media (prefers-reduced-motion: no-preference) {
+  .ga-tile__layer.is-new {
+    animation: ga-turn 1.1s cubic-bezier(0.65, 0, 0.35, 1) both;
+  }
+}
+
+@keyframes ga-turn {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.ga-tile__layer .media__img {
+  transition:
+    opacity 0.6s var(--ease-out),
+    transform 1.4s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ga-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(0deg, rgba(7, 8, 10, 0.6) 0%, rgba(7, 8, 10, 0) 42%);
+  opacity: 0;
+  transition: opacity 0.4s var(--ease-out);
+  pointer-events: none;
+}
+
+.ga-tile__cap {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 0.9rem 1rem;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  text-align: left;
+  color: #fff;
+  opacity: 0;
+  transform: translateY(0.5rem);
+  transition:
+    opacity 0.4s var(--ease-out),
+    transform 0.4s var(--ease-out);
+}
+
+@media (hover: hover) {
+  .ga-tile:hover::after,
+  .ga-tile:hover .ga-tile__cap {
+    opacity: 1;
+    transform: none;
+  }
+
+  .ga-tile:hover .media__img {
+    transform: scale(1.05);
+  }
+}
+
+.ga-tile:focus-visible::after,
+.ga-tile:focus-visible .ga-tile__cap {
+  opacity: 1;
+  transform: none;
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .ga-hero .ld-word__in {
     transform: translateY(112%);
     transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
-    transition-delay: calc(0.35s + var(--i) * 0.09s);
+    transition-delay: calc(0.1s + var(--i) * 0.07s);
   }
 
-  .ga-hero__label,
   .ga-hero__lead,
-  .ga-hero__cue,
-  .ga-hero__index a {
+  .ga-hero__index,
+  .ga-tile {
     opacity: 0;
-    transform: translateY(14px);
+    transform: scale(0.96);
     transition:
-      opacity 0.8s var(--ease-out),
-      transform 0.8s var(--ease-out);
-    transition-delay: calc(0.9s + var(--i, 0) * 0.07s);
+      opacity 0.9s var(--ease-out),
+      transform 1.1s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: calc(0.25s + var(--i, 0) * 0.08s);
+  }
+
+  .ga-hero__lead,
+  .ga-hero__index {
+    transform: translateY(14px);
+    transition-delay: 0.6s;
+  }
+
+  .ga-hero__index {
+    transition-delay: 0.75s;
   }
 
   .ga-hero.is-in .ld-word__in,
-  .ga-hero.is-in .ga-hero__label,
   .ga-hero.is-in .ga-hero__lead,
-  .ga-hero.is-in .ga-hero__cue,
-  .ga-hero.is-in .ga-hero__index a {
+  .ga-hero.is-in .ga-hero__index,
+  .ga-hero.is-in .ga-tile {
     opacity: 1;
     transform: none;
   }
 }
 
-@media (max-width: 767px) {
-  .ga-wall__plane {
-    width: 260vw;
+/* narrower: the headline above, the pictures in two columns below it */
+@media (max-width: 899px) {
+  .ga-hero {
+    padding-top: calc(var(--nav-h) + 2rem);
   }
 
-  .ga-hero__grade {
-    background:
-      linear-gradient(0deg, rgba(7, 8, 10, 0.97) 0%, rgba(7, 8, 10, 0.8) 48%, rgba(7, 8, 10, 0.2) 82%),
-      linear-gradient(180deg, rgba(7, 8, 10, 0.7) 0%, rgba(7, 8, 10, 0) 22%);
+  .ga-mosaic {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    /* the headline's row sizes to the headline; the pictures' rows are fixed */
+    grid-template-rows: auto;
+    grid-auto-rows: 38vw;
   }
 
-  .ga-hero__cue {
+  .ga-hero__copy {
+    grid-column: 1 / -1;
+    grid-row: auto;
+    padding: 1rem 0 0.75rem;
+  }
+
+  .ga-tile {
+    grid-column: auto / span 1 !important;
+    grid-row: auto / span 1 !important;
+  }
+
+  .ga-tile:nth-of-type(1) {
+    grid-column: 1 / -1 !important;
+    grid-row: auto / span 2 !important;
+  }
+
+  .ga-tile__cap {
     display: none;
   }
 }
 
-/* --- the rows ----------------------------------------------------------------- */
-.ga-rows {
-  background: var(--bg);
-  color: var(--fg);
-  padding-block: clamp(3rem, 2rem + 4vw, 6rem) clamp(4rem, 3rem + 5vw, 8rem);
+/* --- the archive: every photograph, at its own shape ----------------------- */
+.ga-archive {
+  padding-bottom: clamp(4rem, 3rem + 5vw, 8rem);
 }
 
-.ga-row {
-  --rh: clamp(19rem, 58svh, 36rem);
-  padding-block: clamp(2.5rem, 2rem + 3vw, 5rem);
-  scroll-margin-top: var(--nav-h);
-}
-
-.ga-row__head {
+.ga-archive__head {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: baseline;
-  gap: 0.5rem clamp(1rem, 3vw, 3rem);
-  max-width: var(--maxw);
-  margin: 0 auto clamp(1.5rem, 1rem + 2vw, 3rem);
-  padding-inline: var(--page-x);
+  gap: 1.25rem;
+  margin-bottom: clamp(1.25rem, 2.5vh, 2rem);
 }
 
-.ga-row__n {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-}
-
-.ga-row__n span {
-  color: var(--fg-faint);
-}
-
-.ga-row__name {
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(2.6rem, 1.4rem + 5.4vw, 7rem);
-  line-height: 0.98;
-  letter-spacing: -0.03em;
-}
-
-.ga-row__name em {
-  font-style: italic;
-  color: var(--accent);
-}
-
-.ga-row__line {
-  grid-column: 2;
-  max-width: 46ch;
-  font-size: var(--t-body);
-  line-height: 1.55;
-  color: var(--fg-dim);
-}
-
-.ga-row__count {
-  grid-column: 2;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--fg-faint);
-}
-
-@media (max-width: 699px) {
-  .ga-row__head {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .ga-row__line,
-  .ga-row__count {
-    grid-column: 1;
+@media (min-width: 900px) {
+  .ga-archive__head {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 7rem);
   }
 }
 
-/* the strip is a scroller the visitor moves; it never moves by itself */
-.ga-row__window {
+.ga-archive .pr-lead {
+  color: var(--light-muted);
+}
+
+/* the sorts ride along under the header while the wall scrolls past: a
+   frosted band the photographs slide under, and in it one control */
+.ga-sort {
+  position: sticky;
+  top: 3.6rem;
+  z-index: 5;
+  padding-block: 0.7rem;
+  margin-bottom: clamp(0.75rem, 2vh, 1.5rem);
+  transition:
+    background-color 0.35s var(--ease-out),
+    box-shadow 0.35s var(--ease-out);
+}
+
+.ga-sort__mark {
+  display: block;
+  height: 0;
+}
+
+.ga-sort.is-stuck {
+  background: rgba(248, 248, 246, 0.86);
+  backdrop-filter: saturate(160%) blur(16px);
+  -webkit-backdrop-filter: saturate(160%) blur(16px);
+  box-shadow:
+    0 1px 0 var(--light-border),
+    0 14px 28px -22px rgba(0, 0, 0, 0.35);
+}
+
+.ga-sort__in {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* one segmented control: the chips share a track, the one in force is lit */
+.ga-sort__track {
+  display: inline-flex;
+  gap: 0.2rem;
+  max-width: 100%;
+  padding: 0.3rem;
   overflow-x: auto;
-  overflow-y: hidden;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--light-shadow);
   scrollbar-width: none;
-  padding-block: 0.75rem 2.5rem;
-  margin-bottom: -1.25rem;
-  cursor: grab;
 }
 
-/* a finger gets frames that settle; a dragged mouse is left exactly where it
-   is let go, because a snap would pull a wide photograph straight back */
-@media (pointer: coarse) {
-  .ga-row__window {
-    scroll-snap-type: x proximity;
-    scroll-padding-inline: var(--page-x);
-  }
-}
-
-.ga-row__window::-webkit-scrollbar {
+.ga-sort__track::-webkit-scrollbar {
   display: none;
 }
 
-.ga-row__window.is-dragging {
-  cursor: grabbing;
-  scroll-snap-type: none;
-  user-select: none;
-}
-
-.ga-row__window.is-dragging .ga-cell {
-  pointer-events: none;
-}
-
-.ga-row__ctrl {
-  display: flex;
+.ga-sort button {
+  display: inline-flex;
+  flex: none;
   align-items: center;
-  gap: 1rem;
-  max-width: var(--maxw);
-  margin-inline: auto;
-  padding-inline: var(--page-x);
-}
-
-/* how far along the strip is: a quarter-length mark riding a hairline */
-.ga-row__bar {
-  position: relative;
-  flex: 1;
-  height: 2px;
-  overflow: hidden;
-  background: linear-gradient(var(--rule), var(--rule)) center / 100% 1px no-repeat;
-}
-
-.ga-row__bar > span {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 25%;
-  background: var(--accent);
-  transition: transform 0.2s linear;
-}
-
-.ga-row__hint {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--fg-faint);
-}
-
-.ga-row__step {
-  display: grid;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  border: 1px solid var(--rule);
-  border-radius: 50%;
-  color: var(--fg);
-  transition:
-    border-color var(--dur-fast) var(--ease-out),
-    opacity var(--dur-fast) var(--ease-out);
-}
-
-.ga-row__step--prev svg {
-  transform: rotate(180deg);
-}
-
-.ga-row__step:disabled {
-  opacity: 0.3;
-}
-
-@media (hover: hover) {
-  .ga-row__step:not(:disabled):hover {
-    border-color: var(--accent);
-    color: var(--accent);
-  }
-}
-
-.ga-row__step:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 3px;
-}
-
-.ga-strip {
-  display: flex;
-  gap: clamp(0.75rem, 1.4vw, 1.5rem);
-  width: max-content;
-  margin: 0;
-  /* lines up with the page's margin at rest, and runs on to the screen's edge */
-  padding: 0 var(--page-x) 0 max(var(--page-x), calc((100vw - var(--maxw)) / 2 + var(--page-x)));
-  list-style: none;
-}
-
-.ga-strip > li {
-  scroll-snap-align: start;
-}
-
-.ga-cell {
-  position: relative;
-  display: block;
-  height: var(--rh);
-  /* a landscape frame is trimmed a little, so several photographs share the screen */
-  max-width: 48vw;
-  overflow: hidden;
-  border-radius: 8px;
-  background: var(--light-surface, #e9e6df);
-  box-shadow: 0 30px 50px -34px rgba(40, 32, 20, 0.55);
-}
-
-.ga-cell .media {
-  position: absolute;
-  inset: 0;
-  transition: transform 1.3s var(--ease-out);
-}
-
-.ga-cell:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 4px;
-}
-
-/* every frame opens from its own centre line, one after the other */
-@media (prefers-reduced-motion: no-preference) {
-  .ga-strip > li {
-    clip-path: inset(0 50% 0 50% round 8px);
-    transition: clip-path 1.2s cubic-bezier(0.7, 0, 0.2, 1);
-    transition-delay: calc(0.1s + var(--i) * 0.08s);
-  }
-
-  .ga-row.is-in .ga-strip > li {
-    clip-path: inset(-3rem -1rem -3rem -1rem round 8px);
-  }
-}
-
-.ga-cell__cap {
-  position: absolute;
-  inset: auto 0 0;
-  display: grid;
-  gap: 0.2rem;
-  padding: 2.5rem 1rem 0.9rem;
-  background: linear-gradient(0deg, rgba(7, 8, 10, 0.85), transparent);
-  text-align: left;
-  color: #fff;
-  opacity: 0;
-  transform: translateY(0.6rem);
-  transition:
-    opacity var(--dur) var(--ease-out),
-    transform var(--dur) var(--ease-out);
-}
-
-.ga-cell__title {
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.45rem 0 1rem;
+  border-radius: var(--radius-pill);
   font-size: var(--t-small);
   font-weight: var(--w-semibold);
+  color: var(--light-text);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
 }
 
-.ga-cell__meta {
-  font-family: var(--font-mono);
-  font-size: 0.5938rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.72);
+.ga-sort button span {
+  display: grid;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  padding-inline: 0.3rem;
+  border-radius: 999px;
+  background: rgba(6, 111, 112, 0.1);
+  font-size: var(--t-micro);
+  color: var(--teal);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
+}
+
+.ga-sort button.is-on {
+  background: var(--teal);
+  color: #fff;
+}
+
+.ga-sort button.is-on span {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
 }
 
 @media (hover: hover) {
-  .ga-cell:hover .media {
-    transform: scale(1.05);
-  }
-
-  .ga-cell:hover .ga-cell__cap {
-    opacity: 1;
-    transform: none;
+  .ga-sort button:not(.is-on):hover {
+    background: var(--paper-2);
   }
 }
 
-.ga-cell:focus-visible .ga-cell__cap {
-  opacity: 1;
-  transform: none;
+.ga-sort button:focus-visible,
+.ga-shot__btn:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
 }
 
-@media (max-width: 899px) {
-  .ga-row {
-    --rh: clamp(18rem, 52svh, 30rem);
-  }
-
-  /* a landscape frame at this height would run off the screen: it is cropped */
-  .ga-cell {
-    max-width: 84vw;
+/* the band stays whole on a phone; the control inside it scrolls sideways */
+@media (max-width: 699px) {
+  .ga-sort__in {
+    padding-inline: 0;
   }
 }
 
-/* no hover to find the caption with: it is simply there */
-@media (hover: none) {
-  .ga-cell__cap {
-    opacity: 1;
-    transform: none;
+.ga-archive__line {
+  max-width: 52ch;
+  margin-bottom: clamp(1.25rem, 2.5vh, 2rem);
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.3rem, 1rem + 1vw, 1.9rem);
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--light-text);
+}
+
+/* the wall: columns filled shortest first, so the foot of the wall is level */
+.ga-masonry {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.4vw, 1.25rem);
+  align-items: start;
+}
+
+.ga-masonry__col {
+  display: grid;
+  gap: clamp(1.25rem, 2vw, 1.75rem);
+}
+
+.ga-shot {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .ga-shot,
+  .ga-archive__line {
+    animation: ga-in 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--i, 0) * 0.05s);
   }
+}
+
+@keyframes ga-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 1.5rem, 0);
+  }
+}
+
+.ga-shot__btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--paper-3);
+  box-shadow: var(--light-shadow);
+  cursor: zoom-in;
+  transition:
+    box-shadow 0.5s var(--ease-out),
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.ga-shot__btn .media {
+  position: absolute;
+  inset: 0;
+}
+
+.ga-shot__btn .media__img {
+  transition:
+    opacity 0.7s var(--ease-out),
+    transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .ga-shot__btn:hover {
+    box-shadow: var(--light-shadow-lift);
+    transform: translateY(-3px);
+  }
+
+  .ga-shot__btn:hover .media__img {
+    transform: scale(1.04);
+  }
+}
+
+.ga-shot figcaption {
+  display: grid;
+  gap: 0.15rem;
+  padding: 0.7rem 0.2rem 0;
+}
+
+.ga-shot figcaption strong {
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  line-height: 1.35;
+  color: var(--light-text);
+}
+
+.ga-shot figcaption span {
+  font-size: var(--t-micro);
+  line-height: 1.4;
+  color: var(--light-muted);
 }

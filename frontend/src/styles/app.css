@@ -106,6 +106,33 @@
   color: var(--accent);
 }
 
+/* a page with no photograph to open on stands on ivory (or the warmer stone),
+   its title in the editorial serif, set large and left to breathe */
+.pagehero--plain {
+  background: var(--bg);
+  color: var(--fg);
+  padding-top: calc(var(--nav-h) + clamp(2.5rem, 1.5rem + 5vw, 6.5rem));
+  padding-bottom: clamp(2.5rem, 1.5rem + 3vw, 4.5rem);
+  border-bottom: 1px solid var(--rule);
+}
+
+.pagehero--plain .pagehero__title {
+  max-width: 16ch;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(3rem, 1.4rem + 5.6vw, 7.5rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+}
+
+.pagehero--plain .pagehero__lead {
+  color: var(--fg-dim);
+}
+
+.pagehero--plain .pagehero__crumb {
+  color: var(--fg-dim);
+}
+
 /* ==========================================================================
    Stat rows
    ========================================================================== */

@@ -41,6 +41,8 @@ export function useScrollVar(ref, { from = 1, to = 0.3, name = '--p', ease = 0.1
   }, [ref, reduced, from, to, name, ease])
 }
 
+export { useLightHero } from '@/lib/hooks'
+
 /** Runs once the site's opening sequence has left the screen. */
 export function whenIntroDone(cb) {
   if (!document.querySelector('.preloader')) {

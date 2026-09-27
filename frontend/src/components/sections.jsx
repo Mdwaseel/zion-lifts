@@ -1,7 +1,7 @@
 import { useId, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { useCountUp } from '@/lib/hooks'
+import { useCountUp, useLightHero } from '@/lib/hooks'
 import { parseStat } from '@/lib/media'
 
 import { Img, VideoLoop } from './Media'
@@ -11,6 +11,12 @@ import { Arrow, Plus } from './icons'
 /* ==========================================================================
    Page hero — every page except Home opens with this
    ========================================================================== */
+
+/* a plain opening sits on ivory, so the header over it turns to ink */
+function LightHeader() {
+  useLightHero()
+  return null
+}
 
 export function PageHero({
   eyebrow,
@@ -23,10 +29,15 @@ export function PageHero({
   meta,
   children,
   align = 'end',
+  tone = 'paper',
 }) {
   const hasMedia = Boolean(image || video)
   return (
-    <header className={`pagehero ${hasMedia ? 'pagehero--media' : ''}`} data-align={align}>
+    <header
+      className={`pagehero ${hasMedia ? 'pagehero--media' : `pagehero--plain on-${tone}`}`}
+      data-align={align}
+    >
+      {!hasMedia && <LightHeader />}
       {hasMedia && (
         <div className="pagehero__bg">
           {video ? (

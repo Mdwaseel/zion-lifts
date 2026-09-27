@@ -35,6 +35,7 @@ export default function Journal() {
   return (
     <>
       <PageHero
+        tone="stone"
         eyebrow="Zion Journal"
         title="Ideas on vertical mobility."
         lead="Notes from the survey, the factory floor and the service van. Written for architects, builders and anyone about to specify a lift."

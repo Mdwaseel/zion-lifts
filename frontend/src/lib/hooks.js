@@ -182,3 +182,14 @@ export function useScrollProgress({ mode = 'pin' } = {}) {
 
   return [ref, progress]
 }
+
+/** For a page whose opening is a flat ground rather than a photograph: the
+    header drops its scrim while the page is mounted, and on ivory ('light')
+    turns to ink as well (Nav.css). */
+export function useLightHero(tone = 'light') {
+  useEffect(() => {
+    const cls = tone === 'light' ? 'hero-light' : 'hero-flat'
+    document.documentElement.classList.add(cls)
+    return () => document.documentElement.classList.remove(cls)
+  }, [tone])
+}

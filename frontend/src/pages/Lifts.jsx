@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Img } from '@/components/Media'
+import { Img, VideoLoop } from '@/components/Media'
 import Reveal from '@/components/Reveal'
 import { Accordion } from '@/components/sections'
 import { Arrow, ArrowDown, GaugeMark, UpDownMark, UsersMark } from '@/components/icons'
@@ -13,7 +13,7 @@ import { useApi, useReducedMotion } from '@/lib/hooks'
 
 import { ProjectsReel } from './home/Proof'
 import CabinStudio from './lift/CabinStudio'
-import { Rise, RiseIn, clamp01, useScrollVar, whenIntroDone } from './lift/shared'
+import { Rise, RiseIn, clamp01, useLightHero, whenIntroDone } from './lift/shared'
 import './lifts.css'
 
 /* ==========================================================================
@@ -25,16 +25,20 @@ import './lifts.css'
 
 const pad = (n) => String(n).padStart(2, '0')
 
-/* --- the opening ---------------------------------------------------------- */
+/* --- the opening: nine shafts, side by side ------------------------------ */
 
-function Opening({ count }) {
+/** The range as it would stand in a building: nine tall shafts in a row, each
+    with its own lift running in it on film. They come up one after another on
+    arrival, like cars reaching a landing, and each one is a way into its page. */
+function Opening({ lifts }) {
   const ref = useRef(null)
   const reduced = useReducedMotion()
   const [shown, setShown] = useState(false)
+  useLightHero()
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
-  // leaving, the room draws back into a frame, as it does on a lift's own page
+  // leaving, the row sinks a little and the headline drifts up past it
   useEffect(() => {
     if (reduced) return undefined
     const el = ref.current
@@ -51,15 +55,9 @@ function Opening({ count }) {
 
   return (
     <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''}`}>
-      <div className="lc-hero__scene">
-        <Img src="/media/interiors/interior-05.jpg" alt="" priority sizes="100vw" />
-      </div>
-      <div className="lc-hero__grade" aria-hidden="true" />
-
       <div className="lc-hero__copy">
-        <p className="ld-label lc-hero__label">The range</p>
         <h1 className="lc-hero__title">
-          <Rise text="Nine ways to move vertically." />
+          <Rise text="Nine ways to move vertically." accent={false} />
         </h1>
         <p className="lc-hero__lead">
           One engineering approach underneath — a gearless machine, a rail-guided cabin and a controller that shapes
@@ -67,16 +65,22 @@ function Opening({ count }) {
         </p>
       </div>
 
-      <div className="lc-hero__foot">
-        <p>
-          <strong>{pad(count || 9)}</strong> systems
-        </p>
-        <a href="#index">The index</a>
-        <a href="#compare">Side by side</a>
-        <a href="#index" className="lc-hero__cue" aria-label="Scroll to the index">
-          <ArrowDown size={16} />
-        </a>
-      </div>
+      <ul className="lc-hero__shafts">
+        {lifts.map((l, i) => (
+          <li key={l.slug} style={{ '--i': i }}>
+            <Link to={`/lifts/${l.slug}`} className="lc-shaft">
+              <span className="lc-shaft__film">
+                <VideoLoop src={`/media/lifts/${l.slug}.mp4`} poster={`/media/lifts/${l.slug}.jpg`} />
+              </span>
+              <span className="lc-shaft__name">{l.short_name || l.name}</span>
+            </Link>
+          </li>
+        ))}
+      </ul>
+
+      <a href="#index" className="lc-hero__cue" aria-label="Scroll to the range">
+        <ArrowDown size={16} />
+      </a>
     </header>
   )
 }
@@ -428,17 +432,24 @@ function Compare({ lifts }) {
 
 /* --- where they go -------------------------------------------------------- */
 
+/** The building first, then the lifts. Pick a kind of building on the left;
+    its photograph comes up on the right with, under it, all nine lifts
+    standing as the arches they are on this page's opening. The ones the
+    building takes are lit and lead to their pages; the rest stand back. */
 function Places({ applications, lifts }) {
-  const ref = useRef(null)
-  useScrollVar(ref, { from: 0.95, to: 0.15 })
   const places = (applications ?? []).filter((a) => PLACES[a.slug])
+  const [at, setAt] = useState(0)
   if (!places.length) return null
 
+  const a = places[Math.min(at, places.length - 1)]
+  const fits = (l, slug) => (l.applications ?? []).some((x) => x.slug === slug)
+  const count = (slug) => lifts.filter((l) => fits(l, slug)).length
+
   return (
-    <section className="section on-stone lc-places">
+    <section className="section on-paper lc-places">
       <div className="shell">
         <header className="lc-compare__head">
-          <RiseIn as="h2" className="lc-h2" text="Where these lifts go." />
+          <RiseIn as="h2" className="lc-h2" text="Where these lifts go." accent={false} />
           <Reveal delay={100}>
             <p className="lc-index__lead">
               The building decides most of the specification before anyone opens a catalogue.
@@ -446,32 +457,80 @@ function Places({ applications, lifts }) {
           </Reveal>
         </header>
 
-        <div ref={ref} className="lc-places__grid">
-          {places.map((a, i) => {
-            const { Icon, src } = PLACES[a.slug]
-            const suited = lifts.filter((l) => (l.applications ?? []).some((x) => x.slug === a.slug))
-            return (
-              <article className="lc-place" key={a.slug} style={{ '--i': i % 4 }}>
-                <div className="lc-place__in">
-                  <div className="lc-place__media">
-                    <Img src={src} alt="" sizes="(min-width: 1000px) 24vw, (min-width: 640px) 46vw, 92vw" />
-                  </div>
-                  <span className="lc-place__icon">
-                    <Icon size={26} />
-                  </span>
-                  <h3>{a.name}</h3>
-                  <p>{a.description}</p>
-                  <ul>
-                    {suited.map((l) => (
-                      <li key={l.slug}>
-                        <Link to={`/lifts/${l.slug}`}>{l.short_name}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </article>
-            )
-          })}
+        <div className="lc-where">
+          <ul className="lc-where__list" role="tablist" aria-label="Kinds of building">
+            {places.map((p, i) => {
+              const { Icon } = PLACES[p.slug]
+              const n = count(p.slug)
+              return (
+                <li key={p.slug} role="presentation">
+                  <button
+                    type="button"
+                    role="tab"
+                    id={`lc-where-tab-${p.slug}`}
+                    aria-selected={i === at}
+                    aria-controls="lc-where-panel"
+                    className={i === at ? 'is-on' : ''}
+                    onClick={() => setAt(i)}
+                  >
+                    <span className="lc-where__icon">
+                      <Icon size={22} />
+                    </span>
+                    <span className="lc-where__name">{p.name}</span>
+                    <span className="lc-where__n">
+                      {n} {n === 1 ? 'lift' : 'lifts'}
+                    </span>
+                  </button>
+                </li>
+              )
+            })}
+          </ul>
+
+          <div
+            className="lc-where__panel"
+            id="lc-where-panel"
+            role="tabpanel"
+            aria-labelledby={`lc-where-tab-${a.slug}`}
+          >
+            <div className="lc-where__view">
+              {places.map((p, i) => (
+                <span key={p.slug} className={`lc-where__shot ${i === at ? 'is-on' : ''}`} aria-hidden="true">
+                  <Img src={PLACES[p.slug].src} alt="" sizes="(min-width: 1000px) 56vw, 92vw" />
+                </span>
+              ))}
+              <div className="lc-where__copy" key={a.slug}>
+                <h3>{a.name}</h3>
+                <p>{a.description}</p>
+              </div>
+            </div>
+
+            <ul className="lc-where__lifts" aria-label={`Lifts for ${a.name.toLowerCase()}`}>
+              {lifts.map((l, i) => {
+                const ok = fits(l, a.slug)
+                const body = (
+                  <>
+                    <span className="lc-arch__img">
+                      <Img src={`/media/lifts/${l.slug}.jpg`} alt="" sizes="9vw" />
+                    </span>
+                    <span className="lc-arch__name">{l.short_name || l.name}</span>
+                  </>
+                )
+                return (
+                  <li key={l.slug} style={{ '--i': i }}>
+                    {ok ? (
+                      <Link to={`/lifts/${l.slug}`} className="lc-arch is-fit">
+                        {body}
+                      </Link>
+                    ) : (
+                      <span className="lc-arch" aria-hidden="true">
+                        {body}
+                      </span>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -495,7 +554,7 @@ export default function Lifts() {
 
   return (
     <div className="lc">
-      <Opening count={all.length} />
+      <Opening lifts={all} />
       {all.length > 0 && <Index lifts={all} />}
       {all.length > 0 && <Compare lifts={all} />}
       <Places applications={applications} lifts={all} />

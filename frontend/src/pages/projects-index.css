@@ -1,9 +1,8 @@
 /* ==========================================================================
    /projects — proof of delivery
-   the gallery's taste: a tilted drifting wall of every case-study photograph
-   (gallery-index.css) → the case studies, one strip a sector, moved by hand
-   (paper) → on film: the seven site reels, one on a screen at a time → dark
-   invitation. The shared parts (.pr-h2, .pr-lead, .pr-go, .pr-invite*) are
+   ivory opening, one building at a time in a large frame → paper wall of the
+   case studies, sorted by sector → the site reels on ivory, one on a screen at
+   a time → the map of every installation → the invitation over a photograph. The shared parts (.pr-h2, .pr-lead, .pr-go, .pr-invite*) are
    also used by /gallery and /contact.
    ========================================================================== */
 
@@ -11,7 +10,7 @@
   --ink: #07080a;
   --serif: var(--font-serif);
   overflow-x: clip;
-  background: var(--ink);
+  background: var(--light-bg);
 }
 
 .pr-h2 {
@@ -75,385 +74,556 @@
   outline-offset: 4px;
 }
 
-/* --- the buildings, held --------------------------------------------------------
-   Built in the language the home page already speaks (`.world` in home.css):
-   photography running the full frame, one held and the next crossfading in
-   under the scroll, typography sitting on the dark side of a horizontal
-   gradient, a specification strip along the foot and a rail down the right the
-   visitor can move by hand. Nothing here is boxed except that strip.
-
-   What separates it from the home page's version: there the title is fixed and
-   the contexts change beneath it; here the headline IS the building, set in the
-   editorial serif and changing with the photograph, because the building is the
-   subject rather than an example of one. The rail is grouped by sector, so a
-   sector holding one case study is one line on it — which is what this replaced,
-   a drag rail wrapped around a single card that could not move. */
-
-.pw {
-  position: relative;
-  background: #050607;
-}
-
-.pw__pin {
-  position: sticky;
-  top: 0;
-  height: 100svh;
-  overflow: hidden;
-}
-
-/* ~86svh of travel per building across the seven */
-.pw__runway {
-  height: 600svh;
-}
-
-.pw__stage {
-  position: absolute;
-  inset: 0;
-}
-
-.pw__layer {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  will-change: opacity, transform;
-}
-
-.pw__layer .media,
-.pw__layer .media__img {
-  height: 100%;
-}
-
-.pw__layer .media__img {
-  object-fit: cover;
-  /* a touch brighter than the home page's contexts: several of these are
-     interiors shot dark, and the veil already protects the type */
-  filter: contrast(1.05) saturate(0.93) brightness(0.9);
-}
-
-/* the photograph dissolves into the page on the left rather than ending at a
-   visible edge, so the name can sit across the boundary */
-.pw__veil {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    linear-gradient(
-      100deg,
-      rgba(5, 6, 7, 0.97) 0%,
-      rgba(5, 6, 7, 0.92) 26%,
-      rgba(5, 6, 7, 0.52) 47%,
-      rgba(5, 6, 7, 0.1) 67%,
-      rgba(5, 6, 7, 0.38) 100%
-    ),
-    radial-gradient(120% 80% at 50% 0%, transparent 40%, rgba(5, 6, 7, 0.55) 100%);
-}
-
-.pw__floor {
-  position: absolute;
-  inset: auto 0 0;
-  height: 48%;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent, rgba(5, 6, 7, 0.8) 62%, rgba(5, 6, 7, 0.95));
-}
-
-.pw__content {
-  position: absolute;
-  inset: 0;
+/* --- the opening: one building at a time --------------------------------- */
+.pr-hero {
   display: grid;
-  align-content: start;
-  padding-top: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem));
-  padding-bottom: clamp(1.5rem, 5vh, 3rem);
+  align-items: center;
+  gap: clamp(2rem, 5vw, 6rem);
+  min-height: 100svh;
+  padding: calc(var(--nav-h) + 1.5rem) var(--page-x) clamp(2rem, 5vh, 3.5rem);
+  background: var(--light-surface);
+  color: var(--light-text);
 }
 
-.pw__kicker {
-  color: rgba(245, 245, 242, 0.5);
+@media (min-width: 900px) {
+  .pr-hero {
+    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  }
 }
 
-/* --- the building ---------------------------------------------------------- */
-.pw__now {
-  margin-top: clamp(1.75rem, 6vh, 4rem);
+.pr-hero__copy {
   display: grid;
-  gap: 0.5rem;
   justify-items: start;
-  max-width: 22ch;
+  gap: clamp(1.1rem, 2.4vh, 1.6rem);
+  max-width: 36rem;
 }
 
-.pw__sector {
-  display: flex;
-  align-items: baseline;
-  gap: 0.7rem;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.5);
-}
-
-.pw__sector-n {
-  color: var(--teal-bright);
-}
-
-/* the name is the headline: the building is the subject here */
-.pw__name {
-  margin: 0;
-  font-family: var(--font-serif);
+.pr-hero__title {
+  font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(2.5rem, 1.6rem + 3.4vw, 5rem);
-  line-height: 1;
-  letter-spacing: -0.024em;
-  color: #f5f5f2;
+  font-size: clamp(2.8rem, 1.4rem + 4.8vw, 6.25rem);
+  line-height: 0.97;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
 }
 
-.pw__line {
-  max-width: 30ch;
-  font-size: clamp(1rem, 0.95rem + 0.35vw, 1.25rem);
+.pr-hero__lead {
+  max-width: 42ch;
+  font-size: var(--t-lead);
   line-height: 1.45;
-  letter-spacing: -0.01em;
-  color: rgba(245, 245, 242, 0.66);
+  color: rgba(21, 21, 21, 0.72);
+  text-wrap: pretty;
 }
 
-/* a text action, not a button — the frame already carries enough weight */
-.pw__cta {
+/* the sectors, each a way down to its own buildings */
+.pr-hero__sectors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+.pr-hero__sectors a {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-top: 0.5rem;
-  font-size: 1rem;
-  color: var(--teal-bright);
+  gap: 0.55rem;
+  padding: 0.5rem 0.55rem 0.5rem 1rem;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--light-shadow);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  transition: background-color var(--dur) var(--ease-out);
 }
 
-.pw__cta svg {
-  transition: transform var(--dur-fast) var(--ease-out);
-}
-
-.pw__cta:hover svg {
-  transform: translateX(3px);
-}
-
-.pw__cta:hover,
-.pw__cta:focus-visible {
-  text-decoration: underline;
-  text-underline-offset: 0.24em;
-  text-decoration-thickness: 1px;
-}
-
-/* --- specification strip ---------------------------------------------------- */
-.pw__spec {
-  position: absolute;
-  left: var(--page-x);
-  bottom: clamp(1.5rem, 6vh, 3.25rem);
-  margin: 0;
+.pr-hero__sectors a span {
   display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  max-width: min(44rem, 52vw);
-  min-height: 5rem;
-  border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: 3px;
-  background: rgba(5, 6, 7, 0.42);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-
-.pw__spec > div {
-  padding: 0.9rem 1.05rem;
-}
-
-.pw__spec > div + div {
-  border-left: 1px solid rgba(255, 255, 255, 0.09);
-}
-
-.pw__spec dt {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.45);
-}
-
-.pw__spec dd {
-  margin: 0.4rem 0 0;
-  font-size: 0.8125rem;
-  line-height: 1.35;
-  color: #f5f5f2;
-}
-
-/* --- the rail ---------------------------------------------------------------
-   A pool of shade rather than a panel, grouped by sector. */
-.pw__rail {
-  position: absolute;
-  right: var(--page-x);
-  top: 50%;
-  transform: translateY(-50%);
-  display: grid;
-  gap: 1.1rem;
-  padding: 1.4rem 1.5rem;
-  border-radius: 999px;
-  /* the rail sits over whatever the photograph is doing, including a bright
-     sky, so the pool has to carry the labels on its own */
-  background: radial-gradient(64% 54% at 50% 50%, rgba(5, 6, 7, 0.82), rgba(5, 6, 7, 0.35) 62%, transparent 78%);
-}
-
-.pw__rail-sector {
-  font-family: var(--font-mono);
-  font-size: 0.5625rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.5);
-  margin: 0 0 0.5rem;
-  text-align: right;
-}
-
-.pw__rail ol {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: grid;
-  gap: 0.3rem;
-}
-
-.pw__rail button {
-  display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 0.7rem;
-  width: 100%;
-  padding: 0.28rem 0;
-  background: none;
-  border: 0;
-  cursor: pointer;
-  text-align: right;
-  color: rgba(245, 245, 242, 0.56);
-  transition: color var(--dur-fast) var(--ease-out);
-}
-
-.pw__rail-n {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.14em;
-  opacity: 0.7;
-}
-
-.pw__rail-name {
-  font-size: 0.875rem;
-  letter-spacing: -0.006em;
-  white-space: nowrap;
-}
-
-.pw__rail li.is-on button {
-  color: #f5f5f2;
-}
-
-.pw__rail li.is-on .pw__rail-n {
-  color: var(--teal-bright);
-  opacity: 1;
+  place-items: center;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 50%;
+  background: rgba(6, 111, 112, 0.1);
+  font-size: var(--t-micro);
+  color: var(--teal);
 }
 
 @media (hover: hover) {
-  .pw__rail button:hover {
-    color: rgba(245, 245, 242, 0.8);
+  .pr-hero__sectors a:hover {
+    background: var(--paper);
   }
 }
 
-.pw__rail button:focus-visible {
-  outline: 2px solid var(--teal-bright);
+.pr-hero__sectors a:focus-visible,
+.pr-hero__frame:focus-visible,
+.pr-hero__picks button:focus-visible {
+  outline: 2px solid var(--teal);
   outline-offset: 3px;
-  border-radius: 2px;
 }
 
-/* --- narrow ------------------------------------------------------------------
-   The rail moves to the foot as a single row and loses its sector headings;
-   the specification strip drops to two columns above it. */
-@media (max-width: 1100px) {
-  .pw__rail {
-    top: auto;
-    bottom: clamp(0.75rem, 3vh, 1.5rem);
-    right: 0;
-    left: 0;
+/* the frame, and the building in it */
+.pr-hero__show {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.pr-hero__frame {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 5 / 4;
+  max-height: calc(100svh - var(--nav-h) - 9rem);
+  width: 100%;
+  border-radius: var(--radius-xl);
+  background: var(--paper-3);
+  box-shadow: var(--light-shadow-lift);
+  isolation: isolate;
+}
+
+.pr-hero__shot {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transform: scale(1.08);
+  transition:
+    opacity 1s var(--ease-out),
+    transform 5.5s linear;
+}
+
+.pr-hero__shot.is-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.pr-hero__shot .media {
+  position: absolute;
+  inset: 0;
+}
+
+.pr-hero__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(7, 8, 10, 0.66) 0%, rgba(7, 8, 10, 0) 38%);
+  pointer-events: none;
+}
+
+.pr-hero__caption {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 1;
+  display: grid;
+  gap: 0.25rem;
+  padding: clamp(1.1rem, 0.8rem + 1.2vw, 2rem);
+  color: #fff;
+}
+
+.pr-hero__caption strong {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.7rem, 1.1rem + 1.8vw, 3rem);
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.pr-hero__caption > span {
+  font-size: var(--t-small);
+  color: rgba(255, 255, 255, 0.82);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-hero__caption {
+    animation: pr-caption 0.8s var(--ease-out) both;
+  }
+}
+
+@keyframes pr-caption {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* all of them underneath: the one in the frame shows how long it has left */
+.pr-hero__picks {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-auto-flow: column;
+  gap: 0.5rem;
+}
+
+.pr-hero__picks button {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-m, 10px);
+  opacity: 0.55;
+  transition: opacity var(--dur) var(--ease-out);
+}
+
+.pr-hero__picks button .media {
+  position: absolute;
+  inset: 0;
+}
+
+.pr-hero__picks button.is-on {
+  opacity: 1;
+}
+
+.pr-hero__tick {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--teal-bright);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+}
+
+.pr-hero__picks button.is-on .pr-hero__tick {
+  animation: pr-tick var(--turn) linear forwards;
+}
+
+.pr-hero__show:hover .pr-hero__tick {
+  animation-play-state: paused;
+}
+
+@keyframes pr-tick {
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@media (hover: hover) {
+  .pr-hero__picks button:hover {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .pr-hero .ld-word__in {
+    transform: translateY(112%);
+    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: calc(0.1s + var(--i) * 0.07s);
+  }
+
+  .pr-hero__lead,
+  .pr-hero__sectors,
+  .pr-hero__show {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.9s var(--ease-out),
+      transform 1s var(--ease-out);
+    transition-delay: 0.6s;
+  }
+
+  .pr-hero__show {
+    transition-delay: 0.3s;
+  }
+
+  .pr-hero.is-in .ld-word__in,
+  .pr-hero.is-in .pr-hero__lead,
+  .pr-hero.is-in .pr-hero__sectors,
+  .pr-hero.is-in .pr-hero__show {
+    opacity: 1;
     transform: none;
-    display: flex;
-    gap: 0;
-    justify-content: center;
-    padding: 0.75rem var(--page-x);
-    border-radius: 0;
-    background: none;
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .pw__rail::-webkit-scrollbar {
-    display: none;
-  }
-
-  .pw__rail-sector {
-    display: none;
-  }
-
-  .pw__rail ol {
-    grid-auto-flow: column;
-    gap: 0;
-  }
-
-  .pw__rail button {
-    justify-content: center;
-    padding: 0.3rem 0.55rem;
-  }
-
-  .pw__rail-name {
-    display: none;
-  }
-
-  .pw__rail-n {
-    font-size: 0.6875rem;
-  }
-
-  .pw__spec {
-    max-width: none;
-    right: var(--page-x);
-    bottom: clamp(3.25rem, 9vh, 4.5rem);
-    grid-auto-flow: row;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    min-height: 0;
-  }
-
-  .pw__spec > div + div {
-    border-left: 0;
-  }
-
-  .pw__spec > div:nth-child(even) {
-    border-left: 1px solid rgba(255, 255, 255, 0.09);
-  }
-
-  .pw__spec > div:nth-child(n + 3) {
-    border-top: 1px solid rgba(255, 255, 255, 0.09);
-  }
-
-  .pw__now {
-    max-width: 18ch;
   }
 }
 
-@media (max-width: 640px) {
-  .pw__now {
-    max-width: none;
-  }
-
-  .pw__line {
-    max-width: 32ch;
-    font-size: 1rem;
-  }
-}
-
-/* Stillness asked for: the runway collapses and the rail drives the stage. */
 @media (prefers-reduced-motion: reduce) {
-  .pw__runway {
-    height: 0;
+  .pr-hero__shot {
+    transition: opacity 0.3s linear;
+    transform: none;
   }
 
-  .pw__pin {
-    position: relative;
+  .pr-hero__tick {
+    display: none;
+  }
+}
+
+@media (max-width: 899px) {
+  .pr-hero__show {
+    order: -1;
+  }
+
+  .pr-hero__picks {
+    grid-auto-flow: row;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+}
+
+/* --- the case studies: a wall you can sort --------------------------------- */
+.pc__head {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: clamp(1.5rem, 3vh, 2.25rem);
+}
+
+@media (min-width: 900px) {
+  .pc__head {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 7rem);
+  }
+}
+
+.pc .pr-lead {
+  color: var(--light-muted);
+}
+
+/* the sort: one chip a sector, the one in force filled */
+.pc__sort {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+}
+
+.pc__sort button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  padding: 0 0.55rem 0 1.1rem;
+  border-radius: var(--radius-pill);
+  background: #fff;
+  box-shadow: var(--light-shadow);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    color var(--dur) var(--ease-out);
+}
+
+.pc__sort button span {
+  display: grid;
+  place-items: center;
+  min-width: 1.7rem;
+  height: 1.7rem;
+  border-radius: 50%;
+  background: rgba(6, 111, 112, 0.1);
+  font-size: var(--t-micro);
+  color: var(--teal);
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+.pc__sort button.is-on {
+  background: var(--teal);
+  color: #fff;
+}
+
+.pc__sort button.is-on span {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .pc__sort button:not(.is-on):hover {
+    background: var(--paper-2);
+  }
+}
+
+.pc__sort button:focus-visible,
+.pc-card__link:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* the wall: twelve columns, the cards falling largest first */
+.pc__wall {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(0.9rem, 1.6vw, 1.5rem);
+}
+
+.pc-card {
+  grid-column: span var(--span);
+}
+
+/* the cards are dealt in, one after another, whenever the wall is sorted */
+@media (prefers-reduced-motion: no-preference) {
+  .pc-card {
+    animation: pc-deal 0.8s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+    animation-delay: calc(var(--i) * 0.07s);
+  }
+}
+
+@keyframes pc-deal {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 2rem, 0) scale(0.97);
+  }
+}
+
+.pc-card__link {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: #fff;
+  box-shadow: var(--light-shadow);
+  color: var(--light-text);
+  transition:
+    box-shadow 0.5s var(--ease-out),
+    transform 0.5s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .pc-card__link:hover {
+    box-shadow: var(--light-shadow-lift);
+    transform: translateY(-4px);
+  }
+}
+
+.pc-card__media {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  /* one height for every card in a row, whatever its width: the wide rows
+     stand taller than the row of three */
+  height: clamp(16rem, 28vw, 27rem);
+  background: var(--paper-3);
+}
+
+.pc-card[style*='--span: 4'] .pc-card__media {
+  height: clamp(13rem, 19vw, 18rem);
+}
+
+@media (max-width: 1199px) {
+  .pc-card .pc-card__media,
+  .pc-card[style*='--span: 4'] .pc-card__media {
     height: auto;
-    min-height: 100svh;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+.pc-card__media > .media,
+.pc-card__alt .media {
+  position: absolute;
+  inset: 0;
+}
+
+/* the second photograph of the job, turned up over the first on hover */
+.pc-card__alt {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(100% 0 0 0);
+  transition: clip-path 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@media (hover: hover) {
+  .pc-card__link:hover .pc-card__alt {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+.pc-card__sector {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.92);
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+}
+
+.pc-card__body {
+  display: grid;
+  align-content: start;
+  gap: 0.6rem;
+  flex: 1;
+  padding: clamp(1.1rem, 0.9rem + 1vw, 1.75rem);
+}
+
+.pc-card__name {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.6rem, 1.1rem + 1.4vw, 2.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+
+.pc-card__line {
+  max-width: 44ch;
+  font-size: var(--t-body);
+  line-height: 1.45;
+  color: rgba(21, 21, 21, 0.72);
+}
+
+.pc-card__spec {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem 1.5rem;
+  margin-top: 0.35rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid var(--light-border);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+}
+
+.pc-card__spec span {
+  display: grid;
+  gap: 0.1rem;
+}
+
+.pc-card__spec em {
+  font-style: normal;
+  font-size: var(--t-micro);
+  font-weight: 400;
+  color: var(--light-muted);
+}
+
+.pc-card__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-self: start;
+  margin-top: 0.4rem;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--teal);
+}
+
+.pc-card__go svg {
+  transition: transform var(--dur) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .pc-card__link:hover .pc-card__go svg {
+    transform: translateX(4px);
+  }
+}
+
+@media (max-width: 899px) {
+  .pc__wall {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pc-card {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1199px) {
+  .pc__wall {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pc-card {
+    grid-column: span 1;
+  }
+
+  .pc-card:first-child {
+    grid-column: 1 / -1;
   }
 }
 
@@ -462,7 +632,15 @@
   max-width: var(--maxw);
   margin: 0 auto;
   padding: clamp(4rem, 3rem + 5vw, 8rem) var(--page-x) clamp(4rem, 3rem + 5vw, 8rem);
-  color: var(--dark-text);
+  color: var(--light-text);
+}
+
+.pf .ld-label {
+  color: var(--light-mark);
+}
+
+.pf .pr-lead {
+  color: var(--light-muted);
 }
 
 .pf__head {
@@ -486,9 +664,9 @@
   overflow: hidden;
   height: clamp(22rem, 76vh, 52rem);
   margin-top: clamp(2rem, 4vh, 3rem);
-  border-radius: 8px;
+  border-radius: var(--radius-xl);
   background: #050607;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+  box-shadow: var(--light-shadow-lift);
   animation: pf-cut 0.7s var(--ease-out) both;
 }
 
@@ -562,16 +740,13 @@
 
 .pf__kicker {
   margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.62);
+  font-size: var(--t-small);
+  color: var(--light-muted);
 }
 
 .pf__kicker span {
   margin-right: 0.6em;
-  color: var(--teal-bright);
+  color: var(--teal);
 }
 
 .pf__name {
@@ -588,7 +763,7 @@
   max-width: 46ch;
   font-size: var(--t-body);
   line-height: 1.5;
-  color: var(--fg-dim);
+  color: rgba(21, 21, 21, 0.72);
 }
 
 .pf__go {
@@ -597,10 +772,10 @@
   gap: 0.5rem;
   margin-top: 0.3rem;
   padding-block: 0.3rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.35);
+  border-bottom: 1px solid rgba(21, 21, 21, 0.3);
   font-size: var(--t-small);
   font-weight: var(--w-semibold);
-  color: #fff;
+  color: var(--light-text);
   transition:
     border-color var(--dur-fast) var(--ease-out),
     color var(--dur-fast) var(--ease-out);
@@ -608,8 +783,8 @@
 
 @media (hover: hover) {
   .pf__go:hover {
-    border-color: var(--teal-bright);
-    color: var(--teal-bright);
+    border-color: var(--teal);
+    color: var(--teal);
   }
 }
 
@@ -643,10 +818,10 @@
 .pf__take-img {
   display: block;
   overflow: hidden;
-  border-radius: 3px;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-  opacity: 0.5;
-  filter: saturate(0.6);
+  border-radius: 8px;
+  box-shadow: var(--light-shadow);
+  opacity: 0.6;
+  filter: saturate(0.7);
   transition:
     opacity var(--dur) var(--ease-out),
     filter var(--dur) var(--ease-out),
@@ -675,19 +850,12 @@
 .pf__take.is-on .pf__take-img {
   opacity: 1;
   filter: none;
-  box-shadow: 0 0 0 2px var(--teal-bright);
+  box-shadow: 0 0 0 2px var(--teal);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pw-frame__in,
-  .pw-frame__link,
-  .pw-frame__ring,
   .pf__take-img {
     transition-duration: 0.01ms;
-  }
-
-  .pw-frame__float {
-    animation: none;
   }
 
   .pf__stage,

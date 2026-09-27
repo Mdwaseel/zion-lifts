@@ -39,6 +39,7 @@ KEEP = {
     "place-institutional": "Lifts - where they go: government & education",
     "place-industrial":    "Lifts - where they go: factories & warehouses",
     "place-parking":       "Lifts - where they go: parking",
+    "place-mall":          "About - where our lifts work: malls",
 }
 
 LICENCE_URL = {

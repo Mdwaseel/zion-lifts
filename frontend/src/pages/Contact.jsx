@@ -5,13 +5,12 @@ import { Img } from '@/components/Media'
 import { Accordion } from '@/components/sections'
 import { Arrow, Chat, Mail, Phone, Pin, Wrench } from '@/components/icons'
 import { faqCategories } from '@/data/faqs'
-import { gsap } from '@/lib/gsap'
-import { useApi, useReducedMotion } from '@/lib/hooks'
+import { useApi } from '@/lib/hooks'
 import { telHref, whatsappHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
 import EnquiryForm, { ProjectSummary } from './contact/EnquiryForm'
-import { Rise, RiseIn, clamp01, useScrollVar, whenIntroDone } from './lift/shared'
+import { Rise, RiseIn, useLightHero, useScrollVar, whenIntroDone } from './lift/shared'
 
 import './contact.css'
 import './projects-index.css'
@@ -43,11 +42,11 @@ function Head({ label, title, lead, action }) {
   )
 }
 
-/* --- the opening: the hall station ------------------------------------------
+/* --- the opening: two doors -------------------------------------------------
    There are two reasons to write to a lift company, and a landing already has
-   a control for exactly that: a plate with an up button and a down button. Up
-   is a new lift; down is one that needs attention. Resting on either lights
-   its ring and brings its photograph up behind the page. */
+   a control for exactly that: an up button and a down button. Up is a new
+   lift; down is one that needs attention. Each is a large photograph with its
+   call button on it, and pointing at one lights the button. */
 
 const CALLS = [
   {
@@ -72,25 +71,10 @@ const CALLS = [
 
 function Opening({ site }) {
   const ref = useRef(null)
-  const reduced = useReducedMotion()
   const [shown, setShown] = useState(false)
-  const [hot, setHot] = useState('up')
+  useLightHero()
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
-
-  useEffect(() => {
-    if (reduced) return undefined
-    const el = ref.current
-    let last = -1
-    const tick = () => {
-      const p = clamp01(window.scrollY / window.innerHeight)
-      if (Math.abs(p - last) < 0.001) return
-      last = p
-      el.style.setProperty('--x', p.toFixed(4))
-    }
-    gsap.ticker.add(tick)
-    return () => gsap.ticker.remove(tick)
-  }, [reduced])
 
   const direct = [
     { Icon: Phone, label: 'Call', value: site.phone, href: telHref(site.phone) },
@@ -106,61 +90,38 @@ function Opening({ site }) {
   ].filter(Boolean)
 
   return (
-    <header ref={ref} className={`ct-hero ${shown ? 'is-in' : ''}`} data-hot={hot}>
-      <div className="ct-hero__scene" aria-hidden="true">
-        {CALLS.map((c) => (
-          <div className={`ct-hero__img ct-hero__img--${c.key}`} key={c.key}>
-            <Img src={c.src} alt="" priority sizes="100vw" />
-          </div>
+    <header ref={ref} className={`ct-hero ${shown ? 'is-in' : ''}`}>
+      <div className="ct-hero__copy">
+        <h1 className="ct-hero__title">
+          <Rise text="Discuss your project." accent={false} />
+        </h1>
+        <p className="ct-hero__lead">
+          Two different conversations, and they should not share a form. Press the one this is.
+        </p>
+      </div>
+
+      <nav className="ct-doors" aria-label="What this is about">
+        {CALLS.map((c, i) => (
+          <Link key={c.key} to={c.href} className={`ct-door ct-door--${c.key}`} style={{ '--i': i }}>
+            <span className="ct-door__media" aria-hidden="true">
+              <Img src={c.src} alt="" priority sizes="(min-width: 900px) 46vw, 92vw" />
+            </span>
+            <span className="ct-door__btn" aria-hidden="true">
+              <svg viewBox="0 0 24 24">
+                <path d={c.key === 'up' ? 'M12 6.5 19 17H5Z' : 'M12 17.5 5 7h14Z'} />
+              </svg>
+            </span>
+            <span className="ct-door__copy">
+              <span className="ct-door__label">{c.label}</span>
+              <strong className="ct-door__title">{c.title}</strong>
+              <span className="ct-door__desc">{c.desc}</span>
+              <span className="ct-door__go">
+                {c.go} <Arrow size={13} />
+              </span>
+            </span>
+          </Link>
         ))}
-      </div>
-      <div className="ct-hero__grade" aria-hidden="true" />
-
-      <div className="ct-hero__main">
-        <div className="ct-hero__copy">
-          <p className="ld-label ct-hero__label">Contact</p>
-          <h1 className="ct-hero__title">
-            <Rise text="Discuss your project." />
-          </h1>
-          <p className="ct-hero__lead">
-            Two different conversations, and they should not share a form. Press the one this is.
-          </p>
-        </div>
-
-        <nav className="ct-station" aria-label="What this is about">
-          <p className="ct-station__brand">
-            <span>Zion</span>
-            <span>Hall call</span>
-          </p>
-          {CALLS.map((c, i) => (
-            <Link
-              key={c.key}
-              to={c.href}
-              className={`ct-call ${hot === c.key ? 'is-hot' : ''}`}
-              style={{ '--i': i }}
-              onPointerEnter={() => setHot(c.key)}
-              onFocus={() => setHot(c.key)}
-            >
-              <span className="ct-call__btn">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path d={c.key === 'up' ? 'M12 6.5 19 17H5Z' : 'M12 17.5 5 7h14Z'} />
-                </svg>
-              </span>
-              <span className="ct-call__copy">
-                <span className="ct-call__label">{c.label}</span>
-                <strong className="ct-call__title">{c.title}</strong>
-                <span className="ct-call__desc">{c.desc}</span>
-                <span className="ct-call__go">
-                  {c.go} <Arrow size={13} />
-                </span>
-              </span>
-            </Link>
-          ))}
-          {['tl', 'tr', 'bl', 'br'].map((k) => (
-            <i className={`ct-station__screw ct-station__screw--${k}`} key={k} aria-hidden="true" />
-          ))}
-        </nav>
-      </div>
+      </nav>
 
       <div className="ct-hero__foot">
         {direct.map((d, i) => (

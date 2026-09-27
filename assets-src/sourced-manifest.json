@@ -471,5 +471,26 @@
     ],
     "replace_with_real_shoot": false,
     "used_for": "Lifts - where they go: parking"
+  },
+  "place-mall": {
+    "title": "Lippo Mall Nusantara main atrium (01).jpg",
+    "creator": "RasyaAbhirama13",
+    "creator_url": "",
+    "license": "BY-SA",
+    "license_version": "4.0",
+    "license_url": "https://creativecommons.org/licenses/by-sa/4.0",
+    "source": "wikimedia",
+    "foreign_landing_url": "https://commons.wikimedia.org/wiki/File:Lippo_Mall_Nusantara_main_atrium_(01).jpg",
+    "widths": [
+      640,
+      1280,
+      1920
+    ],
+    "native": [
+      1920,
+      2560
+    ],
+    "replace_with_real_shoot": false,
+    "used_for": "About - where our lifts work: malls"
   }
 }

@@ -1,6 +1,6 @@
 /* ==========================================================================
    /projects/:slug — one building
-   the photograph and the nameplate (dark) → the brief read into focus (ivory)
+   the name, then the building and its plate (ivory) → the brief read into focus (ivory)
    → three chapters, a photograph each (paper) → the film (dark) → every
    photograph on a strip (paper) → what the client said (dark) → the next
    building. Shares .pf* / .pr-invite* / .pr-go / .pr-h2 with the index
@@ -29,182 +29,179 @@
   color: var(--accent);
 }
 
-/* --- the opening ---------------------------------------------------------------
-   `--p` is how far the page has moved past the hero (0 at the top, 1 a screen
-   down), written by useScrollVar with no easing so the drift tracks the hand. */
+/* --- the opening: the name, then the building ---------------------------- */
 .pd-hero {
   --p: 0;
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
   display: grid;
-  grid-template-rows: auto 1fr auto;
-  min-height: 100svh;
-  padding: calc(var(--nav-h) + 2rem) var(--page-x) 0;
+  gap: clamp(1.75rem, 4vh, 3rem);
+  padding: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)) var(--page-x) clamp(2rem, 5vh, 4rem);
+  background: var(--light-bg);
+  color: var(--light-text);
 }
 
-.pd-hero__scene {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  transform: translate3d(0, calc(var(--p) * 18vh), 0) scale(calc(1.06 + var(--p) * 0.06));
-  will-change: transform;
+.pd-hero__top {
+  display: grid;
+  gap: clamp(1rem, 2.4vh, 1.5rem) clamp(2rem, 5vw, 6rem);
+  align-items: end;
 }
 
-.pd-hero__scene .media {
-  position: absolute;
-  inset: 0;
-}
-
-/* the photograph comes in slowly, the one page-load moment */
-@media (prefers-reduced-motion: no-preference) {
-  .pd-hero__scene .media__img {
-    transform: scale(1.12);
-    transition:
-      opacity 0.7s var(--ease-out),
-      transform 2.4s cubic-bezier(0.16, 1, 0.3, 1);
+@media (min-width: 900px) {
+  .pd-hero__top {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.8fr);
   }
 
-  .pd-hero.is-in .pd-hero__scene .media__img {
-    transform: none;
+  .pd-crumb {
+    grid-column: 1 / -1;
   }
-}
-
-.pd-hero__grade {
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background:
-    linear-gradient(180deg, rgba(7, 8, 10, 0.55) 0%, rgba(7, 8, 10, 0) 28%),
-    linear-gradient(0deg, rgba(7, 8, 10, 0.96) 0%, rgba(7, 8, 10, 0.55) 34%, rgba(7, 8, 10, 0) 62%);
 }
 
 .pd-crumb {
   display: flex;
   gap: 0.6rem;
-  align-self: start;
   font-size: var(--t-small);
-  color: rgba(245, 245, 242, 0.7);
+  color: var(--light-muted);
 }
 
 .pd-crumb a {
-  color: rgba(245, 245, 242, 0.9);
-  transition: color var(--dur-fast) var(--ease-out);
+  color: var(--light-text);
+  border-bottom: 1px solid rgba(21, 21, 21, 0.25);
 }
 
-@media (hover: hover) {
-  .pd-crumb a:hover {
-    color: var(--teal-bright);
-  }
-}
-
-.pd-hero__copy {
-  align-self: end;
-  display: grid;
-  gap: 1rem;
-  max-width: 72rem;
-  padding-block: clamp(2rem, 6vh, 5rem) clamp(1.75rem, 4vh, 3rem);
-  transform: translate3d(0, calc(var(--p) * -6vh), 0);
-  opacity: calc(1 - var(--p) * 1.4);
-}
-
-@media (min-width: 900px) {
-  .pd-hero__copy {
-    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
-    align-items: end;
-    column-gap: clamp(2rem, 5vw, 6rem);
-  }
-
-  .pd-hero__kicker {
-    grid-column: 1 / -1;
-  }
-}
-
-.pd-hero__kicker {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.62);
+.pd-crumb a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
 }
 
 .pd-hero__name {
-  margin: 0;
   font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(3rem, 1.6rem + 6.4vw, 8rem);
-  line-height: 0.95;
-  letter-spacing: -0.035em;
+  font-size: clamp(3rem, 1.2rem + 6.4vw, 8.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em;
   text-wrap: balance;
 }
 
-.pd-hero__statement {
-  margin: 0;
-  max-width: 40ch;
-  font-size: var(--t-lead);
-  line-height: 1.4;
-  letter-spacing: var(--tr-lead);
-  color: rgba(245, 245, 242, 0.84);
-}
-
-@media (min-width: 900px) {
-  .pd-hero__statement {
-    padding-bottom: 0.4em;
-  }
-}
-
-/* the nameplate: the lift's figures along the foot of the photograph */
-.pd-plate {
+.pd-hero__aside {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem 1.5rem;
-  margin: 0;
-  padding: 1.25rem 0 clamp(1.5rem, 3vh, 2.5rem);
-  border-top: 1px solid rgba(255, 255, 255, 0.18);
+  gap: 0.75rem;
+  padding-bottom: 0.6rem;
 }
 
-@media (min-width: 700px) {
-  .pd-plate {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
+.pd-hero__statement {
+  max-width: 34ch;
+  font-size: var(--t-lead);
+  line-height: 1.42;
+  color: rgba(21, 21, 21, 0.78);
+  text-wrap: pretty;
 }
 
-@media (min-width: 1100px) {
-  .pd-plate {
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 1rem 2rem;
-  }
+.pd-hero__kicker {
+  font-size: var(--t-small);
+  color: var(--light-muted);
+}
+
+/* the building: a wide frame that opens from its middle, then drifts */
+.pd-hero__view {
+  position: relative;
+}
+
+.pd-hero__scene {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 21 / 9;
+  border-radius: var(--radius-xl);
+  background: var(--paper-3);
+  box-shadow: var(--light-shadow-lift);
+}
+
+.pd-hero__scene .media {
+  position: absolute;
+  inset: -8% 0;
+  height: auto;
+  transform: translate3d(0, calc(var(--p) * 8%), 0);
+}
+
+/* the lift's figures, as the plate on the frame's lower edge */
+.pd-plate {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0;
+  width: min(100% - 2rem, 64rem);
+  margin: -2.75rem auto 0;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: #fff;
+  box-shadow: var(--light-shadow-lift);
+}
+
+.pd-plate > div {
+  display: grid;
+  gap: 0.3rem;
+  padding: 1rem 1.25rem;
+  border-right: 1px solid var(--light-border);
+}
+
+.pd-plate > div:last-child {
+  border-right: 0;
 }
 
 .pd-plate dt {
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: rgba(245, 245, 242, 0.55);
+  font-size: var(--t-micro);
+  color: var(--light-muted);
 }
 
 .pd-plate dd {
-  margin: 0.35rem 0 0;
+  margin: 0;
   font-size: var(--t-small);
-  line-height: 1.4;
-  color: #fff;
+  font-weight: var(--w-semibold);
+  line-height: 1.35;
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .pd-plate > div {
+  .pd-hero__aside,
+  .pd-plate {
     opacity: 0;
-    transform: translate3d(0, 0.75rem, 0);
+    transform: translateY(14px);
     transition:
-      opacity 0.7s var(--ease-out),
-      transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
-    transition-delay: calc(0.9s + var(--i) * 0.07s);
+      opacity 0.8s var(--ease-out),
+      transform 0.8s var(--ease-out);
+    transition-delay: 0.65s;
   }
 
-  .pd-hero.is-in .pd-plate > div {
+  .pd-plate {
+    transition-delay: 1.1s;
+  }
+
+  .pd-hero__scene {
+    clip-path: inset(0 50% 0 50% round var(--radius-xl));
+    transition: clip-path 1.5s cubic-bezier(0.65, 0, 0.35, 1) 0.35s;
+  }
+
+  .pd-hero.is-in .pd-hero__aside,
+  .pd-hero.is-in .pd-plate {
     opacity: 1;
     transform: none;
+  }
+
+  .pd-hero.is-in .pd-hero__scene {
+    clip-path: inset(0 0 0 0 round var(--radius-xl));
+  }
+}
+
+@media (max-width: 899px) {
+  .pd-hero__scene {
+    aspect-ratio: 4 / 3;
+  }
+
+  .pd-plate {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: -1.5rem;
+  }
+
+  .pd-plate > div {
+    border-bottom: 1px solid var(--light-border);
   }
 }
 

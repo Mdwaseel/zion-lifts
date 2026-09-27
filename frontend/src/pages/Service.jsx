@@ -3,14 +3,12 @@ import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
 import { Arrow, PILLAR_ICONS, Phone, Shield } from '@/components/icons'
-import { gsap } from '@/lib/gsap'
 import SERVICE_PILLARS from '@/data/servicePillars'
-import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
 import ServiceForm from './contact/ServiceForm'
-import { Rise, RiseIn, clamp01, whenIntroDone } from './lift/shared'
+import { Rise, RiseIn, useLightHero, whenIntroDone } from './lift/shared'
 
 import './contact.css'
 import './contact-index.css'
@@ -23,52 +21,34 @@ import './service.css'
    number comes first and stays in reach; the form is the quieter route.
    ========================================================================== */
 
+/** Teal, the one ground on the site that is the brand's own colour: a call
+    for help should look like it reaches Zion, not like another page. The
+    number is set beside a lit call button, and the person who answers is on
+    the right. */
 function Opening({ phone }) {
   const ref = useRef(null)
-  const reduced = useReducedMotion()
   const [shown, setShown] = useState(false)
+  useLightHero('flat')
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
-  useEffect(() => {
-    if (reduced) return undefined
-    const el = ref.current
-    let last = -1
-    const tick = () => {
-      const p = clamp01(window.scrollY / window.innerHeight)
-      if (Math.abs(p - last) < 0.001) return
-      last = p
-      el.style.setProperty('--x', p.toFixed(4))
-    }
-    gsap.ticker.add(tick)
-    return () => gsap.ticker.remove(tick)
-  }, [reduced])
-
   return (
     <header ref={ref} className={`sv-hero ${shown ? 'is-in' : ''}`}>
-      <div className="sv-hero__scene" aria-hidden="true">
-        <Img src="/media/frames/kashi-machine.jpg" alt="" priority sizes="100vw" />
-      </div>
-      <div className="sv-hero__grade" aria-hidden="true" />
-
       <div className="sv-hero__copy">
-        <p className="ld-label sv-hero__label">Existing lift · 24/7</p>
         <h1 className="sv-hero__title">
-          <Rise text="Already have a Zion lift?" />
+          <Rise text="Already have a Zion lift?" accent={false} />
         </h1>
         <p className="sv-hero__lead">
           This reaches the service desk directly. We also take on lifts we did not install, subject to a survey.
         </p>
-      </div>
 
-      {/* the number, before anything else on the page */}
-      <div className="sv-hero__foot">
+        {/* the number, before anything else on the page */}
         <a className="sv-line" href={telHref(phone)}>
           <span className="sv-line__pulse" aria-hidden="true">
-            <Phone size={20} />
+            <Phone size={26} />
           </span>
           <span className="sv-line__copy">
-            <span className="sv-line__label">Service desk · answered 24 hours, every day</span>
+            <span className="sv-line__label">Call the service desk</span>
             <strong className="sv-line__num">{phone}</strong>
           </span>
         </a>
@@ -76,6 +56,22 @@ function Opening({ phone }) {
           Or send a request <Arrow size={14} />
         </a>
       </div>
+
+      <figure className="sv-hero__who">
+        <span className="sv-hero__photo">
+          <Img
+            src="/media/frames/workshop-assembly.jpg"
+            alt="A Zion technician working on a lift car frame"
+            priority
+            sizes="(min-width: 900px) 40vw, 92vw"
+            objectPosition="40% 50%"
+          />
+        </span>
+        <figcaption className="sv-hero__note">
+          <strong>Answered 24 hours, every day</strong>
+          <span>Breakdowns and entrapments go to the front of the queue.</span>
+        </figcaption>
+      </figure>
     </header>
   )
 }

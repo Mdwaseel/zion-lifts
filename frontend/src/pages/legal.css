@@ -8,6 +8,8 @@
 }
 
 .legal__head {
+  background: var(--bg);
+  color: var(--fg);
   padding-top: calc(var(--nav-h) + clamp(2.5rem, 2rem + 4vw, 5rem));
   padding-bottom: clamp(2rem, 1.5rem + 2.5vw, 3.5rem);
   border-bottom: 1px solid var(--rule);

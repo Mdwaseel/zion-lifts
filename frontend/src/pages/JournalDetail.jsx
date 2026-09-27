@@ -5,7 +5,7 @@ import { Img } from '@/components/Media'
 import Reveal, { RevealGroup } from '@/components/Reveal'
 import { CtaBand, JournalCard, SectionHead } from '@/components/sections'
 import { Arrow } from '@/components/icons'
-import { useApi } from '@/lib/hooks'
+import { useApi, useLightHero } from '@/lib/hooks'
 
 import './journal.css'
 
@@ -49,6 +49,7 @@ function Rich({ text }) {
 }
 
 export default function JournalDetail() {
+  useLightHero()
   const { slug } = useParams()
   const { data: post, loading, error } = useApi(slug ? `journal/${slug}/` : null)
   const [activeHeading, setActiveHeading] = useState(null)
@@ -115,7 +116,7 @@ export default function JournalDetail() {
 
   return (
     <>
-      <header className="jhero">
+      <header className="jhero on-stone">
         <div className="shell jhero__inner">
           <nav className="pagehero__crumb" aria-label="Breadcrumb">
             <Link to="/">Home</Link>

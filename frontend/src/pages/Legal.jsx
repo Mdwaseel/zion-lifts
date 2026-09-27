@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Arrow } from '@/components/icons'
 import { legalPage } from '@/data/legal'
+import { useLightHero } from '@/lib/hooks'
 
 import './legal.css'
 
@@ -20,6 +21,7 @@ const SIBLINGS = [
  * publish still has to be handled, because the route can be typed.
  */
 export default function Legal({ slug }) {
+  useLightHero()
   const doc = legalPage(slug)
   const [active, setActive] = useState(null)
 
@@ -62,7 +64,7 @@ export default function Legal({ slug }) {
 
   return (
     <div className="legal">
-      <header className="legal__head">
+      <header className="legal__head on-paper">
         <div className="shell">
           <nav className="pagehero__crumb" aria-label="Breadcrumb">
             <Link to="/">Home</Link>

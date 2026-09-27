@@ -5,7 +5,7 @@ import { Img, VideoPlayer } from '@/components/Media'
 import { Arrow, Plus } from '@/components/icons'
 import { useApi } from '@/lib/hooks'
 
-import { Rise, RiseIn, Scrub, useScrollVar, whenIntroDone } from './lift/shared'
+import { Rise, RiseIn, Scrub, useLightHero, useScrollVar, whenIntroDone } from './lift/shared'
 import { Lightbox } from './gallery/pieces'
 import { sizeOf } from './projects/frames'
 
@@ -32,14 +32,16 @@ const CHAPTERS = [
   ['The result', 'result', ['completion', 'interior', 'detail']],
 ]
 
-/* --- the opening: the building, and the lift's nameplate -----------------
-   The photograph fills the screen and drifts up as the page moves; the name
-   stands at the foot of it in the serif, with the statement beside it, and
-   the lift's figures run along the bottom edge like the plate in a car. */
+/* --- the opening: the name, then the building -----------------------------
+   Set like the first page of a monograph: the building's name large on ivory
+   with its statement beside it, and under them the building itself, a wide
+   frame that opens out from its middle and drifts as the page moves. The
+   lift's figures sit on a plate across the frame's lower edge. */
 function Opening({ project: p }) {
   const ref = useRef(null)
   const [shown, setShown] = useState(false)
   useScrollVar(ref, { from: 0, to: -1, ease: 1 })
+  useLightHero()
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
   const specs = [
@@ -50,40 +52,41 @@ function Opening({ project: p }) {
     ['Drive', p.drive],
     ['Scope', p.scope],
   ].filter(([, v]) => v)
+  const where = [p.category?.name, p.location].filter(Boolean).join(' in ')
 
   return (
     <header ref={ref} className={`pd-hero ${shown ? 'is-in' : ''}`}>
-      <div className="pd-hero__scene" aria-hidden="true">
-        <Img src={p.hero_image_url || p.poster_url} alt="" priority sizes="100vw" />
-      </div>
-      <div className="pd-hero__grade" aria-hidden="true" />
-
-      <nav className="pd-crumb" aria-label="Breadcrumb">
-        <Link to="/projects">Projects</Link>
-        <span aria-hidden="true">/</span>
-        <span>{p.category?.name}</span>
-      </nav>
-
-      <div className="pd-hero__copy">
-        <p className="pd-hero__kicker">
-          {p.category?.name}
-          {p.year ? ` · ${p.year}` : ''}
-          {p.location ? ` · ${p.location}` : ''}
-        </p>
+      <div className="pd-hero__top">
+        <nav className="pd-crumb" aria-label="Breadcrumb">
+          <Link to="/projects">Projects</Link>
+          <span aria-hidden="true">/</span>
+          <span>{p.name}</span>
+        </nav>
         <h1 className={`pd-hero__name ld-rise ${shown ? 'is-in' : ''}`}>
           <Rise text={p.name} accent={false} />
         </h1>
-        <p className="pd-hero__statement">{p.statement}</p>
+        <div className="pd-hero__aside">
+          <p className="pd-hero__statement">{p.statement}</p>
+          <p className="pd-hero__kicker">
+            {where}
+            {p.year ? `, ${p.year}` : ''}
+          </p>
+        </div>
       </div>
 
-      <dl className="pd-plate">
-        {specs.map(([k, v], i) => (
-          <div key={k} style={{ '--i': i }}>
-            <dt>{k}</dt>
-            <dd>{v}</dd>
-          </div>
-        ))}
-      </dl>
+      <div className="pd-hero__view">
+        <div className="pd-hero__scene" aria-hidden="true">
+          <Img src={p.hero_image_url || p.poster_url} alt="" priority sizes="100vw" />
+        </div>
+        <dl className="pd-plate">
+          {specs.map(([k, v], i) => (
+            <div key={k} style={{ '--i': i }}>
+              <dt>{k}</dt>
+              <dd>{v}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </header>
   )
 }

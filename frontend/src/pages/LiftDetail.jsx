@@ -26,7 +26,7 @@ import { useSite } from '@/lib/site'
 
 import { FEATURES, ROOMS } from './home/LiftsExperience'
 import CabinStudio from './lift/CabinStudio'
-import { Rise, RiseIn, Scrub, clamp01, useScrollVar, whenIntroDone } from './lift/shared'
+import { Rise, RiseIn, Scrub, clamp01, useLightHero, useScrollVar, whenIntroDone } from './lift/shared'
 import { ProjectsReel } from './home/Proof'
 import './lift-detail.css'
 
@@ -48,15 +48,22 @@ function useScene(lift) {
   return { src: room?.src ?? lift.hero_image_url, pos: room?.pos }
 }
 
+/* the lifts that have a portrait film of their own in media/lifts */
+const FILMS = new Set(Object.keys(ROOMS))
+
+/** The shaft you picked on /lifts, come forward: the same arched frame, now
+    tall beside the lift's name, with its film still running in it. */
 function Hero({ lift }) {
   const ref = useRef(null)
   const reduced = useReducedMotion()
   const [shown, setShown] = useState(false)
   const scene = useScene(lift)
+  const film = FILMS.has(lift.slug) ? `/media/lifts/${lift.slug}.mp4` : null
+  useLightHero()
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
-  // leaving, the room draws back into a frame — the first of the page's frames
+  // leaving, the frame rises a little faster than the page
   useEffect(() => {
     if (reduced) return undefined
     const el = ref.current
@@ -73,24 +80,17 @@ function Hero({ lift }) {
 
   return (
     <header ref={ref} className={`ld-hero ${shown ? 'is-in' : ''}`}>
-      <div className="ld-hero__scene">
-        <Img key={scene.src} src={scene.src} alt="" priority sizes="100vw" objectPosition={scene.pos} />
-      </div>
-      <div className="ld-hero__grade" aria-hidden="true" />
-
       <div className="ld-hero__copy">
         <nav className="ld-crumb" aria-label="Breadcrumb">
           <Link to="/lifts">Lifts</Link>
           <span aria-hidden="true">/</span>
-          <span>{lift.eyebrow}</span>
+          <span>{lift.short_name || lift.name}</span>
         </nav>
         <h1 className="ld-hero__title">
-          <Rise text={lift.name} />
+          <Rise text={lift.name} accent={false} />
         </h1>
         <p className="ld-hero__lead">{lift.tagline}</p>
-      </div>
 
-      <div className="ld-hero__foot">
         <dl className="ld-feats">
           {FEATURES.filter(([, key]) => lift[key]).map(([label, key, Icon], i) => (
             <div key={key} style={{ '--i': i }}>
@@ -100,9 +100,23 @@ function Hero({ lift }) {
             </div>
           ))}
         </dl>
-        <a href="#overview" className="ld-hero__cue" aria-label="Scroll to the overview">
-          <ArrowDown size={16} />
-        </a>
+
+        <div className="ld-hero__actions">
+          <Link to="/contact" className="ld-hero__go">
+            Ask about this lift <Arrow size={14} />
+          </Link>
+          <a href="#overview" className="ld-hero__more">
+            Read the overview <ArrowDown size={14} />
+          </a>
+        </div>
+      </div>
+
+      <div className="ld-hero__frame">
+        {film ? (
+          <VideoLoop src={film} poster={`/media/lifts/${lift.slug}.jpg`} />
+        ) : (
+          <Img key={scene.src} src={scene.src} alt="" priority sizes="(min-width: 900px) 40vw, 92vw" objectPosition={scene.pos} />
+        )}
       </div>
     </header>
   )
@@ -900,7 +914,7 @@ function Enquire({ lift }) {
           specification and a figure.
         </p>
         <div className="ld-ask__actions">
-          <Link to={`/contact?lift=${lift.slug}`} className="ld-ask__go">
+          <Link to="/contact" className="ld-ask__go">
             <span>Get a quote</span>
             <span className="ld-ask__go-ring">
               <Arrow size={18} />
@@ -982,7 +996,7 @@ function EnquirePill({ lift }) {
 
   return (
     <Link
-      to={`/contact?lift=${lift.slug}`}
+      to="/contact"
       className={`ld-pill ${on ? 'is-on' : ''}`}
       tabIndex={on ? 0 : -1}
       aria-hidden={!on}
