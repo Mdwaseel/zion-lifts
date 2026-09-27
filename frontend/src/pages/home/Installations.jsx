@@ -10,8 +10,14 @@ import './installations.css'
 
 const pad = (n) => String(n).padStart(2, '0')
 const DATA = '/data/installations.json'
-const TILES = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
-const CREDIT = '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+/* CARTO's Voyager tiles are already the quiet street map the section wants,
+   so no filter has to run over the tile layer on every frame */
+const MAP_KEY = import.meta.env.VITE_MAP_API_KEY
+const TILES =
+  'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png' +
+  (MAP_KEY ? `?key=${encodeURIComponent(MAP_KEY)}` : '')
+const CREDIT =
+  '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
 
 /** how close choosing a single installation goes: street level */
 const CLOSE = 16
@@ -113,8 +119,7 @@ export function Installations() {
       const map = mapRef.current
       const it = items[i]
       if (!L || !map || !it) return
-      const icons = pinIcons(L)
-      markers.current.forEach((m, k) => m.setIcon(k === i ? icons.on : icons.off))
+      markers.current.forEach((m, k) => m.setOn(k === i))
       if (halo.current) halo.current.setLatLng([it.lat, it.lng])
       else halo.current = L.marker([it.lat, it.lng], { icon: L.divIcon({ className: 'inst-halo', iconSize: [40, 40], iconAnchor: [20, 20] }), interactive: false, keyboard: false, zIndexOffset: -1000 }).addTo(map)
       if (fly) {
@@ -134,15 +139,14 @@ export function Installations() {
     const L = window.L
     const map = L.map(mapEl.current, { scrollWheelZoom: false, preferCanvas: true, zoomControl: true })
     mapRef.current = map
-    L.tileLayer(TILES, { attribution: CREDIT, maxZoom: 19 }).addTo(map)
+    L.tileLayer(TILES, { attribution: CREDIT, maxZoom: 19, subdomains: 'abcd' }).addTo(map)
     // the wheel only zooms the map once the visitor has put their hand on it
     map.on('click focus', () => map.scrollWheelZoom.enable())
     map.on('mouseout blur', () => map.scrollWheelZoom.disable())
 
     const group = L.featureGroup().addTo(map)
-    const icons = pinIcons(L)
     markers.current = items.map((it, i) => {
-      const m = L.marker([it.lat, it.lng], { icon: icons.off, riseOnHover: true, keyboard: false }).addTo(group)
+      const m = pinMarker(L, [it.lat, it.lng], {}).addTo(group)
       m.bindTooltip(`${it.area}, ${it.city}`, { direction: 'top', offset: [0, -30], opacity: 0.95 })
       m.on('click', () => select(i))
       return m
@@ -175,8 +179,7 @@ export function Installations() {
     const L = window.L
     const map = mapRef.current
     if (!map) return
-    const icons = pinIcons(window.L)
-    markers.current.forEach((m) => m.setIcon(icons.off))
+    markers.current.forEach((m) => m.setOn(false))
     if (halo.current) {
       halo.current.remove()
       halo.current = null
@@ -384,20 +387,61 @@ function cityBounds(L, items, office) {
   return L.latLngBounds((core.length > 10 ? core : items).map((it) => [it.lat, it.lng])).pad(0.04)
 }
 
-/* the pin: a map marker in the site's teal, drawn once as an SVG data URL;
-   the one that has been pressed is larger and white-faced */
-const PIN = (fill, stroke) =>
-  'data:image/svg+xml;utf8,' +
-  encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 32"><path d="M12 1C6.5 1 2 5.4 2 10.9c0 7.4 8.6 18.1 9.3 19 .4.4 1 .4 1.4 0 .7-.9 9.3-11.6 9.3-19C22 5.4 17.5 1 12 1z" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/><circle cx="12" cy="11" r="3.6" fill="${stroke}"/></svg>`,
-  )
+/* The pins are drawn on the map's one canvas rather than as 377 separate
+   images: an image a pin was hundreds of layers for the browser to repaint
+   every frame the page scrolled. Same teal teardrop, same shadow, same
+   tooltip and click; the one that has been pressed is larger and
+   white-faced, and drawn on top. */
+const PIN_PATH = 'M12 1C6.5 1 2 5.4 2 10.9c0 7.4 8.6 18.1 9.3 19 .4.4 1 .4 1.4 0 .7-.9 9.3-11.6 9.3-19C22 5.4 17.5 1 12 1z'
+let PinMarker = null
+let path2d = null
 
-let cache = null
-function pinIcons(L) {
-  if (cache) return cache
-  cache = {
-    off: L.icon({ iconUrl: PIN('#2ec9ca', '#066f70'), iconSize: [22, 30], iconAnchor: [11, 29], tooltipAnchor: [0, -2], className: 'inst-pin' }),
-    on: L.icon({ iconUrl: PIN('#ffffff', '#066f70'), iconSize: [30, 40], iconAnchor: [15, 39], tooltipAnchor: [0, -2], className: 'inst-pin inst-pin--on' }),
+function pinMarker(L, latlng, opts) {
+  if (!PinMarker) {
+    // the drawing is 24 x 32 with its tip at (12, 30); `k` scales it to the pin's height
+    const scaleOf = (on) => (on ? 40 : 30) / 32
+    PinMarker = L.CircleMarker.extend({
+      options: { on: false, radius: 12, bubblingMouseEvents: false },
+      setOn(on) {
+        if (this.options.on === on) return this
+        this.options.on = on
+        if (on) this.bringToFront()
+        return this.redraw()
+      },
+      _updateBounds() {
+        const k = scaleOf(this.options.on)
+        const p = this._point
+        this._pxBounds = L.bounds(p.subtract([13 * k, 31 * k]), p.add([13 * k, 2 * k]))
+      },
+      _containsPoint(pt) {
+        const k = scaleOf(this.options.on)
+        return pt.distanceTo(this._point.subtract([0, 19 * k])) <= 12 * k
+      },
+      _updatePath() {
+        const r = this._renderer
+        if (!r._drawing || this._empty()) return
+        const ctx = r._ctx
+        const k = scaleOf(this.options.on)
+        path2d ??= new Path2D(PIN_PATH)
+        ctx.save()
+        ctx.translate(this._point.x - 12 * k, this._point.y - 30 * k)
+        ctx.scale(k, k)
+        ctx.fillStyle = 'rgba(0,0,0,0.22)'
+        ctx.beginPath()
+        ctx.ellipse(12, 30.4, 4.2, 1.4, 0, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.fillStyle = this.options.on ? '#ffffff' : '#2ec9ca'
+        ctx.strokeStyle = '#066f70'
+        ctx.lineWidth = 1.5
+        ctx.fill(path2d)
+        ctx.stroke(path2d)
+        ctx.fillStyle = '#066f70'
+        ctx.beginPath()
+        ctx.arc(12, 11, 3.6, 0, Math.PI * 2)
+        ctx.fill()
+        ctx.restore()
+      },
+    })
   }
-  return cache
+  return new PinMarker(latlng, opts)
 }

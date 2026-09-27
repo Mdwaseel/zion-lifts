@@ -410,3 +410,287 @@
 .hero-flat .hd.is-top .hd__cta .hd__roll > span + span {
   color: var(--teal-deep);
 }
+
+/* --- the lifts menu --------------------------------------------------------- */
+.hd__drop {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.hd__chev {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-right: -0.35rem;
+  border-radius: 50%;
+  color: inherit;
+  opacity: 0.7;
+  transition:
+    opacity var(--dur-fast) var(--ease-out),
+    background-color var(--dur-fast) var(--ease-out);
+}
+
+.hd__chev svg {
+  width: 0.7rem;
+  height: 0.7rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.hd__chev.is-open svg {
+  transform: rotate(180deg);
+}
+
+@media (hover: hover) {
+  .hd__chev:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.12);
+  }
+}
+
+.hd__chev:focus-visible {
+  outline: 2px solid var(--teal-bright);
+  outline-offset: 2px;
+}
+
+/* the panel hangs just under whichever shape the header is in */
+.hd-menu {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 50%;
+  width: min(calc(100vw - 2rem), 62rem);
+  padding: 0.75rem;
+  border-radius: 1.4rem;
+  background: #fff;
+  color: var(--light-text);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.06),
+    0 30px 60px -24px rgba(0, 0, 0, 0.45);
+  pointer-events: auto;
+  transform: translate3d(-50%, 0, 0);
+}
+
+.hd-menu[hidden] {
+  display: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hd-menu.is-open {
+    animation: hd-menu-in 0.32s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+@keyframes hd-menu-in {
+  from {
+    opacity: 0;
+    transform: translate3d(-50%, -8px, 0);
+  }
+}
+
+.hd-menu__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.25rem;
+}
+
+.hd-menu__item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.9rem;
+  padding: 0.6rem;
+  border-radius: 0.9rem;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+/* the lift's own photograph, in the arch it stands in on /lifts */
+.hd-menu__arch {
+  width: 2.9rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: 999px 999px 8px 8px;
+  background: var(--paper-3);
+}
+
+.hd-menu__text {
+  display: grid;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.hd-menu__text strong {
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+}
+
+.hd-menu__text span {
+  font-size: var(--t-micro);
+  line-height: 1.4;
+  color: var(--light-muted);
+}
+
+@media (hover: hover) {
+  .hd-menu__item:hover {
+    background: var(--light-bg);
+  }
+
+  .hd-menu__item:hover strong {
+    color: var(--teal);
+  }
+}
+
+.hd-menu__item:focus-visible,
+.hd-menu__foot a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.hd-menu__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.9rem 0.8rem 0.35rem;
+  border-top: 1px solid var(--light-border);
+}
+
+.hd-menu__foot a {
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--teal);
+  border-radius: 6px;
+}
+
+@media (max-width: 899px) {
+  .hd-menu {
+    top: calc(100% + 0.4rem);
+    max-height: calc(100svh - 7rem);
+    overflow-y: auto;
+  }
+
+  .hd-menu__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hd-menu__text span {
+    display: none;
+  }
+
+  .hd-menu__arch {
+    width: 2.2rem;
+    height: 3rem;
+  }
+}
+
+/* --- the resources menu ----------------------------------------------------- */
+/* a label that is only a menu: the chevron rides inside it */
+.hd__link--menu {
+  gap: 0.35rem;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hd__chev--in {
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  background: none;
+}
+
+.hd-menu--res {
+  width: min(calc(100vw - 2rem), 38rem);
+}
+
+.hd-res {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.35rem;
+}
+
+.hd-res__card {
+  display: grid;
+  gap: 0.4rem;
+  padding: 0.55rem 0.55rem 0.9rem;
+  border-radius: 1rem;
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+
+.hd-res__img {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  margin-bottom: 0.4rem;
+  object-fit: cover;
+  border-radius: 0.75rem;
+  background: var(--paper-3);
+}
+
+.hd-res__name {
+  padding-inline: 0.2rem;
+  font-size: var(--t-body);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+}
+
+.hd-res__line {
+  padding-inline: 0.2rem;
+  font-size: var(--t-micro);
+  line-height: 1.45;
+  color: var(--light-muted);
+}
+
+@media (hover: hover) {
+  .hd-res__card:hover {
+    background: var(--light-bg);
+  }
+
+  .hd-res__card:hover .hd-res__name {
+    color: var(--teal);
+  }
+}
+
+.hd-res__card:focus-visible,
+.hd-res__latest:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.hd-res__latest {
+  display: grid;
+  gap: 0.15rem;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+}
+
+.hd-res__latest span {
+  font-size: var(--t-micro);
+  font-weight: 400;
+  color: var(--light-muted);
+}
+
+@media (hover: hover) {
+  .hd-res__latest:hover {
+    color: var(--teal);
+  }
+}
+
+@media (max-width: 599px) {
+  .hd-res {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .hd-res__img {
+    aspect-ratio: 21 / 9;
+  }
+}

@@ -7,7 +7,7 @@ import Reveal from '@/components/Reveal'
 import { ClientLogos } from '@/components/sections'
 import { Arrow, ArrowDown } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
-import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
+import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
 
 import { Rise, RiseIn, Scrub, clamp01, useLightHero, useScrollVar, whenIntroDone } from './lift/shared'
@@ -168,42 +168,14 @@ function WhoWeAre() {
   )
 }
 
-/* --- where our lifts work: five buildings, side by side ------------------ */
-
-/** The sectors the lifts go into, as five tall photographs standing in a row.
-    The one in play widens and its caption rises; the scroll walks the row once
-    as the section crosses the screen, and a pointer or a key takes over. */
+/* --- where our lifts work: a mosaic of the buildings ---------------------
+   The homes the company began with take the large frame; the four other
+   kinds of building stand beside them. Each tile names the lifts that kind of
+   building usually takes, and each of those is a way into its page. Under the
+   mosaic, the question most visitors arrive with, and the way to ask it. */
 function Sectors() {
   const ref = useRef(null)
-  const reduced = useReducedMotion()
-  const narrow = useMediaQuery('(max-width: 899px)')
-  const [active, setActive] = useState(0)
-  const [held, setHeld] = useState(false) // a pointer or key has taken over from the scroll
-  const n = SECTORS.length
-
-  useEffect(() => {
-    if (reduced || narrow || held) return undefined
-    const el = ref.current
-    let last = -1
-    const tick = () => {
-      const r = el.getBoundingClientRect()
-      const vh = window.innerHeight
-      if (r.bottom < 0 || r.top > vh) return
-      const p = clamp01((vh * 0.75 - r.top) / (r.height * 0.9))
-      const i = Math.min(n - 1, Math.floor(p * n))
-      if (i !== last) {
-        last = i
-        setActive(i)
-      }
-    }
-    gsap.ticker.add(tick)
-    return () => gsap.ticker.remove(tick)
-  }, [reduced, narrow, held, n])
-
-  const pick = (i) => {
-    setHeld(true)
-    setActive(i)
-  }
+  useScrollVar(ref, { from: 0.95, to: 0.3 })
 
   return (
     <section className="section on-paper ab-sectors">
@@ -211,7 +183,7 @@ function Sectors() {
         <header className="ab-head">
           <div>
             <p className="ld-label ab-sectors__label">Where our lifts work</p>
-            <RiseIn as="h2" className="ab-h2" text="World-class lifts for every building." />
+            <RiseIn as="h2" className="ab-h2" text="World-class lifts for every building." accent={false} />
           </div>
           <Reveal delay={100}>
             <p className="ab-lead">
@@ -221,27 +193,38 @@ function Sectors() {
           </Reveal>
         </header>
 
-        <ul ref={ref} className="ab-sectors__row" onMouseLeave={() => setHeld(false)}>
+        <ul ref={ref} className="ab-mosaic">
           {SECTORS.map((sec, i) => (
-            <li
-              key={sec.name}
-              className={`ab-sector ${i === active ? 'is-on' : ''}`}
-              style={{ '--i': i }}
-              onMouseEnter={() => pick(i)}
-            >
-              <button type="button" className="ab-sector__hit" aria-pressed={i === active} onClick={() => pick(i)} onFocus={() => pick(i)}>
-                <span className="sr-only">{sec.name}</span>
-              </button>
-              <div className="ab-sector__media">
-                <Img src={sec.src} alt="" sizes="(min-width: 900px) 40vw, 92vw" />
-              </div>
-              <div className="ab-sector__copy" aria-hidden={i !== active && !narrow}>
+            <li key={sec.name} className={`ab-tile ${i === 0 ? 'is-lead' : ''}`} style={{ '--i': i }}>
+              <span className="ab-tile__media" aria-hidden="true">
+                <Img src={sec.src} alt="" sizes={i === 0 ? '(min-width: 900px) 50vw, 92vw' : '(min-width: 900px) 25vw, 92vw'} />
+              </span>
+              <div className="ab-tile__copy">
                 <h3>{sec.name}</h3>
-                <p className="ab-sector__line">{sec.line}</p>
+                <p>{sec.line}</p>
+                {sec.lifts?.length > 0 && (
+                  <ul className="ab-tile__lifts" aria-label={`Lifts for ${sec.name.toLowerCase()}`}>
+                    {sec.lifts.map(([slug, label]) => (
+                      <li key={slug}>
+                        <Link to={`/lifts/${slug}`}>{label}</Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
             </li>
           ))}
         </ul>
+
+        <div className="ab-sectors__ask">
+          <p>
+            <strong>Not sure which lift your building needs?</strong>
+            <span>Tell us the floors and what it has to carry — an engineer will recommend one.</span>
+          </p>
+          <Link to="/contact#enquiry" className="ab-sectors__go">
+            Ask an engineer <Arrow size={14} />
+          </Link>
+        </div>
       </div>
     </section>
   )

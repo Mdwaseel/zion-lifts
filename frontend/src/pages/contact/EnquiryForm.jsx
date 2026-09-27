@@ -153,7 +153,12 @@ export default function EnquiryForm({ lifts = [], onSnapshot }) {
       phone: '',
       email: '',
       organisation: '',
-      message: params.get('variant') ? `Interested in variant ${params.get('variant')}.` : '',
+      // arriving from a case study, the brief starts from the building that sent them
+      message: params.get('variant')
+        ? `Interested in variant ${params.get('variant')}.`
+        : params.get('like')
+          ? `I'd like something similar to ${params.get('like')}.`
+          : '',
       consent: false,
       website: '', // honeypot
     }

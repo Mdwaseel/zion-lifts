@@ -175,7 +175,7 @@ function Facility() {
     <div ref={wrap} className="pr-invite-wrap">
       <section className="pr-invite">
         <div className="pr-invite__scene">
-          <Img src="/media/process/process-structure.jpg" alt="" sizes="100vw" />
+          <Img src="/media/frames/workshop-sparks.jpg" alt="" sizes="100vw" objectPosition="60% 50%" />
         </div>
         <div className="pr-invite__copy">
           <p className="ld-label">The facility</p>

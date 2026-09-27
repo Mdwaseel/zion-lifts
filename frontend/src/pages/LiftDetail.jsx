@@ -19,9 +19,10 @@ import {
   WaveMark,
 } from '@/components/icons'
 import { FlameMark, PLACES, WeightMark } from '@/components/place-marks'
+import { AskBand, Asks, quoteHref } from '@/components/Asks'
 import { gsap } from '@/lib/gsap'
 import { useApi, useMediaQuery, useReducedMotion } from '@/lib/hooks'
-import { telHref } from '@/lib/media'
+import { telHref, whatsappHref } from '@/lib/media'
 import { useSite } from '@/lib/site'
 
 import { FEATURES, ROOMS } from './home/LiftsExperience'
@@ -102,9 +103,13 @@ function Hero({ lift }) {
         </dl>
 
         <div className="ld-hero__actions">
-          <Link to="/contact" className="ld-hero__go">
-            Ask about this lift <Arrow size={14} />
-          </Link>
+          <Asks
+            to={quoteHref({ lift: lift.slug })}
+            label={`Get a quote for the ${lift.name}`}
+            short="Get a quote"
+            whatsapp={`Hello Zion Lifts — I'd like a quote for the ${lift.name}.`}
+            compact
+          />
           <a href="#overview" className="ld-hero__more">
             Read the overview <ArrowDown size={14} />
           </a>
@@ -914,7 +919,7 @@ function Enquire({ lift }) {
           specification and a figure.
         </p>
         <div className="ld-ask__actions">
-          <Link to="/contact" className="ld-ask__go">
+          <Link to={quoteHref({ lift: lift.slug })} className="ld-ask__go">
             <span>Get a quote</span>
             <span className="ld-ask__go-ring">
               <Arrow size={18} />
@@ -923,6 +928,16 @@ function Enquire({ lift }) {
           {site.phone && (
             <a href={telHref(site.phone)} className="ld-ask__alt">
               {site.phone}
+            </a>
+          )}
+          {(site.whatsapp || site.phone) && (
+            <a
+              href={whatsappHref(site.whatsapp || site.phone, `Hello Zion Lifts — I'd like a quote for the ${lift.name}.`)}
+              className="ld-ask__alt"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              WhatsApp
             </a>
           )}
         </div>
@@ -996,12 +1011,12 @@ function EnquirePill({ lift }) {
 
   return (
     <Link
-      to="/contact"
+      to={quoteHref({ lift: lift.slug })}
       className={`ld-pill ${on ? 'is-on' : ''}`}
       tabIndex={on ? 0 : -1}
       aria-hidden={!on}
     >
-      <span>Enquire</span>
+      <span>Get a quote</span>
       <em>{lift.short_name}</em>
       <Arrow size={14} />
     </Link>
@@ -1048,6 +1063,15 @@ function LiftPage({ slug }) {
       <Statement lift={lift} />
       <Belongs lift={lift} />
       <Figures lift={lift} />
+      <AskBand
+        id="ld-fit-title"
+        className="ld-fit"
+        title={`Will the ${lift.name} fit your building?`}
+        lead="Send the number of floors and the shaft size, or just a photo of where it has to go. An engineer comes back with a specification and a price — usually within one working day."
+        to={quoteHref({ lift: lift.slug })}
+        label="Get a specification and a price"
+        whatsapp={`Hello Zion Lifts — would the ${lift.name} fit my building?`}
+      />
       <CabinStudio lift={lift} finishes={finishes} />
       <Plates lift={lift} />
       <Engineering lift={lift} partners={partners} />

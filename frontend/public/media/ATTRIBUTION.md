@@ -40,3 +40,14 @@ is published. CC BY-SA additionally requires that modified versions carry the sa
 licence — so those assets must not be composited into artwork Zion wants to own.
 
 _24 sourced assets; 0 rejected during review._
+
+## Process stages (home page)
+
+From Unsplash, under the [Unsplash licence](https://unsplash.com/license) — free to use, credit appreciated but not required.
+
+| Asset | Used for | Photographer | Source |
+| --- | --- | --- | --- |
+| `process/stage-blueprint` | Home 06 - process: blueprint | Lucas Kepner | [unsplash](https://unsplash.com/photos/Yn8D5B8C-eY) |
+| `process/stage-structure` | Home 06 - process: structure | Robert V. Ruggiero | [unsplash](https://unsplash.com/photos/BG-iyXjJiLs) |
+| `process/stage-finished` | Home 06 - process: the finished lift | Yale Gurney | [unsplash](https://unsplash.com/photos/FQxzbG0L76c) |
+| `process/stage-building` | Home 06 - process: in the building | Aalo Lens | [unsplash](https://unsplash.com/photos/1PXsFfTbEcI) |

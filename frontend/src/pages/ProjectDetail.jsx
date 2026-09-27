@@ -2,8 +2,13 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { Link, useParams } from 'react-router-dom'
 
 import { Img, VideoPlayer } from '@/components/Media'
-import { Arrow, Plus } from '@/components/icons'
+import { DoorMark } from '@/components/cabin-marks'
+import { AskBand, Asks, quoteHref } from '@/components/Asks'
+import { Arrow, CogMark, Phone, Plus, UpDownMark, UsersMark, Wrench } from '@/components/icons'
+import { LIFT_ICONS } from '@/components/lift-marks'
 import { useApi } from '@/lib/hooks'
+import { telHref } from '@/lib/media'
+import { useSite } from '@/lib/site'
 
 import { Rise, RiseIn, Scrub, useLightHero, useScrollVar, whenIntroDone } from './lift/shared'
 import { Lightbox } from './gallery/pieces'
@@ -12,8 +17,6 @@ import { sizeOf } from './projects/frames'
 import './gallery.css'
 import './projects-index.css'
 import './project-detail.css'
-
-const pad = (n) => String(n).padStart(2, '0')
 
 const STAGE_LABEL = {
   site: 'The site',
@@ -44,13 +47,14 @@ function Opening({ project: p }) {
   useLightHero()
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
+  // each figure with the mark it is read by: the system by its own lift's mark
   const specs = [
-    ['System', p.system || p.lift_type_name],
-    ['Capacity', p.capacity],
-    ['Stops', p.stops],
-    ['Doors', p.door],
-    ['Drive', p.drive],
-    ['Scope', p.scope],
+    ['System', p.system || p.lift_type_name, LIFT_ICONS[p.lift_type_slug] ?? CogMark],
+    ['Capacity', p.capacity, UsersMark],
+    ['Stops', p.stops, UpDownMark],
+    ['Doors', p.door, DoorMark],
+    ['Drive', p.drive, CogMark],
+    ['Scope', p.scope, Wrench],
   ].filter(([, v]) => v)
   const where = [p.category?.name, p.location].filter(Boolean).join(' in ')
 
@@ -66,11 +70,14 @@ function Opening({ project: p }) {
           <Rise text={p.name} accent={false} />
         </h1>
         <div className="pd-hero__aside">
-          <p className="pd-hero__statement">{p.statement}</p>
-          <p className="pd-hero__kicker">
-            {where}
-            {p.year ? `, ${p.year}` : ''}
-          </p>
+          <div className="pd-hero__say">
+            <p className="pd-hero__statement">{p.statement}</p>
+            <p className="pd-hero__kicker">
+              {where}
+              {p.year ? `, ${p.year}` : ''}
+            </p>
+          </div>
+          <Asks to={quoteOf(p)} label="Get a quote for a lift like this" short="Get a quote" whatsapp={chatOf(p)} compact />
         </div>
       </div>
 
@@ -79,8 +86,11 @@ function Opening({ project: p }) {
           <Img src={p.hero_image_url || p.poster_url} alt="" priority sizes="100vw" />
         </div>
         <dl className="pd-plate">
-          {specs.map(([k, v], i) => (
+          {specs.map(([k, v, Icon], i) => (
             <div key={k} style={{ '--i': i }}>
+              <span className="pd-plate__icon" aria-hidden="true">
+                <Icon size={20} />
+              </span>
               <dt>{k}</dt>
               <dd>{v}</dd>
             </div>
@@ -91,36 +101,130 @@ function Opening({ project: p }) {
   )
 }
 
-/* --- a chapter: one photograph and what it shows ----------------------------
-   The frame tips up into place as it comes up the screen; the text beside it
-   is short enough to read while it does. */
-function Chapter({ title, body, image, flip, index }) {
-  const ref = useRef(null)
-  useScrollVar(ref, { from: 1, to: 0.4 })
-  const size = image ? sizeOf(image.src) : null
-  const portrait = size ? size.height > size.width : false
+/* --- the asks ----------------------------------------------------------------
+   A case study is read by someone deciding whether their building could have
+   the same. So the way to ask is offered where that decision is made: under
+   the name, on the job sheet, after the story, and in a small bar that rides
+   along between them. Every one of them lands on the enquiry form with this
+   lift chosen and this building named in the brief. */
+
+const quoteOf = (p) => quoteHref({ lift: p.lift_type_slug, like: p.name })
+const chatOf = (p) => `Hello Zion Lifts — I saw ${p.name} on your site and would like something similar.`
+
+/* the bar that rides along: shown once the opening has gone, put away again
+   when the page's own way on comes up */
+function StickyAsk({ project: p }) {
+  const site = useSite()
+  const [shown, setShown] = useState(false)
+
+  useEffect(() => {
+    const hero = document.querySelector('.pd-hero')
+    const end = document.querySelector('.pd-next')
+    if (!hero) return undefined
+    let past = false
+    let atEnd = false
+    const apply = () => setShown(past && !atEnd)
+    const io1 = new IntersectionObserver(([e]) => {
+      past = !e.isIntersecting && e.boundingClientRect.top < 0
+      apply()
+    })
+    const io2 = new IntersectionObserver(([e]) => {
+      atEnd = e.isIntersecting
+      apply()
+    })
+    io1.observe(hero)
+    if (end) io2.observe(end)
+    return () => {
+      io1.disconnect()
+      io2.disconnect()
+    }
+  }, [])
 
   return (
-    <article ref={ref} className={`pd-ch ${flip ? 'is-flip' : ''} ${portrait ? 'is-tall' : ''}`}>
-      {image && (
-        <figure className="pd-ch__fig">
-          <span className="pd-ch__frame">
-            <Img
-              src={image.src}
-              alt={image.alt || ''}
-              ratio={portrait ? '4 / 5' : '4 / 3'}
-              sizes="(min-width: 900px) 50vw, 100vw"
-            />
-          </span>
-          {image.caption && <figcaption className="pd-ch__cap">{image.caption}</figcaption>}
-        </figure>
+    <aside className={`pd-stick ${shown ? 'is-on' : ''}`} aria-label="Enquire about a lift like this" aria-hidden={!shown}>
+      <p className="pd-stick__text">
+        Like <strong>{p.name}</strong>?
+      </p>
+      <Link to={quoteOf(p)} className="pd-stick__go" tabIndex={shown ? 0 : -1}>
+        Get a quote <Arrow size={14} />
+      </Link>
+      {site?.phone && (
+        <a href={telHref(site.phone)} className="pd-stick__call" aria-label={`Call ${site.phone}`} tabIndex={shown ? 0 : -1}>
+          <Phone size={16} />
+        </a>
       )}
-      <div className="pd-ch__text">
-        <p className="pd-ch__n">{pad(index + 1)}</p>
-        <RiseIn as="h2" text={`${title}.`} className="pd-h2" />
-        <p className="pd-ch__body">{body}</p>
+    </aside>
+  )
+}
+
+/* --- the brief, and the job sheet beside it --------------------------------
+   What the building asked for, set large; beside it the facts a site engineer
+   would want on one card. */
+function Brief({ project: p }) {
+  const facts = [
+    ['Where', p.location],
+    ['Completed', p.year],
+    ['Building', p.category?.name],
+    ['System', p.system || p.lift_type_name],
+    ['Scope', p.scope],
+  ].filter(([, v]) => v)
+
+  return (
+    <section className="pd-brief" aria-label="The brief">
+      <div className="pd-brief__in">
+        <div className="pd-brief__say">
+          <p className="ld-label">The brief</p>
+          <Scrub as="p" className="pd-brief__text" text={p.summary} span={0.5} />
+        </div>
+        {facts.length > 0 && (
+          <div className="pd-sheet">
+            <dl>
+              {facts.map(([k, v]) => (
+                <div key={k}>
+                  <dt>{k}</dt>
+                  <dd>{v}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link to={quoteOf(p)} className="pd-sheet__go">
+              Get this spec quoted for your building <Arrow size={14} />
+            </Link>
+          </div>
+        )}
       </div>
-    </article>
+    </section>
+  )
+}
+
+/* --- the story: challenge, solution, result, side by side -------------------
+   Three tall cards in one row, each the photograph that proves its part and
+   the few lines that tell it. They come up one after another as the row
+   reaches the middle of the screen. */
+function Story({ chapters }) {
+  const ref = useRef(null)
+  useScrollVar(ref, { from: 0.95, to: 0.35 })
+
+  return (
+    <section className="pd-story" aria-labelledby="pd-story-title">
+      <header className="pd-story__head">
+        <RiseIn as="h2" id="pd-story-title" text="How it came together." className="pd-h2" accent={false} />
+      </header>
+      <ol ref={ref} className="pd-tri">
+        {chapters.map((c, i) => (
+          <li className="pd-tri__card" key={c.title} style={{ '--i': i }}>
+            <figure className="pd-tri__fig">
+              {c.image && <Img src={c.image.src} alt={c.image.alt || ''} sizes="(min-width: 900px) 32vw, 92vw" />}
+              <span className="pd-tri__tag">{c.title}</span>
+            </figure>
+            <div className="pd-tri__text">
+              <h3>{c.title}</h3>
+              <p>{c.body}</p>
+              {c.image?.caption && <p className="pd-tri__cap">{c.image.caption}</p>}
+            </div>
+          </li>
+        ))}
+      </ol>
+    </section>
   )
 }
 
@@ -226,19 +330,16 @@ function Shots({ project, shots, onOpen }) {
 function Film({ project: p }) {
   const tall = !!p.is_portrait
   return (
-    <section className="pf pd-film" aria-labelledby="pd-film-title">
-      <div className="pf__head">
-        <div>
+    <section className="pd-film" aria-labelledby="pd-film-title">
+      <div className={`pd-film__in ${tall ? 'is-tall' : 'is-wide'}`}>
+        <div className="pd-film__copy">
           <p className="ld-label">On film</p>
-          <RiseIn id="pd-film-title" text={`${p.name}, on site.`} className="pr-h2" />
+          <RiseIn as="h2" id="pd-film-title" text={`${p.name}, on site.`} className="pd-h2" accent={false} />
+          <p className="pd-film__lead">
+            Shot at the finished installation, with the lift running. No renders, no stock.
+          </p>
         </div>
-        <p className="pr-lead">Shot at the finished installation, with the lift running. No renders, no stock.</p>
-      </div>
-      <div className={`pf__stage ${tall ? 'is-tall' : 'is-wide'}`}>
-        <div className="pf__back" aria-hidden="true">
-          <Img src={p.poster_url || p.hero_image_url} alt="" sizes="60vw" />
-        </div>
-        <div className="pf__player" style={{ aspectRatio: tall ? '9 / 16' : '16 / 9' }}>
+        <div className="pd-film__screen">
           <VideoPlayer
             src={p.hero_video_url}
             poster={p.poster_url || p.hero_image_url}
@@ -253,54 +354,45 @@ function Film({ project: p }) {
 
 /* --- the way on: the next building in the same sector ----------------------- */
 function NextProject({ project }) {
-  const wrap = useRef(null)
-  useScrollVar(wrap, { from: 1, to: 0.15 })
   const next = project.related?.[0]
   const scene = next ? next.hero_image_url || next.poster_url : '/media/frames/lekha-approach.jpg'
 
   return (
-    <div ref={wrap} className="pr-invite-wrap">
-      <section className="pr-invite" aria-label={next ? 'Next project' : 'Next step'}>
-        <div className="pr-invite__scene">
-          <Img src={scene} alt="" sizes="100vw" />
-        </div>
-        <div className="pr-invite__copy">
-          <p className="ld-label">{next ? `Next project · ${next.category?.name ?? ''}` : 'Next step'}</p>
-          <h2 className="pr-invite__title ld-rise">
-            <Rise text={next ? next.name : 'Planning something similar?'} accent={!next} />
-          </h2>
-          <p className="pr-invite__lead">
+    <section className="pd-next" aria-label={next ? 'Next project' : 'Next step'}>
+      <div className="pd-next__card">
+        <div className="pd-next__copy">
+          <p className="ld-label">{next ? 'Next project' : 'Next step'}</p>
+          <h2 className="pd-next__title">{next ? next.name : 'Planning something similar?'}</h2>
+          <p className="pd-next__lead">
             {next
               ? next.statement
               : `If your building resembles ${project.name}, we already know most of the questions worth asking.`}
           </p>
-          <div className="pr-invite__actions">
-            <Link to={next ? `/projects/${next.slug}` : '/contact'} className="pr-go">
-              <span>{next ? 'View the case study' : 'Get a quote'}</span>
-              <span className="pr-go__ring">
-                <Arrow size={16} />
-              </span>
+          <div className="pd-next__actions">
+            <Link to={next ? `/projects/${next.slug}` : '/contact'} className="pd-next__go">
+              {next ? 'View the case study' : 'Get a quote'} <Arrow size={14} />
             </Link>
-            {next && (
-              <Link to="/contact" className="pr-invite__alt">
-                Get a quote
-              </Link>
-            )}
-            <Link to="/projects" className="pr-invite__alt">
-              All projects
-            </Link>
+            {next && <Link to="/contact">Get a quote</Link>}
+            <Link to="/projects">All projects</Link>
           </div>
         </div>
-      </section>
-    </div>
+        <Link
+          to={next ? `/projects/${next.slug}` : '/contact'}
+          className="pd-next__media"
+          aria-hidden="true"
+          tabIndex={-1}
+        >
+          <Img src={scene} alt="" sizes="(min-width: 900px) 50vw, 92vw" />
+        </Link>
+      </div>
+    </section>
   )
 }
 
 /* --- page ------------------------------------------------------------------
-   One building, told the way the site tells everything: the photograph first
-   (dark), the brief read into focus (ivory), the three chapters each with the
-   photograph that proves it (paper), the film (dark), every photograph on a
-   strip (paper), what the client said (dark), and the next building. */
+   One building, on light ground throughout: the name and the building, the
+   brief beside its job sheet, the story as three cards side by side, the
+   film, every photograph, what the client said, and the next building. */
 export default function ProjectDetail() {
   const { slug } = useParams()
   const { data: project, loading, error } = useApi(slug ? `projects/${slug}/` : null)
@@ -379,20 +471,19 @@ export default function ProjectDetail() {
     <div className="pd">
       <Opening project={project} />
 
-      {project.summary && (
-        <section className="pd-brief on-stone" aria-label="The brief">
-          <p className="ld-label">The brief</p>
-          <Scrub as="p" className="pd-brief__text" text={project.summary} span={0.5} />
-        </section>
-      )}
+      {project.summary && <Brief project={project} />}
 
-      {chapters.length > 0 && (
-        <section className="pd-story on-paper" aria-label="How it came together">
-          {chapters.map((c, i) => (
-            <Chapter key={c.title} index={i} title={c.title} body={c.body} image={c.image} flip={i % 2 === 1} />
-          ))}
-        </section>
-      )}
+      {chapters.length > 0 && <Story chapters={chapters} />}
+
+      <AskBand
+        id="pd-ask-title"
+        className="pd-ask"
+        title={`Want a lift like ${project.name}’s?`}
+        lead="Tell us about your building — floors, shaft, what the lift has to carry. An engineer reads every enquiry and replies within one working day."
+        to={quoteOf(project)}
+        label="Start your enquiry"
+        whatsapp={chatOf(project)}
+      />
 
       {project.hero_video_url && <Film project={project} />}
 
@@ -401,14 +492,17 @@ export default function ProjectDetail() {
       {quote && (
         <section className="pd-quote" aria-label="What the client said">
           <figure className="pd-quote__fig">
+            <span className="pd-quote__mark" aria-hidden="true">
+              &ldquo;
+            </span>
             <blockquote className="pd-quote__text">
-              <Scrub as="p" text={`“${quote.quote}”`} span={0.4} />
+              <Scrub as="p" text={quote.quote} span={0.4} />
             </blockquote>
             <figcaption className="pd-quote__by">
               <strong>{quote.organisation || quote.name}</strong>
               <span>
                 {quote.role}
-                {quote.location ? ` · ${quote.location}` : ''}
+                {quote.location ? `, ${quote.location}` : ''}
               </span>
             </figcaption>
           </figure>
@@ -416,6 +510,7 @@ export default function ProjectDetail() {
       )}
 
       <NextProject project={project} />
+      <StickyAsk project={project} />
 
       {open !== null && <Lightbox items={shots} index={open} onClose={() => setOpen(null)} onMove={move} />}
     </div>

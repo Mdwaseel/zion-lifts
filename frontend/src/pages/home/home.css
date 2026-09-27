@@ -422,7 +422,7 @@ canvas.hero__film.is-in {
 
 .world__layer .media__img {
   object-fit: cover;
-  filter: contrast(1.06) saturate(0.92) brightness(0.86);
+  filter: contrast(1.04) saturate(1.02);
 }
 
 /* The photograph has to dissolve into the page on the left rather than end at
@@ -431,15 +431,17 @@ canvas.hero__film.is-in {
   position: absolute;
   inset: 0;
   background:
+    /* dark only where the words sit; the room itself stays in clear view */
     linear-gradient(
       100deg,
-      rgba(5, 6, 7, 0.97) 0%,
-      rgba(5, 6, 7, 0.93) 26%,
-      rgba(5, 6, 7, 0.55) 46%,
-      rgba(5, 6, 7, 0.12) 66%,
-      rgba(5, 6, 7, 0.4) 100%
+      rgba(5, 6, 7, 0.78) 0%,
+      rgba(5, 6, 7, 0.6) 24%,
+      rgba(5, 6, 7, 0.28) 42%,
+      rgba(5, 6, 7, 0) 60%,
+      rgba(5, 6, 7, 0) 82%,
+      rgba(5, 6, 7, 0.22) 100%
     ),
-    radial-gradient(120% 80% at 50% 0%, transparent 40%, rgba(5, 6, 7, 0.55) 100%);
+    linear-gradient(180deg, rgba(5, 6, 7, 0.35) 0%, rgba(5, 6, 7, 0) 16%);
   pointer-events: none;
 }
 
@@ -447,8 +449,8 @@ canvas.hero__film.is-in {
 .world__floor {
   position: absolute;
   inset: auto 0 0;
-  height: 52%;
-  background: linear-gradient(to bottom, transparent, rgba(5, 6, 7, 0.82) 62%, rgba(5, 6, 7, 0.95));
+  height: 38%;
+  background: linear-gradient(to bottom, transparent, rgba(5, 6, 7, 0.5) 64%, rgba(5, 6, 7, 0.78));
   pointer-events: none;
 }
 
@@ -597,13 +599,15 @@ canvas.hero__film.is-in {
   top: 50%;
   transform: translateY(-50%);
   width: max-content;
-  padding: 1.5rem 1rem;
-  background: radial-gradient(
-    ellipse 130% 78% at 50% 50%,
-    rgba(5, 6, 7, 0.78) 0%,
-    rgba(5, 6, 7, 0.5) 45%,
-    rgba(5, 6, 7, 0) 76%
-  );
+  padding: 1rem 1.25rem 1rem 0.9rem;
+  /* its own frosted panel: the photograph behind is bright now, so the rail
+     can no longer borrow the page's darkness to be read against */
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 1.25rem;
+  background: rgba(8, 9, 11, 0.62);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+  backdrop-filter: blur(14px) saturate(1.2);
+  box-shadow: 0 20px 40px -24px rgba(0, 0, 0, 0.6);
 }
 
 .world__rail ol {
@@ -648,7 +652,7 @@ canvas.hero__film.is-in {
   font-size: 0.625rem;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
-  color: rgba(245, 245, 242, 0.62);
+  color: rgba(245, 245, 242, 0.85);
   transition:
     background-color 0.55s var(--ease-out),
     border-color 0.55s var(--ease-out),
@@ -657,9 +661,9 @@ canvas.hero__film.is-in {
 
 .world__rail-label {
   white-space: nowrap;
-  font-size: 0.8125rem;
+  font-size: 0.875rem;
   letter-spacing: 0.01em;
-  color: rgba(245, 245, 242, 0.5);
+  color: rgba(245, 245, 242, 0.86);
   transition: color 0.55s var(--ease-out);
 }
 
@@ -668,7 +672,7 @@ canvas.hero__film.is-in {
 }
 
 .world__rail button:hover .world__rail-label {
-  color: rgba(245, 245, 242, 0.8);
+  color: #fff;
 }
 
 /* Active state carries weight as well as colour, so it does not depend on
@@ -702,10 +706,10 @@ canvas.hero__film.is-in {
   .world__veil {
     background: linear-gradient(
       180deg,
-      rgba(5, 6, 7, 0.94) 0%,
-      rgba(5, 6, 7, 0.6) 38%,
-      rgba(5, 6, 7, 0.5) 62%,
-      rgba(5, 6, 7, 0.96) 100%
+      rgba(5, 6, 7, 0.78) 0%,
+      rgba(5, 6, 7, 0.42) 36%,
+      rgba(5, 6, 7, 0.28) 60%,
+      rgba(5, 6, 7, 0.82) 100%
     );
   }
   .world__title {
@@ -725,6 +729,11 @@ canvas.hero__film.is-in {
     overflow-x: auto;
     scrollbar-width: none;
     background: none;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
     padding-block: 0;
     margin-inline: calc(var(--page-x) * -1);
     padding-inline: var(--page-x);
@@ -745,6 +754,7 @@ canvas.hero__film.is-in {
     padding: 0.4rem 0.75rem 0.4rem 0.4rem;
     border: 1px solid rgba(255, 255, 255, 0.14);
     border-radius: var(--radius-pill);
+    background: rgba(8, 9, 11, 0.62);
   }
   .world__rail-dot {
     width: 1.4rem;
@@ -1485,7 +1495,9 @@ canvas.hero__film.is-in {
    long tonal run from banding. Sized in rem/vh so a phone gets a short crossing,
    not a tall empty dark block. */
 .section.eng {
-  --bridge-h: clamp(10rem, 24vh, 18rem);
+  /* long enough that the move from black to ivory reads as light arriving,
+     not as a band */
+  --bridge-h: clamp(16rem, 40vh, 28rem);
   padding-bottom: calc(var(--section-y) + var(--bridge-h));
 }
 
@@ -1498,26 +1510,38 @@ canvas.hero__film.is-in {
   z-index: -2;
   height: calc(var(--bridge-h) + clamp(3rem, 6vh, 5rem));
   pointer-events: none;
-  background:
-    repeating-linear-gradient(90deg, rgba(21, 21, 21, 0.16) 0 1px, transparent 1px 3rem)
-      center calc(100% - 2.5rem) / calc(100% - 2 * var(--page-x)) 5px no-repeat,
-    linear-gradient(rgba(21, 21, 21, 0.14), rgba(21, 21, 21, 0.14))
-      center calc(100% - 2.5rem) / calc(100% - 2 * var(--page-x)) 1px no-repeat,
-    radial-gradient(70% 55% at 84% 100%, rgba(255, 255, 255, 0.34), rgba(255, 255, 255, 0) 70%),
-    linear-gradient(
-      180deg,
-      rgba(8, 9, 11, 0) 0%,
-      #08090b 12%,
-      #121314 24%,
-      #2b2926 36%,
-      #4d4944 48%,
-      #73706a 58%,
-      #9b978f 68%,
-      #bfbab1 78%,
-      #dcd8cf 88%,
-      #ebe8e1 95%,
-      var(--light-surface) 100%
-    );
+  /* black to the cabin's ivory, blended in OKLab on an eased curve so the
+     middle stays a clean grey rather than a muddy brown; the same across the
+     whole width, with enough steps that it cannot band */
+  background: linear-gradient(
+    180deg,
+    rgba(8, 9, 11, 0) 0%,
+    #08090b 6%,
+    #090a0c 10%,
+    #0b0c0e 14%,
+    #0f1012 18%,
+    #151618 22%,
+    #1c1d1f 26%,
+    #252527 30%,
+    #2f2f30 33%,
+    #3a3a3b 37%,
+    #464647 41%,
+    #545453 45%,
+    #626161 49%,
+    #70706f 53%,
+    #7f7f7d 57%,
+    #8e8d8b 61%,
+    #9d9c99 65%,
+    #acaaa7 69%,
+    #bab8b4 73%,
+    #c7c5c0 76%,
+    #d3d0cb 80%,
+    #dddad5 84%,
+    #e5e3dd 88%,
+    #ece9e3 92%,
+    #f0ede7 96%,
+    #f1eee8 100%
+  );
 }
 
 .section.eng::before {
@@ -5612,7 +5636,7 @@ canvas.hero__film.is-in {
    foot carries the mirror of the threshold under Engineering: the page settles
    back into the dark for the final ascent and the footer instead of cutting. */
 .section.logos {
-  --bridge-h: clamp(10rem, 24vh, 18rem);
+  --bridge-h: clamp(16rem, 40vh, 28rem);
   position: relative;
   padding-bottom: calc(var(--section-y) + var(--bridge-h));
 }
@@ -5626,25 +5650,36 @@ canvas.hero__film.is-in {
   z-index: -1;
   height: calc(var(--bridge-h) + clamp(3rem, 6vh, 5rem));
   pointer-events: none;
-  background:
-    repeating-linear-gradient(90deg, rgba(21, 21, 21, 0.16) 0 1px, transparent 1px 3rem)
-      center 2.5rem / calc(100% - 2 * var(--page-x)) 5px no-repeat,
-    linear-gradient(rgba(21, 21, 21, 0.14), rgba(21, 21, 21, 0.14))
-      center 2.5rem / calc(100% - 2 * var(--page-x)) 1px no-repeat,
-    linear-gradient(
-      180deg,
-      rgba(248, 248, 246, 0) 0%,
-      rgba(248, 248, 246, 0.92) 12%,
-      #ebe8e1 20%,
-      #dcd8cf 30%,
-      #bfbab1 42%,
-      #9b978f 54%,
-      #73706a 65%,
-      #4d4944 76%,
-      #2b2926 86%,
-      #0e0f10 94%,
-      #000 100%
-    );
+  /* the paper down into the black of the closing section, blended in OKLab on
+     an eased curve, with enough steps that it cannot band */
+  background: linear-gradient(
+    180deg,
+    #f8f8f6 4%,
+    #f6f6f4 8%,
+    #f2f2f0 12%,
+    #eaeae8 16%,
+    #e0e0de 20%,
+    #d4d4d2 24%,
+    #c6c6c4 28%,
+    #b6b6b5 32%,
+    #a6a6a5 36%,
+    #959594 40%,
+    #838382 44%,
+    #727271 48%,
+    #60605f 52%,
+    #4f4f4f 56%,
+    #3f3f3f 60%,
+    #303030 64%,
+    #222222 68%,
+    #161616 72%,
+    #0c0c0c 76%,
+    #040404 80%,
+    #010101 84%,
+    #000000 88%,
+    #000000 92%,
+    #000000 96%,
+    #000000 100%
+  );
 }
 
 /* --- 16 FINAL ASCENT ----------------------------------------------------- */

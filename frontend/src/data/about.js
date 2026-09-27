@@ -19,32 +19,38 @@ export const WHO_WE_ARE = {
   founder: { name: 'Varghese', role: 'Founder & CEO' },
 }
 
-/** "World-class, current-generation elevator solutions for …" — the sectors, each with a building to show it */
+/** "World-class, current-generation elevator solutions for …" — the sectors, each with a building to
+    show it and the lifts it usually takes ([slug, label]) */
 export const SECTORS = [
   {
     name: 'Residential buildings',
     line: 'Homes, villas and apartment blocks — lifts sized to the family and finished to the interior.',
     src: '/media/frames/kashi-exterior.jpg',
+    lifts: [['home-elevator', 'Home'], ['capsule-elevator', 'Capsule'], ['hydraulic-elevator', 'Hydraulic']],
   },
   {
     name: 'Commercial & corporate towers',
     line: 'Daily peaks, group control and lobbies that have to look the part.',
     src: '/media/contexts/context-office.jpg',
+    lifts: [['passenger-elevator', 'Passenger'], ['mrl-traction', 'MRL']],
   },
   {
     name: 'Industries',
     line: 'Goods and freight lifts from 500 kg to 5,000 kg, built for daily abuse.',
     src: '/media/contexts/context-industrial.jpg',
+    lifts: [['goods-elevator', 'Goods & freight'], ['hydraulic-elevator', 'Hydraulic']],
   },
   {
     name: 'Malls',
     line: 'Scenic and capsule lifts that are part of the view, and service lifts behind the scenes.',
     src: '/media/sourced/place-mall.jpg',
+    lifts: [['capsule-elevator', 'Capsule'], ['passenger-elevator', 'Passenger']],
   },
   {
     name: 'Hotels',
     line: 'Guest lifts, service lifts and dumbwaiters, running to different schedules.',
     src: '/media/contexts/context-hotel.jpg',
+    lifts: [['passenger-elevator', 'Passenger'], ['dumbwaiter', 'Dumbwaiter']],
   },
 ]
 

@@ -131,25 +131,6 @@
   margin-top: 0.5rem;
 }
 
-.ld-hero__go {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  min-height: 3.1rem;
-  padding: 0 1.5rem;
-  border-radius: var(--radius-pill);
-  background: var(--teal);
-  font-size: var(--t-small);
-  font-weight: var(--w-semibold);
-  color: #fff;
-  transition: background-color var(--dur) var(--ease-out);
-}
-
-@media (hover: hover) {
-  .ld-hero__go:hover {
-    background: var(--teal-deep);
-  }
-}
 
 .ld-hero__more {
   display: inline-flex;
@@ -160,7 +141,6 @@
   font-size: var(--t-body);
 }
 
-.ld-hero__go:focus-visible,
 .ld-hero__more:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 4px;
@@ -2024,4 +2004,14 @@
     transform: none;
     transition: opacity var(--dur-fast) linear, visibility 0s;
   }
+}
+
+/* the ask after the figures: its own breathing room, on the page's paper */
+.ask-band.ld-fit {
+  padding-top: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+  padding-bottom: clamp(3.5rem, 2.5rem + 4vw, 6rem);
+}
+
+.ld-hero__actions .asks {
+  margin-top: 0;
 }

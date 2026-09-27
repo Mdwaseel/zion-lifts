@@ -79,6 +79,8 @@
   inset: 0;
   z-index: 0;
   font-family: var(--font-sans);
+  /* the map's repaints stay inside its own box */
+  contain: strict;
 }
 
 .inst__state {
@@ -101,8 +103,7 @@
   padding: 0 0.9rem;
   border: 1px solid var(--light-border);
   border-radius: var(--radius-pill);
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(6px);
+  background: rgba(255, 255, 255, 0.96);
   font-size: var(--t-small);
   font-weight: var(--w-semibold);
   color: var(--light-text);
@@ -125,11 +126,6 @@
 .inst__map svg,
 .inst__map img {
   max-width: none;
-}
-
-/* the street map, quietened to sit on paper */
-.inst__map .leaflet-tile-pane {
-  filter: grayscale(0.55) saturate(0.75) contrast(0.92) brightness(1.03);
 }
 
 /* Leaflet's furniture, in the site's hand */
@@ -173,11 +169,6 @@
 .inst__map .leaflet-container:focus {
   outline: 2px solid var(--teal);
   outline-offset: -2px;
-}
-
-/* the pins */
-.inst-pin {
-  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.28));
 }
 
 /* the pressed pin's ring, and our office, and you */

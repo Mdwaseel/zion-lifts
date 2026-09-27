@@ -1,0 +1,166 @@
+/* The asks a page offers where a reader decides: the quote in words, and the
+   phone and WhatsApp beside it. Shared by the case studies and the lift pages. */
+
+/* --- the asks ---------------------------------------------------------------- */
+.asks {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.asks__go {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 3.1rem;
+  padding: 0 1.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--teal);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  box-shadow: 0 10px 24px -12px rgba(6, 111, 112, 0.7);
+  transition:
+    background-color var(--dur) var(--ease-out),
+    transform var(--dur) var(--ease-out);
+}
+
+.asks__alt {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 3.1rem;
+  padding: 0 1.1rem;
+  border: 1px solid rgba(21, 21, 21, 0.16);
+  border-radius: var(--radius-pill);
+  background: #fff;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--light-text);
+  transition: border-color var(--dur) var(--ease-out);
+}
+
+.asks__alt svg {
+  color: var(--teal);
+}
+
+@media (hover: hover) {
+  .asks__go:hover {
+    background: var(--teal-deep);
+    transform: translateY(-1px);
+  }
+
+  .asks__alt:hover {
+    border-color: var(--teal);
+  }
+}
+
+.asks a:focus-visible,
+.ask-band a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 3px;
+}
+
+/* on the teal band the buttons invert */
+.asks--dark .asks__go {
+  background: #fff;
+  color: var(--teal-deep);
+  box-shadow: none;
+}
+
+.asks--dark .asks__alt {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: transparent;
+  color: #fff;
+}
+
+.asks--dark .asks__alt svg {
+  color: #fff;
+}
+
+@media (hover: hover) {
+  .asks--dark .asks__go:hover {
+    background: #f1f7f7;
+  }
+
+  .asks--dark .asks__alt:hover {
+    border-color: #fff;
+  }
+}
+
+.asks--dark a:focus-visible {
+  outline-color: #fff;
+}
+
+/* --- the band: the brand's own teal, and the ask -------------------------- */
+.ask-band {
+  padding: 0 var(--page-x) clamp(4.5rem, 3rem + 6vw, 9rem);
+  background: var(--light-bg);
+}
+
+.ask-band__in {
+  display: grid;
+  gap: 1.75rem;
+  align-items: center;
+  max-width: var(--maxw);
+  margin: 0 auto;
+  padding: clamp(1.75rem, 1.25rem + 3vw, 3.75rem);
+  border-radius: var(--radius-xl);
+  background:
+    radial-gradient(ellipse 60% 120% at 100% 0%, rgba(46, 201, 202, 0.32), transparent 60%),
+    linear-gradient(150deg, #066f70 0%, #04595a 60%, #033f40 100%);
+  color: #fff;
+  box-shadow: 0 30px 60px -30px rgba(3, 63, 64, 0.7);
+}
+
+@media (min-width: 1000px) {
+  .ask-band__in {
+    grid-template-columns: minmax(0, 1.2fr) auto;
+    gap: clamp(2rem, 5vw, 5rem);
+  }
+}
+
+.ask-band__title {
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(2rem, 1.3rem + 2.6vw, 3.6rem);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.ask-band__lead {
+  max-width: 48ch;
+  margin-top: 0.9rem;
+  font-size: var(--t-lead);
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.84);
+}
+
+
+/* the opening's asks: the quote in words, the phone and WhatsApp as rounds */
+.asks--compact {
+  flex-wrap: nowrap;
+  margin-top: 0;
+}
+
+.asks--compact .asks__alt {
+  justify-content: center;
+  width: 3.1rem;
+  padding: 0;
+  border-radius: 50%;
+}
+
+.asks--compact .asks__alt svg {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+/* on a phone the quote button says only what it does */
+@media (max-width: 599px) {
+  .asks--compact .asks__more {
+    display: none;
+  }
+}
