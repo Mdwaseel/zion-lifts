@@ -221,7 +221,7 @@ export default function Contact() {
       <Opening site={site} />
 
       {/* --- project enquiry + live summary --- */}
-      <section className="ct-sec on-stone" id="enquiry">
+      <section className="ct-sec on-paper ct-readable ct-sec--white" id="enquiry">
         <Head
           label="Project enquiry"
           title="Three steps, then an engineer reads it."
@@ -238,7 +238,7 @@ export default function Contact() {
       <NextSteps />
 
       {/* --- visit + map --- */}
-      <section className="ct-sec on-paper" id="visit">
+      <section className="ct-sec on-paper ct-readable" id="visit">
         <Head
           label="Come see us"
           title="Two addresses."
@@ -327,7 +327,7 @@ export default function Contact() {
 
       {/* --- contact FAQ --- */}
       {contactFaqs.length > 0 && (
-        <section className="ct-sec on-stone">
+        <section className="ct-sec on-stone ct-readable">
           <Head
             label="Before you ask"
             title="Contacting us, in questions."

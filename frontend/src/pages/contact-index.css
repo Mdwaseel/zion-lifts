@@ -340,6 +340,176 @@
   }
 }
 
+/* --- readable light sections ----------------------------------------------
+   The enquiry, the addresses and the questions: ink-dark text, outlines you
+   can see, labels at reading size, and the form on white. Scoped here so the
+   service page's dark form keeps its own palette. */
+.ct-readable {
+  --fg: #151515;
+  --fg-dim: #3f3f3f;
+  --fg-faint: #676767;
+  --rule: rgba(0, 0, 0, 0.14);
+  --field-bg: #fff;
+}
+
+.ct-sec--white {
+  background: #fff;
+}
+
+.ct-readable .ct-lead {
+  font-size: var(--t-lead);
+  line-height: 1.5;
+  color: #4a4a4a;
+}
+
+.ct-readable .ld-label {
+  color: var(--light-mark);
+}
+
+/* the form itself: a card with a clear edge */
+.ct-readable .enquiry {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: var(--radius-xl);
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 18px 40px -24px rgba(0, 0, 0, 0.22);
+}
+
+.ct-readable .enquiry__steps button {
+  border-top-width: 3px;
+  color: #6a6a6a;
+}
+
+.ct-readable .enquiry__steps li.is-on button {
+  color: #151515;
+}
+
+.ct-readable .enquiry__steps li.is-done button {
+  color: #3f3f3f;
+}
+
+.ct-readable .enquiry__step-n {
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.02em;
+  color: var(--teal);
+}
+
+.ct-readable .enquiry__step-label {
+  font-size: var(--t-body);
+  font-weight: var(--w-semibold);
+}
+
+.ct-readable .field__label {
+  font-size: var(--t-small);
+  letter-spacing: 0;
+  color: #151515;
+}
+
+.ct-readable .field input[type='text'],
+.ct-readable .field input[type='tel'],
+.ct-readable .field input[type='email'],
+.ct-readable .field input[type='number'],
+.ct-readable .field select,
+.ct-readable .field textarea {
+  border-color: rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  color: #151515;
+}
+
+.ct-readable .field select option {
+  background: #fff;
+  color: #151515;
+}
+
+.ct-readable .field input::placeholder,
+.ct-readable .field textarea::placeholder {
+  color: #8a8a8a;
+}
+
+.ct-readable .field__hint,
+.ct-readable .dropzone__label span {
+  color: #5c5c5c;
+}
+
+.ct-readable .field__error {
+  color: #b3412a;
+}
+
+/* the choices: white pills with a visible edge, filled when chosen */
+.ct-readable .chip {
+  border-color: rgba(0, 0, 0, 0.16);
+  background: #fff;
+  color: #262626;
+  font-size: var(--t-body);
+}
+
+.ct-readable .chip__icon {
+  color: #4d4d4d;
+}
+
+.ct-readable .chip__mark {
+  background-color: #4d4d4d;
+}
+
+.ct-readable .chip:hover {
+  border-color: var(--teal);
+  color: #151515;
+}
+
+.ct-readable .chip.is-on {
+  border-color: var(--teal);
+  background: var(--teal);
+  color: #fff;
+}
+
+.ct-readable .chip.is-on .chip__icon {
+  color: #fff;
+}
+
+.ct-readable .chip.is-on .chip__mark {
+  background-color: #fff;
+}
+
+.ct-readable .dropzone {
+  border-color: rgba(0, 0, 0, 0.22);
+  border-radius: 12px;
+  background: #fafaf8;
+}
+
+/* the running summary beside it */
+.ct-readable .summary {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: var(--radius-xl);
+  background: var(--light-bg);
+}
+
+.ct-readable .summary__eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0;
+  text-transform: none;
+  color: #151515;
+}
+
+.ct-readable .summary__empty {
+  color: #5c5c5c;
+}
+
+.ct-readable .summary__list dt {
+  font-family: var(--font-sans);
+  font-size: var(--t-micro);
+  letter-spacing: 0;
+  text-transform: none;
+  color: #6a6a6a;
+}
+
+.ct-readable .summary__list dd {
+  font-size: var(--t-body);
+  color: #151515;
+}
+
 /* --- what happens next --------------------------------------------------------- */
 .ct-next {
   background: var(--ink);
@@ -400,7 +570,7 @@
   display: grid;
   align-content: start;
   gap: 0.7rem;
-  opacity: calc(0.25 + var(--t) * 0.75);
+  opacity: calc(0.6 + var(--t) * 0.4);
   transform: translate3d(0, calc((1 - var(--t)) * 1.25rem), 0);
 }
 
@@ -421,7 +591,7 @@
   font-size: clamp(2.6rem, 1.8rem + 2.6vw, 4.5rem);
   line-height: 1;
   letter-spacing: -0.03em;
-  color: color-mix(in srgb, var(--teal-bright) calc(var(--t) * 100%), rgba(245, 245, 242, 0.4));
+  color: color-mix(in srgb, var(--teal-bright) calc(var(--t) * 100%), rgba(245, 245, 242, 0.55));
 }
 
 .ct-next__title {
@@ -432,9 +602,9 @@
 
 .ct-next__body {
   max-width: 34ch;
-  font-size: var(--t-small);
+  font-size: var(--t-body);
   line-height: 1.55;
-  color: rgba(245, 245, 242, 0.7);
+  color: rgba(245, 245, 242, 0.84);
 }
 
 @media (max-width: 899px) {
