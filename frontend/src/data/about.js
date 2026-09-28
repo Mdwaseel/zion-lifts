@@ -26,31 +26,32 @@ export const SECTORS = [
     name: 'Residential buildings',
     line: 'Homes, villas and apartment blocks — lifts sized to the family and finished to the interior.',
     src: '/media/frames/kashi-exterior.jpg',
-    lifts: [['home-elevator', 'Home'], ['capsule-elevator', 'Capsule'], ['hydraulic-elevator', 'Hydraulic']],
+    lifts: [['home-elevator', 'Home elevator'], ['capsule-elevator', 'Capsule elevator'], ['hydraulic-elevator', 'Hydraulic elevator']],
   },
   {
     name: 'Commercial & corporate towers',
     line: 'Daily peaks, group control and lobbies that have to look the part.',
     src: '/media/contexts/context-office.jpg',
-    lifts: [['passenger-elevator', 'Passenger'], ['mrl-traction', 'MRL']],
+    lifts: [['passenger-elevator', 'Passenger elevator'], ['mrl-traction', 'MRL traction']],
   },
   {
     name: 'Industries',
     line: 'Goods and freight lifts from 500 kg to 5,000 kg, built for daily abuse.',
     src: '/media/contexts/context-industrial.jpg',
-    lifts: [['goods-elevator', 'Goods & freight'], ['hydraulic-elevator', 'Hydraulic']],
+    lifts: [['goods-elevator', 'Goods & freight'], ['hydraulic-elevator', 'Hydraulic elevator']],
   },
   {
     name: 'Malls',
     line: 'Scenic and capsule lifts that are part of the view, and service lifts behind the scenes.',
     src: '/media/sourced/place-mall.jpg',
-    lifts: [['capsule-elevator', 'Capsule'], ['passenger-elevator', 'Passenger']],
+    pos: 'center 40%',
+    lifts: [['capsule-elevator', 'Capsule elevator'], ['passenger-elevator', 'Passenger elevator']],
   },
   {
     name: 'Hotels',
     line: 'Guest lifts, service lifts and dumbwaiters, running to different schedules.',
     src: '/media/contexts/context-hotel.jpg',
-    lifts: [['passenger-elevator', 'Passenger'], ['dumbwaiter', 'Dumbwaiter']],
+    lifts: [['passenger-elevator', 'Passenger elevator'], ['dumbwaiter', 'Dumbwaiter']],
   },
 ]
 
