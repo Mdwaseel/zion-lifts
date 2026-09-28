@@ -6,8 +6,8 @@ import { AWARDS } from '@/data/awards'
 import { ESTABLISHED, KNOWN_FOR, MODERNISATION, OFFICES, REVIEWS, SECTORS, VALUES, WHO_WE_ARE } from '@/data/about'
 import Reveal from '@/components/Reveal'
 import { ClientLogos } from '@/components/sections'
-import { Arrow, ArrowDown } from '@/components/icons'
-import { gsap, initGsap } from '@/lib/gsap'
+import { Arrow, ArrowDown, Plus } from '@/components/icons'
+import { gsap } from '@/lib/gsap'
 import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
 
@@ -169,195 +169,111 @@ function WhoWeAre() {
   )
 }
 
-/* --- where our lifts work: the home page's held stage, for the lifts --------
-   The building types in one pinned frame, the photograph of each crossfading
-   into the next as the page scrolls — built in the vocabulary of the home
-   page's "Every building has a different rhythm" stage (veil on the left,
-   numbered rail on the right, copy that re-enters on each change). The one
-   difference: where the home page sets a strip of claims at the foot, this one
-   sets the lifts themselves — each lift's own film, as a way into its page. */
-
-/** fraction of each building's slot spent crossfading into the next */
-const BLEND = 0.25
-
+/* --- where our lifts work: five buildings, side by side --------------------
+   Every kind of building stays in view as a tall photograph. The one being
+   looked at opens wide — its name, its line and the lifts it takes, each as
+   the lift's own film and a way to its page — while the others fold to a
+   strip with their name up the side. Hover opens a panel on a desktop; a tap
+   (or Enter) opens it anywhere. On a phone the strips stack and open
+   downwards. Under the panels, the question most visitors arrive with. */
 function Sectors() {
-  const sectionRef = useRef(null)
-  const layersRef = useRef([])
-  const copyRef = useRef(null)
+  const ref = useRef(null)
   const [active, setActive] = useState(0)
-  const reduced = useReducedMotion()
-  const N = SECTORS.length
-
-  // scroll drives the stage: hold on a building, then hand over to the next
-  useEffect(() => {
-    if (reduced) return undefined
-    const section = sectionRef.current
-    const { ScrollTrigger } = initGsap()
-
-    const apply = (progress) => {
-      const x = Math.min(N - 0.0001, Math.max(0, progress * N))
-      const idx = Math.floor(x)
-      const frac = x - idx
-      // the last slot has nothing to hand over to, so it only holds
-      const t = idx === N - 1 || frac <= 1 - BLEND ? 0 : (frac - (1 - BLEND)) / BLEND
-      const next = Math.min(N - 1, idx + 1)
-      layersRef.current.forEach((el, i) => {
-        if (!el) return
-        let o = 0
-        let sc = 1.04
-        if (i === idx) {
-          o = 1 - t
-          sc = 1 + 0.04 * t
-        } else if (i === next && t > 0) {
-          o = t
-          sc = 1.04 - 0.04 * t
-        }
-        el.style.opacity = o
-        el.style.transform = `scale(${sc.toFixed(4)})`
-      })
-      const a = t > 0.5 ? next : idx
-      setActive((prev) => (prev === a ? prev : a))
-    }
-
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start: 'top top',
-      end: 'bottom bottom',
-      onUpdate: (self) => apply(self.progress),
-      onRefresh: (self) => apply(self.progress),
-    })
-    return () => st.kill()
-  }, [N, reduced])
-
-  // reduced motion: nothing is pinned, the rail alone changes the building
-  useEffect(() => {
-    if (!reduced) return
-    layersRef.current.forEach((el, i) => {
-      if (!el) return
-      el.style.opacity = i === active ? 1 : 0
-      el.style.transform = 'none'
-    })
-  }, [reduced, active])
-
-  // the building's name, its line and its lifts come in again on each change
-  useEffect(() => {
-    if (reduced || !copyRef.current) return undefined
-    const tween = gsap.fromTo(
-      copyRef.current.querySelectorAll('[data-enter]'),
-      { autoAlpha: 0, y: 18 },
-      { autoAlpha: 1, y: 0, duration: 0.55, stagger: 0.06, ease: 'power2.out', overwrite: true },
-    )
-    return () => tween.kill()
-  }, [active, reduced])
-
-  const goTo = (i) => {
-    const section = sectionRef.current
-    const runway = section.offsetHeight - window.innerHeight
-    if (reduced || runway <= 0) {
-      setActive(i)
-      return
-    }
-    const top = section.getBoundingClientRect().top + window.scrollY
-    const target = top + runway * ((i + 0.5) / N)
-    if (window.__lenis) window.__lenis.scrollTo(target, { duration: 1 })
-    else window.scrollTo({ top: target, behavior: 'smooth' })
-  }
-
-  // on a phone the rail is a row that scrolls sideways: keep the current one in it
-  const railRef = useRef(null)
-  useEffect(() => {
-    const rail = railRef.current
-    const on = rail?.querySelector('li.is-on')
-    if (!on || rail.scrollWidth <= rail.clientWidth) return
-    rail.scrollTo({ left: on.offsetLeft - rail.clientWidth / 2 + on.offsetWidth / 2, behavior: reduced ? 'auto' : 'smooth' })
-  }, [active, reduced])
-
-  const cur = SECTORS[active]
+  useScrollVar(ref, { from: 0.95, to: 0.35 })
 
   return (
-    <section ref={sectionRef} className="ab-where" style={{ '--n': N }} aria-labelledby="where-title">
-      <div className="ab-where__pin">
-        <div className="ab-where__stage">
-          {SECTORS.map((sec, i) => (
-            <div
-              key={sec.name}
-              className="ab-where__layer"
-              ref={(el) => (layersRef.current[i] = el)}
-              style={{ opacity: i === 0 ? 1 : 0 }}
-            >
-              <Img src={sec.src} alt="" sizes="100vw" objectPosition={sec.pos} />
-            </div>
-          ))}
-          <div className="ab-where__veil" aria-hidden="true" />
-        </div>
-
-        <div className="shell ab-where__content">
-          <div className="ab-where__head">
-            <p className="ld-label">Where our lifts work</p>
-            <h2 className="ab-where__title" id="where-title">
-              World-class lifts for <em>every building.</em>
-            </h2>
+    <section className="section on-paper ab-sectors" aria-labelledby="sectors-title">
+      <div className="shell">
+        <header className="ab-head">
+          <div>
+            <p className="ld-label ab-sectors__label">Where our lifts work</p>
+            <RiseIn
+              as="h2"
+              className="ab-h2"
+              id="sectors-title"
+              text="World-class lifts for every building."
+              accent={false}
+            />
           </div>
-
-          <div className="ab-where__now" ref={copyRef} aria-live="polite">
-            <p className="ab-where__count" data-enter>
-              {String(active + 1).padStart(2, '0')} <span>/ {String(N).padStart(2, '0')}</span>
+          <Reveal delay={100}>
+            <p className="ab-lead">
+              A wide range of current-generation elevator solutions — for residential buildings, commercial and
+              corporate towers, industries, malls and hotels, to name a few.
             </p>
-            <h3 className="ab-where__name" data-enter>
-              {cur.name}
-            </h3>
-            <p className="ab-where__line" data-enter>
-              {cur.line}
-            </p>
+          </Reveal>
+        </header>
 
-            <p className="ab-where__takes" data-enter>
-              The lifts it takes
-            </p>
-            <ul className="ab-where__lifts">
-              {cur.lifts.map(([slug, label]) => (
-                <li key={`${active}-${slug}`} data-enter>
-                  <Link to={`/lifts/${slug}`} className="ab-lift">
-                    <span className="ab-lift__film">
-                      <VideoLoop src={`/media/lifts/${slug}.mp4`} poster={`/media/lifts/${slug}.jpg`} />
-                    </span>
-                    <span className="ab-lift__name">
-                      {label.split(' ').slice(0, -1).join(' ')}{' '}
-                      <span className="ab-lift__last">
-                        {label.split(' ').at(-1)}
-                        <Arrow size={13} />
-                      </span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <ul ref={ref} className="ab-panels">
+          {SECTORS.map((sec, i) => {
+            const on = i === active
+            const num = String(i + 1).padStart(2, '0')
+            return (
+              <li
+                key={sec.name}
+                className={`ab-panel ${on ? 'is-on' : ''}`}
+                style={{ '--i': i }}
+                onMouseEnter={() => setActive(i)}
+              >
+                <span className="ab-panel__media" aria-hidden="true">
+                  <Img src={sec.src} alt="" sizes="(min-width: 900px) 60vw, 92vw" objectPosition={sec.pos} />
+                </span>
 
-          <nav ref={railRef} className="ab-where__rail" aria-label="Building types">
-            <ol>
-              {SECTORS.map((sec, i) => (
-                <li key={sec.name} className={i === active ? 'is-on' : ''}>
-                  <button type="button" onClick={() => goTo(i)} aria-current={i === active ? 'true' : undefined}>
-                    <span className="ab-where__dot">{String(i + 1).padStart(2, '0')}</span>
-                    <span className="ab-where__rail-label">{sec.name}</span>
-                  </button>
-                </li>
-              ))}
-            </ol>
-          </nav>
+                <button
+                  type="button"
+                  className="ab-panel__tab"
+                  onClick={() => setActive(i)}
+                  aria-expanded={on}
+                  aria-controls={`sector-${i}`}
+                >
+                  <span className="ab-panel__num">{num}</span>
+                  <span className="ab-panel__tab-name">{sec.name}</span>
+                  <Plus size={16} className="ab-panel__plus" aria-hidden="true" />
+                </button>
 
-          <div className="ab-where__ask">
-            <p>
-              <strong>Not sure which lift your building needs?</strong>
-              <span>Tell us the floors and what it has to carry — an engineer will recommend one.</span>
-            </p>
-            <Link to="/contact#enquiry" className="ab-sectors__go">
-              Ask an engineer <Arrow size={14} />
-            </Link>
-          </div>
+                <div className="ab-panel__body" id={`sector-${i}`} inert={on ? undefined : true}>
+                  <p className="ab-panel__count">
+                    {num} <span>/ {String(SECTORS.length).padStart(2, '0')}</span>
+                  </p>
+                  <h3 className="ab-panel__name">{sec.name}</h3>
+                  <p className="ab-panel__line">{sec.line}</p>
+                  <ul className="ab-panel__lifts" aria-label={`Lifts for ${sec.name.toLowerCase()}`}>
+                    {sec.lifts.map(([slug, label]) => (
+                      <li key={slug}>
+                        <Link to={`/lifts/${slug}`} className="ab-lift">
+                          <span className="ab-lift__film">
+                            {on ? (
+                              <VideoLoop src={`/media/lifts/${slug}.mp4`} poster={`/media/lifts/${slug}.jpg`} />
+                            ) : (
+                              <Img src={`/media/lifts/${slug}.jpg`} alt="" sizes="10rem" />
+                            )}
+                          </span>
+                          <span className="ab-lift__name">
+                            {label.split(' ').slice(0, -1).join(' ')}{' '}
+                            <span className="ab-lift__last">
+                              {label.split(' ').at(-1)}
+                              <Arrow size={13} />
+                            </span>
+                          </span>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+
+        <div className="ab-sectors__ask">
+          <p>
+            <strong>Not sure which lift your building needs?</strong>
+            <span>Tell us the floors and what it has to carry — an engineer will recommend one.</span>
+          </p>
+          <Link to="/contact#enquiry" className="ab-sectors__go">
+            Ask an engineer <Arrow size={14} />
+          </Link>
         </div>
       </div>
-      <div className="ab-where__runway" aria-hidden="true" />
     </section>
   )
 }
