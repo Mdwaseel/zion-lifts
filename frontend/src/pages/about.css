@@ -626,268 +626,170 @@
 }
 
 
-/* --- where our lifts work: five buildings, side by side -------------------
-   Tall photographs in a row on the paper. The open one takes most of the
-   width; the others fold to strips with their name set up the side. The
-   photographs stay bright — the only shade is a warm fall at the foot, where
-   the words sit. */
+/* --- where our lifts work: five buildings, read at a glance --------------- */
 .ab-sectors__label {
   margin-bottom: 1rem;
   color: var(--light-mark);
 }
 
-.ab-panels {
+.ab-bldgs {
   --p: 0;
-  display: flex;
-  gap: clamp(0.5rem, 0.8vw, 0.85rem);
-  height: clamp(32rem, 76svh, 42rem);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.1vw, 1.1rem);
   padding: 0;
   list-style: none;
 }
 
-.ab-panel {
+/* the cards come up in reading order as the row enters */
+.ab-bldg {
   --t: clamp(0, (var(--p) - var(--i) * 0.08) * 2.4, 1);
-  position: relative;
-  flex: 1 1 0;
-  min-width: 0;
-  overflow: hidden;
-  border-radius: var(--radius-xl);
-  background: var(--paper-3);
-  box-shadow: var(--light-shadow);
-  isolation: isolate;
-  opacity: calc(0.2 + var(--t) * 0.8);
-  transform: translate3d(0, calc((1 - var(--t)) * 2.5rem), 0);
-  transition: flex-grow 0.75s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.ab-panel.is-on {
-  flex-grow: 5.5;
-}
-
-.ab-panel__media {
-  position: absolute;
-  inset: 0;
-  z-index: -2;
-}
-
-.ab-panel__media .media {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-}
-
-.ab-panel__media .media__img {
-  height: 100%;
-  object-fit: cover;
-  transform: scale(1.06);
-  transition: transform 1.2s cubic-bezier(0.22, 0.61, 0.36, 1);
-}
-
-.ab-panel.is-on .ab-panel__media .media__img {
-  transform: scale(1);
-}
-
-/* warm, and only at the foot */
-.ab-panel::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  background: linear-gradient(
-    0deg,
-    rgba(28, 22, 16, 0.78) 0%,
-    rgba(28, 22, 16, 0.42) 34%,
-    rgba(28, 22, 16, 0) 58%
-  );
-  transition: opacity 0.6s var(--ease-out);
-}
-
-/* --- the folded strip ------------------------------------------------------ */
-/* The whole strip is the button while folded; once open it steps aside so
-   the lifts beneath it can be reached. */
-.ab-panel__tab {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.25rem 0 1.4rem;
-  color: #fff;
-  cursor: pointer;
-  transition: opacity 0.35s var(--ease-out);
-}
-
-.ab-panel.is-on .ab-panel__tab {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.ab-panel__num {
-  display: grid;
-  place-items: center;
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  border-radius: 50%;
-  background: rgba(28, 22, 16, 0.3);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  font-family: var(--font-mono);
-  font-size: 0.625rem;
-  letter-spacing: 0.06em;
-}
-
-.ab-panel__tab-name {
-  writing-mode: vertical-rl;
-  transform: rotate(180deg);
-  max-height: 80%;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(1.25rem, 1rem + 0.6vw, 1.6rem);
-  letter-spacing: -0.01em;
-  white-space: nowrap;
-}
-
-.ab-panel__plus {
-  display: none;
-}
-
-.ab-panel__tab:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: -6px;
+  overflow: hidden;
+  border: 1px solid var(--light-border);
   border-radius: var(--radius-xl);
-}
-
-/* --- the open panel --------------------------------------------------------- */
-/* Laid out at a fixed width so the words do not reflow while the panel opens;
-   they wait for it to be open before they arrive. */
-.ab-panel__body {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: min(40rem, 58vw);
-  padding: clamp(1.25rem, 1rem + 1vw, 2rem);
-  color: #fff;
-  /* a bright photograph behind small type: a soft shadow keeps it readable */
-  text-shadow: 0 1px 12px rgba(28, 22, 16, 0.55);
-  opacity: 0;
-  transform: translate3d(0, 1rem, 0);
+  background: var(--light-card);
+  box-shadow: var(--light-shadow);
+  opacity: calc(0.2 + var(--t) * 0.8);
+  transform: translate3d(0, calc((1 - var(--t)) * 2rem), 0);
   transition:
-    opacity 0.3s var(--ease-out),
-    transform 0.3s var(--ease-out);
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
 }
 
-.ab-panel.is-on .ab-panel__body {
-  opacity: 1;
-  transform: none;
-  transition:
-    opacity 0.5s var(--ease-out) 0.3s,
-    transform 0.6s var(--ease-out) 0.3s;
+.ab-bldg:hover {
+  border-color: rgba(21, 21, 21, 0.18);
+  box-shadow: var(--light-shadow-lift);
 }
 
-.ab-panel__count {
-  font-family: var(--font-mono);
-  font-size: var(--t-micro);
-  letter-spacing: 0.14em;
-  color: #fff;
-}
-
-.ab-panel__count span {
-  color: rgba(255, 255, 255, 0.6);
-}
-
-.ab-panel__name {
-  margin-top: 0.45rem;
-  font-family: var(--serif);
-  font-weight: 300;
-  font-size: clamp(2rem, 1.3rem + 2vw, 3.3rem);
-  line-height: 1.02;
-  letter-spacing: -0.022em;
-}
-
-.ab-panel__line {
-  margin-top: 0.6rem;
-  max-width: 42ch;
-  font-size: var(--t-body);
-  line-height: 1.5;
-  color: rgba(255, 255, 255, 0.88);
-}
-
-/* the lifts it takes: each one's own film, and the way to its page */
-.ab-panel__lifts {
-  display: flex;
-  gap: clamp(0.55rem, 0.9vw, 0.8rem);
-  margin-top: clamp(1rem, 2.5vh, 1.4rem);
-  padding: 0;
-  list-style: none;
-}
-
-.ab-lift {
-  display: grid;
-  gap: 0.5rem;
-  width: clamp(7.25rem, 8.5vw, 9rem);
-  color: #fff;
-}
-
-.ab-lift__film {
+.ab-bldg__media {
   position: relative;
   display: block;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 4 / 3;
   overflow: hidden;
-  border: 2px solid rgba(255, 255, 255, 0.85);
-  border-radius: 14px;
-  background: var(--paper-3);
-  box-shadow: 0 16px 30px -18px rgba(0, 0, 0, 0.7);
 }
 
-.ab-lift__film > * {
+.ab-bldg__media .media {
   position: absolute;
   inset: 0;
   height: 100%;
 }
 
-.ab-lift__film video,
-.ab-lift__film img {
-  width: 100%;
+.ab-bldg__media .media__img {
   height: 100%;
   object-fit: cover;
-  transition: transform 0.8s var(--ease-out);
+  transition: transform 0.9s var(--ease-out);
 }
 
-/* the arrow rides on the last word, so a name that wraps keeps it close */
-.ab-lift__name {
+.ab-bldg:hover .ab-bldg__media .media__img {
+  transform: scale(1.04);
+}
+
+.ab-bldg__copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.45rem;
+  padding: clamp(0.95rem, 0.8rem + 0.5vw, 1.25rem);
+}
+
+.ab-bldg h3 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.25rem, 1.05rem + 0.45vw, 1.5rem);
+  line-height: 1.12;
+  letter-spacing: -0.015em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.ab-bldg p {
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--fg-dim);
+  text-wrap: pretty;
+}
+
+/* the lifts it takes — at the foot of every card, whatever the line above */
+.ab-bldg__lifts {
+  display: grid;
+  gap: 0.15rem;
+  margin-top: auto;
+  padding: 0.75rem 0 0;
+  border-top: 1px solid var(--light-border);
+  list-style: none;
+}
+
+.ab-bldg__lifts a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 1.75rem;
   font-size: var(--t-small);
   font-weight: var(--w-semibold);
-  line-height: 1.3;
+  color: var(--teal);
 }
 
-.ab-lift__last {
-  white-space: nowrap;
-}
-
-.ab-lift__name svg {
-  display: inline-block;
-  margin-left: 0.3rem;
-  vertical-align: -0.1em;
+.ab-bldg__lifts svg {
   transition: transform var(--dur-fast) var(--ease-out);
 }
 
-@media (hover: hover) {
-  .ab-lift:hover .ab-lift__film video,
-  .ab-lift:hover .ab-lift__film img {
-    transform: scale(1.06);
+.ab-bldg__lifts a:hover svg {
+  transform: translateX(3px);
+}
+
+.ab-bldg__lifts a:hover {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+/* a narrower screen: three across, then two wider ones filling the row */
+@media (max-width: 1100px) {
+  .ab-bldgs {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
   }
 
-  .ab-lift:hover .ab-lift__name svg {
-    transform: translateX(3px);
+  .ab-bldg {
+    grid-column: span 2;
+  }
+
+  .ab-bldg:nth-child(n + 4) {
+    grid-column: span 3;
+  }
+
+  .ab-bldg:nth-child(n + 4) .ab-bldg__media {
+    aspect-ratio: 16 / 9;
   }
 }
 
-.ab-lift:focus-visible {
-  outline: 2px solid #fff;
-  outline-offset: 4px;
-  border-radius: 14px;
+/* a phone: one swipeable strip, the next card peeking in at the edge */
+@media (max-width: 699px) {
+  .ab-bldgs {
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: 72%;
+    margin-inline: calc(var(--page-x) * -1);
+    padding: 0.25rem var(--page-x) 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--page-x);
+    scrollbar-width: none;
+  }
+
+  .ab-bldgs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ab-bldg,
+  .ab-bldg:nth-child(n + 4) {
+    grid-column: auto;
+    scroll-snap-align: start;
+  }
+
+  .ab-bldg:nth-child(n + 4) .ab-bldg__media {
+    aspect-ratio: 4 / 3;
+  }
 }
 
 /* --- the question most visitors arrive with --------------------------------- */
@@ -940,88 +842,16 @@
   }
 }
 
-.ab-sectors__go:focus-visible {
+.ab-sectors__go:focus-visible,
+.ab-bldg__lifts a:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
 
-/* --- a phone: the strips stack, and the open one drops down --------------- */
-@media (max-width: 899px) {
-  .ab-panels {
-    flex-direction: column;
-    height: auto;
-  }
-
-  .ab-panel {
-    flex: none;
-    height: 4.75rem;
-    transition: height 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-
-  .ab-panel.is-on {
-    height: clamp(30rem, 118vw, 36rem);
-  }
-
-  /* folded, the strip is shaded right across so its name reads */
-  .ab-panel:not(.is-on)::after {
-    background: linear-gradient(90deg, rgba(28, 22, 16, 0.7), rgba(28, 22, 16, 0.25));
-  }
-
-  .ab-panel__tab {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 0.85rem;
-    padding: 0 1.1rem;
-  }
-
-  .ab-panel__tab-name {
-    writing-mode: horizontal-tb;
-    transform: none;
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-align: left;
-    font-size: 1.25rem;
-  }
-
-  .ab-panel__plus {
-    display: block;
-    flex: none;
-  }
-
-  .ab-panel__body {
-    width: 100%;
-  }
-
-  .ab-panel__lifts {
-    margin-inline: calc(clamp(1.25rem, 1rem + 1vw, 2rem) * -1);
-    padding-inline: clamp(1.25rem, 1rem + 1vw, 2rem);
-    overflow-x: auto;
-    scrollbar-width: none;
-  }
-
-  .ab-panel__lifts::-webkit-scrollbar {
-    display: none;
-  }
-
-  .ab-lift {
-    flex: none;
-    width: clamp(6.5rem, 27vw, 8rem);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .ab-panel {
+  .ab-bldg {
     opacity: 1;
     transform: none;
-    transition: none;
-  }
-
-  .ab-panel__media .media__img,
-  .ab-panel__body,
-  .ab-panel.is-on .ab-panel__body {
-    transform: none;
-    transition: none;
   }
 }
 

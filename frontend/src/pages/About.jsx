@@ -6,7 +6,7 @@ import { AWARDS } from '@/data/awards'
 import { ESTABLISHED, KNOWN_FOR, MODERNISATION, OFFICES, REVIEWS, SECTORS, VALUES, WHO_WE_ARE } from '@/data/about'
 import Reveal from '@/components/Reveal'
 import { ClientLogos } from '@/components/sections'
-import { Arrow, ArrowDown, Plus } from '@/components/icons'
+import { Arrow, ArrowDown } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
 import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
@@ -169,17 +169,14 @@ function WhoWeAre() {
   )
 }
 
-/* --- where our lifts work: five buildings, side by side --------------------
-   Every kind of building stays in view as a tall photograph. The one being
-   looked at opens wide — its name, its line and the lifts it takes, each as
-   the lift's own film and a way to its page — while the others fold to a
-   strip with their name up the side. Hover opens a panel on a desktop; a tap
-   (or Enter) opens it anywhere. On a phone the strips stack and open
-   downwards. Under the panels, the question most visitors arrive with. */
+/* --- where our lifts work: five buildings, read at a glance ----------------
+   One row of five cards on the paper: a photograph of the kind of building,
+   its name, one line, and the lifts it usually takes as plain links. Nothing
+   to open or scroll through — everything is on the card. On a phone the row
+   becomes a strip that swipes sideways, so the section stays short. */
 function Sectors() {
   const ref = useRef(null)
-  const [active, setActive] = useState(0)
-  useScrollVar(ref, { from: 0.95, to: 0.35 })
+  useScrollVar(ref, { from: 0.95, to: 0.4 })
 
   return (
     <section className="section on-paper ab-sectors" aria-labelledby="sectors-title">
@@ -203,65 +200,27 @@ function Sectors() {
           </Reveal>
         </header>
 
-        <ul ref={ref} className="ab-panels">
-          {SECTORS.map((sec, i) => {
-            const on = i === active
-            const num = String(i + 1).padStart(2, '0')
-            return (
-              <li
-                key={sec.name}
-                className={`ab-panel ${on ? 'is-on' : ''}`}
-                style={{ '--i': i }}
-                onMouseEnter={() => setActive(i)}
-              >
-                <span className="ab-panel__media" aria-hidden="true">
-                  <Img src={sec.src} alt="" sizes="(min-width: 900px) 60vw, 92vw" objectPosition={sec.pos} />
-                </span>
-
-                <button
-                  type="button"
-                  className="ab-panel__tab"
-                  onClick={() => setActive(i)}
-                  aria-expanded={on}
-                  aria-controls={`sector-${i}`}
-                >
-                  <span className="ab-panel__num">{num}</span>
-                  <span className="ab-panel__tab-name">{sec.name}</span>
-                  <Plus size={16} className="ab-panel__plus" aria-hidden="true" />
-                </button>
-
-                <div className="ab-panel__body" id={`sector-${i}`} inert={on ? undefined : true}>
-                  <p className="ab-panel__count">
-                    {num} <span>/ {String(SECTORS.length).padStart(2, '0')}</span>
-                  </p>
-                  <h3 className="ab-panel__name">{sec.name}</h3>
-                  <p className="ab-panel__line">{sec.line}</p>
-                  <ul className="ab-panel__lifts" aria-label={`Lifts for ${sec.name.toLowerCase()}`}>
-                    {sec.lifts.map(([slug, label]) => (
-                      <li key={slug}>
-                        <Link to={`/lifts/${slug}`} className="ab-lift">
-                          <span className="ab-lift__film">
-                            {on ? (
-                              <VideoLoop src={`/media/lifts/${slug}.mp4`} poster={`/media/lifts/${slug}.jpg`} />
-                            ) : (
-                              <Img src={`/media/lifts/${slug}.jpg`} alt="" sizes="10rem" />
-                            )}
-                          </span>
-                          <span className="ab-lift__name">
-                            {label.split(' ').slice(0, -1).join(' ')}{' '}
-                            <span className="ab-lift__last">
-                              {label.split(' ').at(-1)}
-                              <Arrow size={13} />
-                            </span>
-                          </span>
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </li>
-            )
-          })}
+        <ul ref={ref} className="ab-bldgs">
+          {SECTORS.map((sec, i) => (
+            <li key={sec.name} className="ab-bldg" style={{ '--i': i }}>
+              <span className="ab-bldg__media" aria-hidden="true">
+                <Img src={sec.src} alt="" sizes="(min-width: 1100px) 19vw, (min-width: 700px) 30vw, 72vw" objectPosition={sec.pos} />
+              </span>
+              <div className="ab-bldg__copy">
+                <h3>{sec.name}</h3>
+                <p>{sec.line}</p>
+                <ul className="ab-bldg__lifts" aria-label={`Lifts for ${sec.name.toLowerCase()}`}>
+                  {sec.lifts.map(([slug, label]) => (
+                    <li key={slug}>
+                      <Link to={`/lifts/${slug}`}>
+                        {label} <Arrow size={12} />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
         </ul>
 
         <div className="ab-sectors__ask">
