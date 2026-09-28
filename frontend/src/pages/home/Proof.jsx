@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
 import Reveal from '@/components/Reveal'
+import { RECOGNITION } from '@/data/awards'
 import { Arrow, ArrowDown, Box, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
 import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
@@ -345,6 +346,32 @@ export function Certifications() {
             </Reveal>
           ))}
         </ul>
+
+        {/* the awards, in brief — one line per awarding body, the full record on /about */}
+        <Reveal className="recog" delay={120}>
+          <p className="recog__label">Awards &amp; recognition</p>
+          <ul className="recog__list">
+            {RECOGNITION.map((r) => (
+              <li key={r.id} className="recog__item">
+                <span className="recog__mark">
+                  <img src={r.logo} alt={r.body} loading="lazy" decoding="async" />
+                </span>
+                <span className="recog__copy">
+                  <strong>{r.title}</strong>
+                  <span>{r.body}</span>
+                  <span className="recog__years">
+                    {r.years.map((y) => (
+                      <em key={y}>{y}</em>
+                    ))}
+                  </span>
+                </span>
+              </li>
+            ))}
+          </ul>
+          <Link to="/about#awards" className="recog__go">
+            All awards <Arrow size={14} />
+          </Link>
+        </Reveal>
       </div>
     </section>
   )

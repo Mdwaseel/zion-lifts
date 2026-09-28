@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img, VideoLoop } from '@/components/Media'
+import { AWARDS } from '@/data/awards'
 import { ESTABLISHED, KNOWN_FOR, MODERNISATION, OFFICES, REVIEWS, SECTORS, VALUES, WHO_WE_ARE } from '@/data/about'
 import Reveal from '@/components/Reveal'
 import { ClientLogos } from '@/components/sections'
@@ -327,6 +328,51 @@ function Values() {
   )
 }
 
+/* --- awards & recognition: the organisers' own marks ----------------------
+   Built like the home page's certification cards — white cards on the ivory,
+   the mark as the picture and the facts as its caption — and brought up in
+   reading order the way the promises wall below is. The four Times Business
+   Awards take the first row, the listings and the certificate the second. */
+function Awards() {
+  const ref = useRef(null)
+  useScrollVar(ref, { from: 0.95, to: 0.3 })
+
+  return (
+    <section className="section on-stone ab-awards" id="awards" aria-labelledby="awards-title">
+      <div className="shell">
+        <header className="ab-head">
+          <div>
+            <p className="ld-label">Awards &amp; recognition</p>
+            <RiseIn as="h2" className="ab-h2" id="awards-title" text="Recognised, year after year." />
+          </div>
+          <Reveal delay={100}>
+            <p className="ab-lead">
+              Four Times Business Awards in a row, two Industry Outlook Top 10 listings, and a quality system
+              certified to ISO 9001:2015.
+            </p>
+          </Reveal>
+        </header>
+
+        <ul ref={ref} className="ab-awards__grid">
+          {AWARDS.map((a, i) => (
+            <li key={a.id} className="ab-award" style={{ '--i': i }}>
+              <span className="ab-award__mark">
+                <img src={a.logo} alt={`${a.body} ${a.year}`} loading="lazy" decoding="async" />
+              </span>
+              <p className="ab-award__meta">
+                <span>{a.body}</span>
+                <span>{a.year}</span>
+              </p>
+              <h3 className="ab-award__title">{a.title}</h3>
+              <p className="ab-award__note">{a.note}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
 /* --- what we are known for: a wall of photographs and drawings ------------ */
 
 function KnownFor() {
@@ -472,6 +518,7 @@ export default function About() {
       <Sectors />
       <Modernisation />
       <Values />
+      <Awards />
       <KnownFor />
       <Reviews />
       <ClientLogos

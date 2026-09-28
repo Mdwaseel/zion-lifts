@@ -1143,3 +1143,144 @@
   }
 
 }
+
+/* --- awards & recognition ---------------------------------------------------
+   The home page's certification card, grown: a white card on the ivory, the
+   organiser's mark in a well at its head, the facts set under it. The cards
+   come up in reading order as the grid enters, like the promises wall. */
+.ab-awards {
+  --p: 0;
+}
+
+.ab-awards__grid {
+  display: grid;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 640px) {
+  .ab-awards__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* seven cards: the last one takes the whole row rather than sit alone */
+  .ab-award:last-child {
+    grid-column: 1 / -1;
+  }
+}
+
+/* four Times Business Awards across the first row, the two listings and the
+   certificate across the second */
+@media (min-width: 1000px) {
+  .ab-awards__grid {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+  }
+
+  .ab-award {
+    grid-column: span 3;
+  }
+
+  .ab-award:nth-child(n + 5),
+  .ab-award:last-child {
+    grid-column: span 4;
+  }
+}
+
+.ab-award {
+  --t: clamp(0, (var(--p) - var(--i) * 0.06) * 2.4, 1);
+  display: flex;
+  flex-direction: column;
+  padding: clamp(0.75rem, 0.6rem + 0.5vw, 1rem);
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-xl);
+  background: var(--light-card);
+  box-shadow: var(--light-shadow);
+  opacity: var(--t);
+  transform: translate3d(0, calc((1 - var(--t)) * 2.5rem), 0);
+  transition:
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
+}
+
+.ab-award:hover {
+  border-color: rgba(21, 21, 21, 0.2);
+  box-shadow: var(--light-shadow-lift);
+}
+
+/* the mark sits in a paper well, contained — an organiser's logo is never
+   cropped or stretched */
+.ab-award__mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* one height for every card, whatever its width, so the marks read at one
+     size across both rows */
+  height: clamp(9rem, 7rem + 4vw, 11rem);
+  margin-bottom: clamp(1rem, 0.8rem + 0.6vw, 1.4rem);
+  padding: clamp(1.4rem, 1rem + 1.2vw, 2.1rem) clamp(1.25rem, 0.8rem + 1.6vw, 2.25rem);
+  border-radius: calc(var(--radius-xl) - 0.5rem);
+  background: var(--paper-2);
+}
+
+.ab-award__mark img {
+  width: auto;
+  height: auto;
+  max-width: min(100%, 17rem);
+  max-height: 100%;
+  min-height: 0;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.ab-award:hover .ab-award__mark img {
+  transform: scale(1.04);
+}
+
+.ab-award__meta,
+.ab-award__title,
+.ab-award__note {
+  padding-inline: clamp(0.25rem, 0.2rem + 0.3vw, 0.5rem);
+}
+
+.ab-award__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ab-award__meta span:last-child {
+  color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+.ab-award__title {
+  margin-top: 0.6rem;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.2rem, 1rem + 0.6vw, 1.5rem);
+  line-height: 1.18;
+  letter-spacing: -0.012em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.ab-award__note {
+  margin-top: 0.55rem;
+  padding-bottom: 0.4rem;
+  font-size: var(--t-small);
+  line-height: 1.5;
+  color: var(--fg-dim);
+  text-wrap: pretty;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ab-award {
+    opacity: 1;
+    transform: none;
+  }
+}

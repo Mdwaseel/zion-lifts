@@ -300,15 +300,28 @@ TEAM = [
 ]
 
 AWARDS = [
-    ("Recognition for quality in vertical transportation", "Industry association", "2023",
-     "Recognised for consistency of installation quality across residential and healthcare projects.",
-     M.frame("lekha-cabin")),
-    ("Excellence in customer service", "Regional business awards", "2022",
-     "Recognised for the 24/7 after-sales operation and entrapment response record.",
-     M.frame("lacheta-inuse")),
-    ("ISO 9001 certification", "Independent certification body", "2019",
-     "Quality management system certified across design, manufacture, installation and service.",
-     M.frame("owaisi-cop")),
+    # Read off the trophies and certificates; the marks live in media/awards.
+    ("Excellence in Lifts Manufacturers & Suppliers", "Times Business Awards, Hyderabad", "2024",
+     "The 10th edition, Hyderabad — presented by The Times of India.",
+     "/media/awards/times-business-2024.webp"),
+    ("Best Lifts Manufacturers & Suppliers", "Times Business Awards, Hyderabad", "2023",
+     "Hyderabad — the third year in a row the category came to Zion.",
+     "/media/awards/times-business-2023.webp"),
+    ("Best Lifts Manufacturers & Suppliers", "Times Business Awards, Hyderabad", "2022",
+     "Hyderabad — awarded for a second consecutive year.",
+     "/media/awards/times-business-2022.webp"),
+    ("Best Lifts Manufacturers & Suppliers", "Times Business Awards, Hyderabad", "2021",
+     "Hyderabad — our first Times Business Award, from The Times Group.",
+     "/media/awards/times-business-2021.webp"),
+    ("Top 10 Elevators & Moving Stairways Manufacturers", "Industry Outlook", "2024",
+     "For an unwavering focus on excellence in quality and delivery.",
+     "/media/awards/industry-outlook-2024.webp"),
+    ("Top 10 Elevators & Escalators Manufacturers", "Industry Outlook", "2022",
+     "Named among the ten, for excellence in quality and delivery.",
+     "/media/awards/industry-outlook-2022.webp"),
+    ("ISO 9001:2015 certification", "APTS Quality Certifications", "",
+     "Sales, supply, erection, commissioning and after-sales support of elevators.",
+     "/media/awards/apts-iso.webp"),
 ]
 
 # --------------------------------------------------------------------- Gallery
@@ -382,12 +395,12 @@ def run():
                           photo_url=photo, order=i),
         )
 
+    # Three awards share a name across years, so the list is replaced whole
+    # rather than matched by name.
+    Award.objects.all().delete()
     for i, (name, org, year, desc, image) in enumerate(AWARDS, 1):
-        Award.objects.update_or_create(
-            name=name,
-            defaults=dict(organisation=org, year=year, description=desc,
-                          image_url=image, order=i),
-        )
+        Award.objects.create(name=name, organisation=org, year=year, description=desc,
+                             image_url=image, order=i)
 
     GalleryItem.objects.all().delete()
     for i, (cat, title, meta, src, w, h, feat) in enumerate(GALLERY, 1):
