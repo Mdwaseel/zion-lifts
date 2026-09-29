@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Img, VideoLoop } from '@/components/Media'
 import Reveal from '@/components/Reveal'
 import { Accordion } from '@/components/sections'
-import { Arrow, ArrowDown, GaugeMark, UpDownMark, UsersMark } from '@/components/icons'
+import { Arrow, GaugeMark, UpDownMark, UsersMark } from '@/components/icons'
 import { LIFT_ICONS } from '@/components/lift-marks'
 import { PLACES } from '@/components/place-marks'
 import { faqCategory } from '@/data/faqs'
@@ -25,11 +25,21 @@ import './lifts.css'
 
 const pad = (n) => String(n).padStart(2, '0')
 
-/* --- the opening: eleven shafts, side by side ------------------------------ */
+/* --- the opening: the range, as a wall of lifts ----------------------------
+   The About page's opening, turned on the product: the words on the left with
+   every system named in a list you can read at arm's length, and on the right
+   the lifts themselves in three columns drifting past each other. Each tile and
+   each name is a way into that lift's page. */
 
-/** The range as it would stand in a building: eleven tall shafts in a row, each
-    with its own lift running in it on film. They come up one after another on
-    arrival, like cars reaching a landing, and each one is a way into its page. */
+const NUMBER_WORDS = { 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen' }
+
+/** the columns of the wall: every third lift, so each column mixes kinds */
+function wallColumns(lifts) {
+  const cols = [[], [], []]
+  lifts.forEach((l, i) => cols[i % 3].push(l))
+  return cols
+}
+
 function Opening({ lifts }) {
   const ref = useRef(null)
   const reduced = useReducedMotion()
@@ -38,7 +48,7 @@ function Opening({ lifts }) {
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
-  // leaving, the row sinks a little and the headline drifts up past it
+  // leaving, the columns hurry on, each at its own rate
   useEffect(() => {
     if (reduced) return undefined
     const el = ref.current
@@ -53,34 +63,78 @@ function Opening({ lifts }) {
     return () => gsap.ticker.remove(tick)
   }, [reduced])
 
+  const count = lifts.length
+  // the headline counts the range, so a new system does not leave it wrong
+  const many = NUMBER_WORDS[count] ?? 'Eleven'
+
   return (
-    <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''}`}>
+    <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''} ${reduced ? 'is-still' : ''}`}>
       <div className="lc-hero__copy">
         <h1 className="lc-hero__title">
-          <Rise text="Eleven ways to move vertically." accent={false} />
+          <Rise text={`${many} ways to move vertically.`} accent={false} />
         </h1>
         <p className="lc-hero__lead">
           One engineering approach underneath — a gearless machine, a rail-guided cabin and a controller that shapes
-          every start and stop. Eleven shells around it, for every kind of building.
+          every start and stop. A shell around it for every kind of building.
         </p>
+
+        <div className="lc-hero__actions">
+          <a href="#places" className="lc-go">
+            <span>Help me choose</span>
+            <span className="lc-go__ring">
+              <Arrow size={16} />
+            </span>
+          </a>
+          <Link to="/contact#enquiry" className="lc-hero__more">
+            Get a quote <Arrow size={14} />
+          </Link>
+        </div>
+
+        {count > 0 && (
+          <nav className="lc-hero__list" aria-label="Lift systems">
+            <ul>
+              {lifts.map((l) => {
+                const Mark = LIFT_ICONS[l.slug]
+                return (
+                  <li key={l.slug}>
+                    <Link to={`/lifts/${l.slug}`}>
+                      {Mark && <Mark size={20} />}
+                      <span>{l.short_name || l.name}</span>
+                    </Link>
+                  </li>
+                )
+              })}
+            </ul>
+          </nav>
+        )}
       </div>
 
-      <ul className="lc-hero__shafts">
-        {lifts.map((l, i) => (
-          <li key={l.slug} style={{ '--i': i }}>
-            <Link to={`/lifts/${l.slug}`} className="lc-shaft">
-              <span className="lc-shaft__film">
-                <VideoLoop src={`/media/lifts/${l.slug}.mp4`} poster={`/media/lifts/${l.slug}.jpg`} />
-              </span>
-              <span className="lc-shaft__name">{l.short_name || l.name}</span>
-            </Link>
-          </li>
+      <div className="lc-hero__wall" aria-hidden="true">
+        {wallColumns(lifts).map((col, c) => (
+          <div className="lc-hero__col" key={c} style={{ '--c': c }}>
+            <div className="lc-hero__track">
+              {[0, 1].map((copy) =>
+                col.map((l, k) => (
+                  <Link
+                    to={`/lifts/${l.slug}`}
+                    className="lc-hero__tile"
+                    key={`${copy}-${l.slug}`}
+                    tabIndex={-1}
+                  >
+                    {/* one film per column; the rest are the films' first frames */}
+                    {copy === 0 && k === 0 ? (
+                      <VideoLoop src={`/media/lifts/${l.slug}.mp4`} poster={`/media/lifts/${l.slug}.jpg`} />
+                    ) : (
+                      <Img src={`/media/lifts/${l.slug}.jpg`} alt="" sizes="(min-width: 900px) 17vw, 34vw" />
+                    )}
+                    <span className="lc-hero__tile-name">{l.short_name || l.name}</span>
+                  </Link>
+                )),
+              )}
+            </div>
+          </div>
         ))}
-      </ul>
-
-      <a href="#index" className="lc-hero__cue" aria-label="Scroll to the range">
-        <ArrowDown size={16} />
-      </a>
+      </div>
     </header>
   )
 }
@@ -446,7 +500,7 @@ function Places({ applications, lifts }) {
   const count = (slug) => lifts.filter((l) => fits(l, slug)).length
 
   return (
-    <section className="section on-paper lc-places">
+    <section className="section on-paper lc-places" id="places">
       <div className="shell">
         <header className="lc-compare__head">
           <RiseIn as="h2" className="lc-h2" text="Where these lifts go." accent={false} />

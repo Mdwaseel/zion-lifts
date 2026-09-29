@@ -24,62 +24,311 @@
   color: var(--accent);
 }
 
-/* --- the opening: nine shafts, side by side ------------------------------ */
+/* --- the opening: the range, as a wall of lifts --------------------------- */
 .lc-hero {
   --x: 0;
   position: relative;
   display: grid;
-  grid-template-rows: auto 1fr;
-  gap: clamp(1.75rem, 4vh, 3rem);
+  align-items: center;
+  gap: clamp(2rem, 4vw, 5rem);
   min-height: 100svh;
-  padding: calc(var(--nav-h) + clamp(1.5rem, 5vh, 3.5rem)) var(--page-x) clamp(1.5rem, 4vh, 2.5rem);
+  padding: calc(var(--nav-h) + 1.5rem) var(--page-x) clamp(2rem, 5vh, 3.5rem);
   background: var(--light-bg);
   color: var(--light-text);
   overflow: hidden;
 }
 
+@media (min-width: 900px) {
+  .lc-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-block: 0;
+  }
+}
+
 .lc-hero__copy {
+  position: relative;
+  z-index: 1;
   display: grid;
-  gap: 1.25rem;
-  justify-items: center;
-  text-align: center;
-  transform: translate3d(0, calc(var(--x) * -60px), 0);
+  justify-items: start;
+  gap: clamp(1.1rem, 2.4vh, 1.75rem);
+  max-width: 40rem;
+  padding-top: calc(var(--nav-h) + 1rem);
+}
+
+@media (max-width: 899px) {
+  .lc-hero__copy {
+    padding-top: 0;
+  }
 }
 
 .lc-hero__title {
   font-family: var(--serif);
   font-weight: 300;
-  font-size: clamp(2.8rem, 1.4rem + 5vw, 6.5rem);
-  line-height: 0.98;
+  font-size: clamp(2.8rem, 1.4rem + 4.6vw, 6.25rem);
+  line-height: 0.96;
   letter-spacing: -0.035em;
   text-wrap: balance;
 }
 
 .lc-hero__lead {
-  max-width: 56ch;
+  max-width: 44ch;
   font-size: var(--t-lead);
   line-height: 1.45;
-  color: rgba(21, 21, 21, 0.7);
+  color: rgba(21, 21, 21, 0.72);
   text-wrap: pretty;
 }
 
-/* the row: one shaft per lift, the same height, the same gap — a lift lobby
-   seen square on. One column per lift, however many there are. */
-.lc-hero__shafts {
-  display: grid;
-  grid-auto-flow: column;
-  grid-auto-columns: minmax(0, 1fr);
-  gap: clamp(0.4rem, 0.8vw, 0.9rem);
-  align-items: stretch;
-  min-height: 0;
-  transform: translate3d(0, calc(var(--x) * 50px), 0);
-}
-
-.lc-hero__shafts li {
+.lc-hero__actions {
   display: flex;
-  min-height: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.75rem;
 }
 
+/* the pill with a ring, as on /about — the one ask the opening makes */
+.lc-go {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  min-height: 3.5rem;
+  padding: 0.35rem 0.35rem 0.35rem 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--light-text);
+  color: #fff;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+}
+
+.lc-go__ring {
+  display: grid;
+  place-items: center;
+  width: 2.8rem;
+  height: 2.8rem;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--light-text);
+  transition: transform 0.5s var(--ease-out);
+}
+
+.lc-go:hover .lc-go__ring {
+  transform: rotate(-45deg);
+}
+
+.lc-hero__more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding-block: 0.4rem;
+  border-bottom: 1px solid rgba(21, 21, 21, 0.3);
+  font-size: var(--t-body);
+  color: var(--light-text);
+}
+
+.lc-go:focus-visible,
+.lc-hero__more:focus-visible,
+.lc-hero__list a:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 4px;
+}
+
+/* every system by name, big enough to read without leaning in */
+.lc-hero__list {
+  width: 100%;
+  margin-top: clamp(0.25rem, 1vh, 0.75rem);
+  padding-top: clamp(1rem, 2vh, 1.4rem);
+  border-top: 1px solid var(--light-border);
+}
+
+.lc-hero__list ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.15rem 1.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+.lc-hero__list a {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  min-height: 2.6rem;
+  font-size: var(--t-body);
+  font-weight: var(--w-medium);
+  color: var(--light-text);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+.lc-hero__list svg {
+  flex: none;
+  color: var(--teal);
+}
+
+.lc-hero__list a:hover {
+  color: var(--teal);
+}
+
+/* the wall: three columns, each drifting its own way at its own pace */
+.lc-hero__wall {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.6rem, 1vw, 1rem);
+  height: 100svh;
+  /* clear of the menu bar at the top: the tiles fade in below it */
+  mask-image: linear-gradient(180deg, transparent 0%, transparent 7%, #000 22%, #000 88%, transparent 100%);
+}
+
+.lc-hero__col {
+  overflow: hidden;
+  transform: translate3d(0, calc(var(--x) * (var(--c) - 1) * 14%), 0);
+}
+
+.lc-hero__track {
+  display: grid;
+  gap: clamp(0.6rem, 1vw, 1rem);
+  animation: lc-rise 60s linear infinite;
+}
+
+.lc-hero__col:nth-child(2) .lc-hero__track {
+  animation-duration: 74s;
+  animation-direction: reverse;
+}
+
+.lc-hero__col:nth-child(3) .lc-hero__track {
+  animation-duration: 52s;
+}
+
+.lc-hero__wall:hover .lc-hero__track {
+  animation-play-state: paused;
+}
+
+@keyframes lc-rise {
+  to {
+    transform: translate3d(0, calc(-50% - clamp(0.6rem, 1vw, 1rem) / 2), 0);
+  }
+}
+
+.lc-hero__tile {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-l);
+  background: var(--paper-3);
+  box-shadow: var(--light-shadow);
+  isolation: isolate;
+}
+
+.lc-hero__tile > .media,
+.lc-hero__tile > div {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+}
+
+.lc-hero__tile video,
+.lc-hero__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s var(--ease-out);
+}
+
+.lc-hero__tile:hover video,
+.lc-hero__tile:hover img {
+  transform: scale(1.05);
+}
+
+.lc-hero__tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(7, 8, 10, 0.6) 0%, rgba(7, 8, 10, 0) 38%);
+  pointer-events: none;
+}
+
+.lc-hero__tile-name {
+  position: absolute;
+  left: 0.9rem;
+  right: 0.9rem;
+  bottom: 0.8rem;
+  z-index: 1;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+}
+
+/* arrival: the words rise, then the columns come up behind them */
+@media (prefers-reduced-motion: no-preference) {
+  .lc-hero .ld-word__in {
+    transform: translateY(112%);
+    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: calc(0.1s + var(--i) * 0.07s);
+  }
+
+  .lc-hero__lead,
+  .lc-hero__actions,
+  .lc-hero__list {
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      opacity 0.8s var(--ease-out),
+      transform 0.8s var(--ease-out);
+    transition-delay: 0.6s;
+  }
+
+  .lc-hero__actions {
+    transition-delay: 0.75s;
+  }
+
+  .lc-hero__list {
+    transition-delay: 0.9s;
+  }
+
+  .lc-hero__wall {
+    opacity: 0;
+    transform: translate3d(0, 8vh, 0);
+    transition:
+      opacity 1.2s var(--ease-out),
+      transform 1.6s cubic-bezier(0.22, 0.61, 0.36, 1);
+    transition-delay: 0.25s;
+  }
+
+  .lc-hero.is-in .ld-word__in,
+  .lc-hero.is-in .lc-hero__lead,
+  .lc-hero.is-in .lc-hero__actions,
+  .lc-hero.is-in .lc-hero__list,
+  .lc-hero.is-in .lc-hero__wall {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.lc-hero.is-still .lc-hero__track {
+  animation: none;
+}
+
+/* a phone: the wall first as a band across the top, the words under it */
+@media (max-width: 899px) {
+  .lc-hero {
+    align-content: start;
+    min-height: auto;
+  }
+
+  .lc-hero__wall {
+    order: -1;
+    height: 52svh;
+    margin: 0 calc(-1 * var(--page-x));
+  }
+}
+
+@media (max-width: 330px) {
+  .lc-hero__list ul {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* --- the shaft: an arched frame, used by the figures below ----------------
+   It opened the page once; the side-by-side chart still stands its lifts in it. */
 .lc-shaft {
   position: relative;
   display: flex;
@@ -138,75 +387,7 @@
   outline-offset: 4px;
 }
 
-.lc-hero__cue {
-  position: absolute;
-  left: 50%;
-  bottom: clamp(0.5rem, 1.5vh, 1rem);
-  display: none;
-  place-items: center;
-  width: 2.75rem;
-  height: 2.75rem;
-  margin-left: -1.375rem;
-  border: 1px solid var(--light-border);
-  border-radius: 50%;
-  color: var(--light-text);
-}
-
-/* arrival: the words rise, then the cars come up into their shafts in turn */
-@media (prefers-reduced-motion: no-preference) {
-  .lc-hero .ld-word__in {
-    transform: translateY(112%);
-    transition: transform 1.1s cubic-bezier(0.2, 0.7, 0.2, 1);
-    transition-delay: calc(0.1s + var(--i) * 0.07s);
-  }
-
-  .lc-hero__lead {
-    opacity: 0;
-    transform: translateY(14px);
-    transition:
-      opacity 0.8s var(--ease-out),
-      transform 0.8s var(--ease-out);
-    transition-delay: 0.6s;
-  }
-
-  .lc-hero__shafts li {
-    opacity: 0;
-    transform: translate3d(0, 40%, 0);
-    transition:
-      opacity 0.9s var(--ease-out),
-      transform 1.3s cubic-bezier(0.22, 0.61, 0.36, 1);
-    transition-delay: calc(0.45s + var(--i) * 0.07s);
-  }
-
-  .lc-hero.is-in .ld-word__in,
-  .lc-hero.is-in .lc-hero__lead,
-  .lc-hero.is-in .lc-hero__shafts li {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* narrower: the row becomes a strip you can swipe along */
 @media (max-width: 899px) {
-  .lc-hero {
-    min-height: auto;
-  }
-
-  .lc-hero__shafts {
-    grid-template-columns: none;
-    grid-auto-flow: column;
-    grid-auto-columns: 42vw;
-    margin-inline: calc(-1 * var(--page-x));
-    padding: 1rem var(--page-x) 0.5rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-  }
-
-  .lc-hero__shafts li {
-    scroll-snap-align: start;
-  }
-
   .lc-shaft {
     min-height: 62vw;
   }
