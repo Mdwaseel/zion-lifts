@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import { Img } from '@/components/Media'
 import Reveal from '@/components/Reveal'
 import { RECOGNITION } from '@/data/awards'
-import { Arrow, ArrowDown, Box, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
+import { Arrow, ArrowDown, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
 import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
 
@@ -278,13 +278,6 @@ export function Blueprint() {
           </div>
         </Reveal>
 
-        <Reveal className="proc__foot" variant="fade" delay={240}>
-          <Link to="/projects" className="proc__cta">
-            <Box size={17} className="proc__cta-mark" />
-            <span>Explore the full journey</span>
-            <Arrow size={15} className="proc__cta-arrow" />
-          </Link>
-        </Reveal>
       </div>
     </section>
   )

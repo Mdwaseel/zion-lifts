@@ -3577,66 +3577,6 @@ canvas.hero__film.is-in {
   color: #4a4a4a;
 }
 
-/* --- the CTA -------------------------------------------------------------- */
-.proc__foot {
-  display: grid;
-  justify-items: center;
-  margin-top: clamp(2.25rem, 5vh, 3.5rem);
-}
-
-.proc__cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(0.9rem, 1.6vw, 1.5rem);
-  width: 100%;
-  max-width: 29rem;
-  padding: 1.05rem 1.75rem;
-  border: 1px solid rgba(21, 21, 21, 0.14);
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.55);
-  font-size: 0.75rem;
-  font-weight: var(--w-semibold);
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--proc-fg);
-  transition:
-    border-color 0.4s var(--ease-out),
-    background 0.4s var(--ease-out),
-    transform 0.4s var(--ease-out);
-}
-
-.proc__cta-mark {
-  color: var(--proc-ink);
-  transition: transform 0.4s var(--ease-out);
-}
-
-.proc__cta-arrow {
-  color: var(--proc-dim);
-  transition:
-    transform 0.4s var(--ease-out),
-    color 0.4s var(--ease-out);
-}
-
-.proc__cta:hover {
-  border-color: rgba(12, 145, 146, 0.5);
-  background: var(--light-card);
-}
-
-.proc__cta:hover .proc__cta-mark {
-  transform: translateY(-2px);
-}
-
-.proc__cta:hover .proc__cta-arrow {
-  transform: translateX(4px);
-  color: var(--proc-ink);
-}
-
-.proc__cta:focus-visible {
-  outline: 2px solid var(--proc-mark);
-  outline-offset: 3px;
-}
-
 /* --- tablet: two by two, with the row's arrows stood down ------------------ */
 @media (max-width: 1199.98px) {
   .proc__row {
@@ -3684,14 +3624,6 @@ canvas.hero__film.is-in {
 
   .proc__line {
     max-width: none;
-  }
-
-  .proc__cta {
-    max-width: 100%;
-    gap: 0.85rem;
-    padding-inline: 1.15rem;
-    font-size: 0.6875rem;
-    letter-spacing: 0.12em;
   }
 }
 
