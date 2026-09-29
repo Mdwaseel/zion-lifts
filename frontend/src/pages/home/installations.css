@@ -282,7 +282,7 @@
   gap: 0.4rem;
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--teal);
@@ -312,7 +312,7 @@
 
 .inst__card-facts dt {
   font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--light-muted);
@@ -494,7 +494,7 @@
   grid-area: n;
   align-self: center;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   color: var(--teal);
   white-space: nowrap;

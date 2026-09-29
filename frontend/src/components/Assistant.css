@@ -97,6 +97,33 @@
   transform: scale(0.97);
 }
 
+/* A phone has no room for a pill parked over the content: the launcher
+   becomes the mascot in a circle, the label kept for screen readers. */
+@media (max-width: 639px) {
+  .asst-launcher {
+    --asst-edge: 0.85rem;
+    justify-content: center;
+    width: 52px;
+    height: 52px;
+    min-height: 52px;
+    padding: 0;
+    bottom: calc(var(--asst-edge) + env(safe-area-inset-bottom));
+  }
+
+  .asst-launcher__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .asst-launcher__mark img {
+    width: 30px;
+  }
+}
+
 /* The panel replaces the launcher rather than sitting beside it — two controls
    for one thing, one of them now redundant, is clutter. */
 .asst-launcher.is-open {
@@ -646,7 +673,7 @@ ol.asst-answer__list {
   background: var(--asst-accent-soft);
   color: var(--asst-accent);
   font-weight: var(--w-semibold);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
 }
 
 .asst-sources__chev {
@@ -703,7 +730,7 @@ ol.asst-answer__list {
   border-radius: 50%;
   background: var(--asst-accent-soft);
   color: var(--asst-accent);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   font-weight: var(--w-semibold);
 }
 
@@ -735,7 +762,7 @@ a.asst-source__title {
   border-radius: var(--radius-pill);
   background: var(--asst-surface);
   color: var(--asst-dim);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: var(--w-medium);
   letter-spacing: var(--tr-label);
   text-transform: uppercase;
@@ -782,7 +809,7 @@ a.asst-source__title {
 }
 
 .asst-related__lead {
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: var(--w-semibold);
   letter-spacing: var(--tr-wide);
   text-transform: uppercase;
@@ -828,7 +855,7 @@ a.asst-source__title {
   border-radius: var(--radius-pill);
   background: var(--asst-surface);
   color: var(--asst-faint);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: var(--w-medium);
   letter-spacing: var(--tr-label);
   text-transform: uppercase;
@@ -1048,7 +1075,7 @@ a.asst-source__title {
   gap: 0.6rem;
   width: 100%;
   margin-top: 1.4rem;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: var(--w-semibold);
   letter-spacing: var(--tr-wide);
   text-transform: uppercase;
@@ -1246,7 +1273,7 @@ a.asst-source__title {
   gap: 0.75rem;
   margin-top: 0.45rem;
   padding: 0 0.5rem;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   line-height: 1.4;
   letter-spacing: var(--tr-small);
   color: var(--asst-faint);

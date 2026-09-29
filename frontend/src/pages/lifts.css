@@ -459,7 +459,7 @@
 
 .lc-about__specs dt {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg-faint);
@@ -598,7 +598,7 @@
   bottom: 1rem;
   z-index: 1;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   text-align: left;
@@ -618,7 +618,7 @@
   order: 3;
   padding-top: clamp(0.5rem, 1.5vh, 1rem);
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   color: var(--fg-faint);
 }
@@ -802,7 +802,7 @@
   height: var(--h);
   margin-top: 1.75rem;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.06em;
   color: var(--fg-faint);
 }
@@ -933,7 +933,7 @@
   left: 50%;
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.02em;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
@@ -1040,7 +1040,7 @@
 .lc-detail em {
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg-faint);
@@ -1265,7 +1265,7 @@
 }
 
 .lc-arch__name {
-  font-size: clamp(0.66rem, 0.55rem + 0.3vw, 0.82rem);
+  font-size: clamp(0.78rem, 0.7rem + 0.2vw, 0.86rem);
   font-weight: var(--w-semibold);
   line-height: 1.2;
   color: var(--light-text);

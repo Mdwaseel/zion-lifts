@@ -93,7 +93,7 @@
 
 .legal__toc-n {
   font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.1em;
   opacity: 0.7;
   flex: none;
@@ -132,7 +132,7 @@
 
 .legal__clause-n {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   color: var(--fg-faint);
   flex: none;

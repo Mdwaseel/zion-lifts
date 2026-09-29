@@ -625,7 +625,7 @@
 .ld-size__rows em {
   font-style: normal;
   font-family: var(--font-mono);
-  font-size: 0.5625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--fg-faint);
@@ -1152,7 +1152,7 @@
   position: absolute;
   z-index: 1;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(245, 245, 242, 0.55);
@@ -1413,7 +1413,7 @@
 
 .ld-ss__test span {
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--teal-bright);
@@ -1855,7 +1855,7 @@
 
 .ld-next__label {
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(245, 245, 242, 0.66);
@@ -1950,6 +1950,16 @@
     transform var(--dur) var(--ease-out),
     visibility 0s linear var(--dur),
     background var(--dur-fast) var(--ease-out);
+}
+
+@media (max-width: 639px) {
+  .ld-pill {
+    left: var(--page-x);
+    right: calc(52px + 0.85rem + 0.75rem);
+    bottom: calc(0.85rem + 4px + env(safe-area-inset-bottom));
+    translate: none;
+    justify-content: center;
+  }
 }
 
 .ld-pill.is-on {

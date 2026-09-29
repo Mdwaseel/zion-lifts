@@ -420,6 +420,7 @@
 }
 
 .hd__chev {
+  position: relative;
   display: grid;
   place-items: center;
   width: 1.5rem;
@@ -431,6 +432,13 @@
   transition:
     opacity var(--dur-fast) var(--ease-out),
     background-color var(--dur-fast) var(--ease-out);
+}
+
+/* a bigger target than the mark: the chevron is small, fingers are not */
+.hd__chev::after {
+  content: '';
+  position: absolute;
+  inset: -0.6rem -0.4rem;
 }
 
 .hd__chev svg {

@@ -46,7 +46,7 @@
 .ft__since {
   margin: 0;
   font-family: var(--font-mono);
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: rgba(243, 241, 236, 0.5);
@@ -71,17 +71,19 @@
 }
 
 /* --- the directory --------------------------------------------------------- */
+/* two link columns side by side from the smallest phone, so the footer is
+   one screen, not two; the contact column takes the full row under them */
 .ft__mid {
   display: grid;
-  gap: 2rem 1.5rem;
+  gap: 2rem 1.25rem;
   padding-block: clamp(1.75rem, 1.25rem + 1.5vw, 2.75rem);
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 520px) {
-  .ft__mid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+@media (max-width: 999px) {
+  .ft__col--contact {
+    grid-column: 1 / -1;
   }
 }
 
@@ -97,7 +99,7 @@
 .ft__col-title {
   margin: 0 0 0.9rem;
   font-family: var(--font-mono);
-  font-size: 0.6875rem;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--teal-bright);
@@ -118,6 +120,13 @@
   font-size: var(--t-small);
   color: rgba(243, 241, 236, 0.72);
   transition: color var(--dur-fast) var(--ease-out);
+}
+
+/* on a touch screen every footer link is a full finger's height */
+@media (pointer: coarse) {
+  .ft__link {
+    min-height: 2.75rem;
+  }
 }
 
 @media (hover: hover) {
@@ -188,6 +197,7 @@
 }
 
 .ft__quote {
+  white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: 0.9rem;
@@ -282,6 +292,9 @@
 }
 
 .ft__legal a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 2.75rem;
   color: rgba(243, 241, 236, 0.5);
   transition: color var(--dur-fast) var(--ease-out);
 }

@@ -98,9 +98,10 @@
   --font-mono: ui-monospace, 'SF Mono', 'JetBrains Mono', Menlo, Consolas, monospace;
 
   /* fluid scale, 360px → 1600px */
-  --t-eyebrow: clamp(0.75rem, 0.73rem + 0.1vw, 0.8125rem);
-  --t-micro: clamp(0.6875rem, 0.66rem + 0.12vw, 0.75rem);
-  --t-small: clamp(0.8125rem, 0.79rem + 0.12vw, 0.875rem);
+  --t-eyebrow: clamp(0.8125rem, 0.8rem + 0.08vw, 0.875rem);
+  /* never below ~12.5px: labels and captions have to read for everyone */
+  --t-micro: clamp(0.78rem, 0.76rem + 0.1vw, 0.8125rem);
+  --t-small: clamp(0.875rem, 0.86rem + 0.1vw, 0.9375rem);
   --t-body: clamp(1rem, 0.96rem + 0.2vw, 1.0625rem);
   --t-lead: clamp(1.125rem, 1.02rem + 0.5vw, 1.5rem);
   --t-h4: clamp(1.1875rem, 1.08rem + 0.5vw, 1.5rem);
