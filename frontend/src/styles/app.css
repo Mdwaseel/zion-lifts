@@ -837,8 +837,10 @@
 }
 
 /* the ends dissolve into the page rather than cutting at the viewport */
+/* Sized to be read, not glimpsed: Zion's clients are the point of the
+   section, and it has to work for someone who reads without glasses. */
 .logos__row {
-  --card-w: clamp(8.5rem, 7rem + 4vw, 11.5rem);
+  --card-w: clamp(11rem, 8rem + 9vw, 17rem);
   --gap: clamp(0.9rem, 1.6vw, 1.25rem);
   overflow: hidden;
   -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
@@ -853,7 +855,8 @@
   padding: 0.35rem 0; /* room for the card shadow */
   list-style: none;
   /* one card plus one gap per item, two copies: -50% is exactly one copy */
-  animation: logosDrift calc(var(--n) * 2.6s) linear infinite;
+  /* slow enough to read a name as it passes */
+  animation: logosDrift calc(var(--n) * 5s) linear infinite;
   will-change: transform;
 }
 
@@ -881,8 +884,8 @@
   align-items: center;
   justify-content: center;
   width: var(--card-w);
-  height: clamp(4.5rem, 4rem + 1.5vw, 5.5rem);
-  padding: 0.9rem 1.25rem;
+  height: clamp(6.5rem, 5rem + 3.5vw, 9rem);
+  padding: clamp(0.7rem, 0.5rem + 0.6vw, 1rem) clamp(0.9rem, 0.6rem + 0.8vw, 1.4rem);
   background: var(--light-card);
   border: 1px solid var(--light-border);
   border-radius: 12px;

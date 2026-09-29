@@ -29,6 +29,7 @@ export default function Home() {
     <>
       <Hero />
       <WorldBelow />
+      <ClientLogos />
       <LiftsExperience lifts={lifts ?? []} />
       <Engineering />
       <Cabin />
@@ -41,7 +42,6 @@ export default function Home() {
       <AfterInstall pillars={SERVICE_PILLARS} />
       <People team={team ?? []} />
       <Voices testimonials={testimonials ?? []} />
-      <ClientLogos />
       <FinalAscent />
     </>
   )
