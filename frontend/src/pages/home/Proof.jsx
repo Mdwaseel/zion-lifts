@@ -29,28 +29,28 @@ const STAGES = [
     label: 'Blueprint',
     line: 'Every detail is considered before a single component is built.',
     src: '/media/process/stage-blueprint.jpg',
-    alt: 'Architectural drawings on a desk with a drafting pencil and a steel rule',
+    alt: 'A lift layout drawing: shaft, car and machine room plan, the section through the lift well and the door opening',
   },
   {
     n: '02',
     label: 'Structure',
     line: 'Rails, frame and machine installed with precision. The foundation takes shape.',
     src: '/media/process/stage-structure.jpg',
-    alt: 'Looking along a lift shaft: the steel frame and guide rails in place',
+    alt: 'Looking up a lift shaft: guide rails bolted to the concrete, with the car frame below',
   },
   {
     n: '03',
     label: 'The finished lift',
     line: 'Finishes fitted, systems tested, safety assured. Ready for seamless performance.',
     src: '/media/process/stage-finished.jpg',
-    alt: 'Finished lift doors in brass along a lit corridor',
+    alt: 'Inside a finished lift car: timber walls, a steel handrail and a marble floor',
   },
   {
     n: '04',
     label: 'In the building',
     line: 'The same lift, in daily use, becoming a natural part of the architecture.',
     src: '/media/process/stage-building.jpg',
-    alt: 'A lift lobby in daily use, finished in warm timber',
+    alt: 'A glass and bronze lift standing in a bright double-height stairwell',
   },
 ]
 
