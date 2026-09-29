@@ -1299,3 +1299,146 @@
     transform: none;
   }
 }
+
+/* --- award cards that lead somewhere ---------------------------------------- */
+.ab-award__link {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  color: inherit;
+}
+
+.ab-award__cta,
+.ab-clip__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: var(--teal);
+}
+
+.ab-award__cta {
+  margin-top: auto;
+  padding: 0.6rem clamp(0.25rem, 0.2rem + 0.3vw, 0.5rem) 0.35rem;
+}
+
+.ab-award__cta svg,
+.ab-clip__cta svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+a.ab-award__link:hover .ab-award__cta svg,
+.ab-clip:hover .ab-clip__cta svg {
+  transform: translate(2px, -2px);
+}
+
+a.ab-award__link:hover .ab-award__cta,
+.ab-clip:hover .ab-clip__cta {
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+a.ab-award__link:focus-visible,
+.ab-clip:focus-visible {
+  outline: 2px solid var(--light-mark);
+  outline-offset: 4px;
+  border-radius: calc(var(--radius-xl) - 0.5rem);
+}
+
+/* --- in the press & on record ----------------------------------------------
+   The pages themselves, as small prints on white cards: the top of each page
+   shows — the masthead and the headline — and the card opens the whole of it. */
+.ab-press {
+  margin-top: clamp(2.5rem, 2rem + 3vw, 4.5rem);
+}
+
+.ab-press__label {
+  margin-bottom: clamp(1rem, 0.8rem + 1vw, 1.5rem);
+}
+
+.ab-press__grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: 0;
+  list-style: none;
+}
+
+@media (max-width: 999px) {
+  .ab-press__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ab-clip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  height: 100%;
+  padding: clamp(0.75rem, 0.6rem + 0.5vw, 1rem);
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-xl);
+  background: var(--light-card);
+  box-shadow: var(--light-shadow);
+  color: inherit;
+  transition:
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out);
+}
+
+.ab-clip:hover {
+  border-color: rgba(21, 21, 21, 0.2);
+  box-shadow: var(--light-shadow-lift);
+}
+
+.ab-clip__page {
+  display: block;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+  border-radius: calc(var(--radius-xl) - 0.5rem);
+  background: var(--paper-2);
+}
+
+.ab-clip__page img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.ab-clip:hover .ab-clip__page img {
+  transform: scale(1.04);
+}
+
+.ab-clip__source {
+  padding-inline: 0.25rem;
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.ab-clip__title {
+  padding-inline: 0.25rem;
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(1.05rem, 0.95rem + 0.35vw, 1.25rem);
+  line-height: 1.22;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.ab-clip__cta {
+  margin-top: auto;
+  padding: 0.5rem 0.25rem 0.2rem;
+}
+
+@media (max-width: 520px) {
+  .ab-press__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

@@ -2,11 +2,11 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 
 import { Img, VideoLoop } from '@/components/Media'
-import { AWARDS } from '@/data/awards'
+import { AWARDS, PRESS } from '@/data/awards'
 import { ESTABLISHED, KNOWN_FOR, MODERNISATION, OFFICES, REVIEWS, SECTORS, VALUES, WHO_WE_ARE } from '@/data/about'
 import Reveal from '@/components/Reveal'
 import { ClientLogos } from '@/components/sections'
-import { Arrow, ArrowDown } from '@/components/icons'
+import { Arrow, ArrowDown, ArrowOut } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
 import { useReducedMotion } from '@/lib/hooks'
 import { telHref } from '@/lib/media'
@@ -334,6 +334,37 @@ function Values() {
   )
 }
 
+/** One award. Where there is something to read — the publication's article,
+    or the certificate itself — the whole card is the way to it, in a new tab. */
+function AwardCard({ award: a }) {
+  const body = (
+    <>
+      <span className="ab-award__mark">
+        <img src={a.logo} alt={`${a.body} ${a.year}`} loading="lazy" decoding="async" />
+      </span>
+      <p className="ab-award__meta">
+        <span>{a.body}</span>
+        <span>{a.year}</span>
+      </p>
+      <h3 className="ab-award__title">{a.title}</h3>
+      <p className="ab-award__note">{a.note}</p>
+      {a.href && (
+        <span className="ab-award__cta">
+          {a.cta} <ArrowOut size={13} />
+          <span className="sr-only"> (opens in a new tab)</span>
+        </span>
+      )}
+    </>
+  )
+  return a.href ? (
+    <a href={a.href} target="_blank" rel="noopener noreferrer" className="ab-award__link">
+      {body}
+    </a>
+  ) : (
+    <div className="ab-award__link">{body}</div>
+  )
+}
+
 /* --- awards & recognition: the organisers' own marks ----------------------
    Built like the home page's certification cards — white cards on the ivory,
    the mark as the picture and the facts as its caption — and brought up in
@@ -362,18 +393,33 @@ function Awards() {
         <ul ref={ref} className="ab-awards__grid">
           {AWARDS.map((a, i) => (
             <li key={a.id} className="ab-award" style={{ '--i': i }}>
-              <span className="ab-award__mark">
-                <img src={a.logo} alt={`${a.body} ${a.year}`} loading="lazy" decoding="async" />
-              </span>
-              <p className="ab-award__meta">
-                <span>{a.body}</span>
-                <span>{a.year}</span>
-              </p>
-              <h3 className="ab-award__title">{a.title}</h3>
-              <p className="ab-award__note">{a.note}</p>
+              <AwardCard award={a} />
             </li>
           ))}
         </ul>
+
+        {/* the coverage itself — the article online where there is one,
+            otherwise the page at full size; every one in a new tab */}
+        <div className="ab-press">
+          <p className="ld-label ab-press__label">In the press &amp; on record</p>
+          <ul className="ab-press__grid">
+            {PRESS.map((p) => (
+              <li key={p.id}>
+                <a href={p.href} target="_blank" rel="noopener noreferrer" className="ab-clip">
+                  <span className="ab-clip__page">
+                    <img src={p.thumb} alt="" loading="lazy" decoding="async" />
+                  </span>
+                  <span className="ab-clip__source">{p.source}</span>
+                  <span className="ab-clip__title">{p.title}</span>
+                  <span className="ab-clip__cta">
+                    {p.cta} <ArrowOut size={13} />
+                    <span className="sr-only"> (opens in a new tab)</span>
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </section>
   )

@@ -20,6 +20,15 @@ export function Arrow({ size = 16, ...rest }) {
   )
 }
 
+/** the arrow for a link that opens in a new tab */
+export function ArrowOut({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <path d="M7 17 17 7M9 7h8v8" />
+    </svg>
+  )
+}
+
 export function ArrowDown({ size = 16, ...rest }) {
   return (
     <svg {...base} width={size} height={size} {...rest}>
