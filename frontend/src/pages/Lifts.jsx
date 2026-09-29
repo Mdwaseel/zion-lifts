@@ -25,50 +25,24 @@ import './lifts.css'
 
 const pad = (n) => String(n).padStart(2, '0')
 
-/* --- the opening: the range, as a wall of lifts ----------------------------
-   The About page's opening, turned on the product: the words on the left with
-   every system named in a list you can read at arm's length, and on the right
-   the lifts themselves in three columns drifting past each other. Each tile and
-   each name is a way into that lift's page. */
+/* --- the opening: the headline, and one lift in its frame -----------------
+   Kept to the point: the whole range is laid out just below, so the opening
+   only says what it is and shows one lift, in the same arched frame a lift's
+   own page opens with. */
 
 const NUMBER_WORDS = { 9: 'Nine', 10: 'Ten', 11: 'Eleven', 12: 'Twelve', 13: 'Thirteen', 14: 'Fourteen' }
 
-/** the columns of the wall: every third lift, so each column mixes kinds */
-function wallColumns(lifts) {
-  const cols = [[], [], []]
-  lifts.forEach((l, i) => cols[i % 3].push(l))
-  return cols
-}
-
 function Opening({ lifts }) {
-  const ref = useRef(null)
-  const reduced = useReducedMotion()
   const [shown, setShown] = useState(false)
   useLightHero()
 
   useEffect(() => whenIntroDone(() => setShown(true)), [])
 
-  // leaving, the columns hurry on, each at its own rate
-  useEffect(() => {
-    if (reduced) return undefined
-    const el = ref.current
-    let last = -1
-    const tick = () => {
-      const p = clamp01(window.scrollY / window.innerHeight)
-      if (Math.abs(p - last) < 0.001) return
-      last = p
-      el.style.setProperty('--x', p.toFixed(4))
-    }
-    gsap.ticker.add(tick)
-    return () => gsap.ticker.remove(tick)
-  }, [reduced])
-
-  const count = lifts.length
   // the headline counts the range, so a new system does not leave it wrong
-  const many = NUMBER_WORDS[count] ?? 'Eleven'
+  const many = NUMBER_WORDS[lifts.length] ?? 'Eleven'
 
   return (
-    <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''} ${reduced ? 'is-still' : ''}`}>
+    <header className={`lc-hero ${shown ? 'is-in' : ''}`}>
       <div className="lc-hero__copy">
         <h1 className="lc-hero__title">
           <Rise text={`${many} ways to move vertically.`} accent={false} />
@@ -77,7 +51,6 @@ function Opening({ lifts }) {
           One engineering approach underneath — a gearless machine, a rail-guided cabin and a controller that shapes
           every start and stop. A shell around it for every kind of building.
         </p>
-
         <div className="lc-hero__actions">
           <a href="#places" className="lc-go">
             <span>Help me choose</span>
@@ -89,52 +62,11 @@ function Opening({ lifts }) {
             Get a quote <Arrow size={14} />
           </Link>
         </div>
-
-        {count > 0 && (
-          <nav className="lc-hero__list" aria-label="Lift systems">
-            <ul>
-              {lifts.map((l) => {
-                const Mark = LIFT_ICONS[l.slug]
-                return (
-                  <li key={l.slug}>
-                    <Link to={`/lifts/${l.slug}`}>
-                      {Mark && <Mark size={20} />}
-                      <span>{l.short_name || l.name}</span>
-                    </Link>
-                  </li>
-                )
-              })}
-            </ul>
-          </nav>
-        )}
       </div>
 
-      <div className="lc-hero__wall" aria-hidden="true">
-        {wallColumns(lifts).map((col, c) => (
-          <div className="lc-hero__col" key={c} style={{ '--c': c }}>
-            <div className="lc-hero__track">
-              {[0, 1].map((copy) =>
-                col.map((l, k) => (
-                  <Link
-                    to={`/lifts/${l.slug}`}
-                    className="lc-hero__tile"
-                    key={`${copy}-${l.slug}`}
-                    tabIndex={-1}
-                  >
-                    {/* one film per column; the rest are the films' first frames */}
-                    {copy === 0 && k === 0 ? (
-                      <VideoLoop src={`/media/lifts/${l.slug}.mp4`} poster={`/media/lifts/${l.slug}.jpg`} />
-                    ) : (
-                      <Img src={`/media/lifts/${l.slug}.jpg`} alt="" sizes="(min-width: 900px) 17vw, 34vw" />
-                    )}
-                    <span className="lc-hero__tile-name">{l.short_name || l.name}</span>
-                  </Link>
-                )),
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
+      <figure className="lc-hero__frame">
+        <VideoLoop src="/media/lifts/capsule-elevator.mp4" poster="/media/lifts/capsule-elevator.jpg" />
+      </figure>
     </header>
   )
 }
