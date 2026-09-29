@@ -8,9 +8,9 @@ import { gsap } from '@/lib/gsap'
 import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
 
 /* ==========================================================================
-   03 · THE LIFTS — nine systems, one room at a time
+   03 · THE LIFTS — eleven systems, one room at a time
    A full-screen scene: the architecture fills the viewport, the editorial copy
-   for the lift in view sits down the left, and a glass rail of the nine marks
+   for the lift in view sits down the left, and a glass rail of the eleven marks
    stands on the right. The section is held at the top of the screen over a
    runway of scroll; each stretch of that runway is one lift, and crossing into
    the next one dissolves the room and the copy into the next room and its
@@ -34,6 +34,8 @@ export const ROOMS = {
   'goods-elevator': { src: '/media/contexts/context-industrial.jpg', pos: '50% 50%' },
   dumbwaiter: { src: '/media/products/dumbwaiter-02.jpg', pos: '50% 50%' },
   'car-stacker': { src: '/media/products/car-stacker-02.jpg', pos: '50% 50%' },
+  'car-lift': { src: '/media/products/car-lift-01.jpg', pos: '50% 60%' },
+  'belt-lift': { src: '/media/products/belt-lift-02.jpg', pos: '50% 50%' },
 }
 
 export const FEATURES = [
@@ -279,7 +281,7 @@ export function LiftsExperience({ lifts = [] }) {
           ))}
         </div>
 
-        {/* the rail: the nine, in glass */}
+        {/* the rail: the eleven, in glass */}
         <nav className="lx__rail" aria-label="Lift systems">
           <ol className="lx__glass">
             {items.map((l, i) => {
@@ -307,7 +309,7 @@ export function LiftsExperience({ lifts = [] }) {
           </ol>
         </nav>
 
-        {/* where you are in the nine */}
+        {/* where you are in the eleven */}
         <p className="lx__progress" aria-hidden="true">
           <span className="lx__progress-n" ref={countRef}>
             {pad(active + 1)}

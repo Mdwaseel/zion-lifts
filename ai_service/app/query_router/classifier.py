@@ -239,7 +239,8 @@ _SIGNALS: Final[tuple[tuple[str, Intent, float, re.Pattern[str]], ...]] = (
         _rule(
             r"\b(?:passenger|home|villa|residential|hospital|stretcher|goods|freight|"
             r"service|capsule|panoramic|observation|platform|wheelchair|dumbwaiter|"
-            r"dumb waiter|car stacker|parking)\s+(?:lift|elevator|stacker)s?\b"
+            r"dumb waiter|car stacker|parking|car|vehicle|belt|belt-driven)"
+            r"\s+(?:lift|elevator|stacker)s?\b"
         ),
     ),
     # --- commercial process: timelines, warranty, what a contract covers -----

@@ -1,4 +1,4 @@
-/** The nine lift-system marks, from Zion's own icon artwork.
+/** The eleven lift-system marks, from Zion's own icon artwork.
 
    Filled outlines rather than the thin strokes used in `icons.jsx`: the
    artwork is line art already, converted to closed paths so it holds its
@@ -164,6 +164,42 @@ export function CarStackerMark({ size = 22, ...rest }) {
   )
 }
 
+/* The two newest marks are drawn rather than traced from the icon artwork:
+   the same 1000-unit square, stroked at the weight the filled marks carry. */
+const drawn = { fill: 'none', stroke: 'currentColor', strokeWidth: 30, strokeLinecap: 'round', strokeLinejoin: 'round' }
+
+/** Car Lift — a car in the lift, the call arrows over it */
+export function CarLiftMark({ size = 22, ...rest }) {
+  return (
+    <svg {...base} {...drawn} width={size} height={size} {...rest}>
+      <rect x="90" y="40" width="820" height="920" rx="44" />
+      <path d="M90 230H910" />
+      <path d="M380 180 430 105 480 180Z" />
+      <path d="M520 105 570 180 620 105Z" />
+      <path d="M335 520 385 420H615L665 520" />
+      <rect x="275" y="520" width="450" height="185" rx="46" />
+      <path d="M320 705V770H390V705M610 705V770H680V705" />
+      <path d="M325 590H395M605 590H675" />
+      <path d="M160 860H840" />
+    </svg>
+  )
+}
+
+/** Belt Lift — the car hung from two flat belts over the machine's sheave */
+export function BeltLiftMark({ size = 22, ...rest }) {
+  return (
+    <svg {...base} {...drawn} width={size} height={size} {...rest}>
+      <circle cx="500" cy="175" r="100" />
+      <circle cx="500" cy="175" r="26" />
+      <path d="M408 175V470M592 175V470" />
+      <path d="M440 175V470M560 175V470" />
+      <rect x="235" y="470" width="530" height="480" rx="34" />
+      <path d="M500 540V880" />
+      <path d="M300 540H700V880H300Z" />
+    </svg>
+  )
+}
+
 /** slug -> mark, for the collection selector */
 export const LIFT_ICONS = {
   'home-elevator': HomeLiftMark,
@@ -175,4 +211,6 @@ export const LIFT_ICONS = {
   'goods-elevator': GoodsLiftMark,
   dumbwaiter: DumbwaiterMark,
   'car-stacker': CarStackerMark,
+  'car-lift': CarLiftMark,
+  'belt-lift': BeltLiftMark,
 }

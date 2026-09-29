@@ -26,13 +26,13 @@ export const SECTORS = [
     name: 'Residential buildings',
     line: 'Homes, villas and apartment blocks — lifts sized to the family and finished to the interior.',
     src: '/media/frames/kashi-exterior.jpg',
-    lifts: [['home-elevator', 'Home elevator'], ['capsule-elevator', 'Capsule elevator'], ['hydraulic-elevator', 'Hydraulic elevator']],
+    lifts: [['home-elevator', 'Home elevator'], ['capsule-elevator', 'Capsule elevator'], ['hydraulic-elevator', 'Hydraulic elevator'], ['car-lift', 'Car lift']],
   },
   {
     name: 'Commercial & corporate towers',
     line: 'Daily peaks, group control and lobbies that have to look the part.',
     src: '/media/contexts/context-office.jpg',
-    lifts: [['passenger-elevator', 'Passenger elevator'], ['mrl-traction', 'MRL traction']],
+    lifts: [['passenger-elevator', 'Passenger elevator'], ['belt-lift', 'Belt lift'], ['mrl-traction', 'MRL traction']],
   },
   {
     name: 'Industries',

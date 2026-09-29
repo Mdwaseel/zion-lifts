@@ -76,6 +76,8 @@ const LIFT_ICONS = new Set([
   'goods-elevator',
   'dumbwaiter',
   'car-stacker',
+  'car-lift',
+  'belt-lift',
 ])
 
 function LiftIcon({ slug }) {

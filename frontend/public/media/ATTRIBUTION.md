@@ -51,3 +51,18 @@ From Unsplash, under the [Unsplash licence](https://unsplash.com/license) — fr
 | `process/stage-structure` | Home 06 - process: structure | Robert V. Ruggiero | [unsplash](https://unsplash.com/photos/BG-iyXjJiLs) |
 | `process/stage-finished` | Home 06 - process: the finished lift | Yale Gurney | [unsplash](https://unsplash.com/photos/FQxzbG0L76c) |
 | `process/stage-building` | Home 06 - process: in the building | Aalo Lens | [unsplash](https://unsplash.com/photos/1PXsFfTbEcI) |
+
+## Car lift and belt lift stand-ins
+
+The car lift's own images (`car-lift-01`, `car-lift-02` and the `lifts/car-lift*` crops made from them) were supplied by Zion. The rest below are [Pexels](https://www.pexels.com/license/) photographs — free for commercial use, no attribution required — standing in until Zion has photographs of its own car and belt lifts. The lift films (`lifts/car-lift*.mp4`, `lifts/belt-lift*.mp4`) are slow camera moves made from these stills.
+
+| Asset | Used for | Licence | Source |
+| --- | --- | --- | --- |
+| `car-lift-03` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/14844362/) |
+| `car-lift-04` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/37703762/) |
+| `car-lift-05` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/27639775/) |
+| `belt-lift-01` | Belt lift - hero, and lifts/belt-lift (square crop) | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/28347479/) |
+| `belt-lift-02` | Belt lift - gallery, and its room on the home page | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/26729558/) |
+| `belt-lift-03` | Belt lift - gallery, and lifts/belt-lift-open (square crop) | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/7722159/) |
+| `belt-lift-04` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/35851979/) |
+| `belt-lift-05` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/26729563/) |

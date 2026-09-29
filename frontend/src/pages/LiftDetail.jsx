@@ -32,7 +32,7 @@ import { ProjectsReel } from './home/Proof'
 import './lift-detail.css'
 
 /* ==========================================================================
-   /lifts/[slug] — one lift, told the way the home page tells all nine
+   /lifts/[slug] — one lift, told the way the home page tells all eleven
    The room fills the first screen. Below it the page goes quiet: a statement,
    the figures beside the lift's own film, the cabin, the rooms it stands in,
    what keeps it safe, and the way on to the next lift. One idea per section,

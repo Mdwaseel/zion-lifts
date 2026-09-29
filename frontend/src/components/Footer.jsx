@@ -24,7 +24,7 @@ const COLUMNS = [
       { to: '/lifts/capsule-elevator', label: 'Capsule elevators' },
       { to: '/lifts/passenger-elevator', label: 'Commercial passenger' },
       { to: '/lifts/hospital-elevator', label: 'Hospital lifts' },
-      { to: '/lifts', label: 'All nine systems' },
+      { to: '/lifts', label: 'All eleven systems' },
     ],
   },
 ]

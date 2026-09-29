@@ -18,7 +18,7 @@ const PRIMARY = [
 ]
 
 /* --- the lifts menu -----------------------------------------------------------
-   Under "Lifts", the nine systems: each as the arched shaft it is on /lifts,
+   Under "Lifts", the eleven systems: each as the arched shaft it is on /lifts,
    its name and the line that says what it is for. Pointing at "Lifts" opens
    it; the chevron beside it opens it from a keyboard or a finger. It is a
    panel of its own under the bar, because the bar clips what it holds. */

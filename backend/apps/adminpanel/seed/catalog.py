@@ -593,6 +593,110 @@ LIFTS = [
             ("Control", "Operation", "Key-switch or remote, hold-to-run", ""),
         ],
     ),
+    dict(
+        slug="car-lift", name="Car Lift", short_name="Car Lift",
+        eyebrow="Vehicle", accent="#6F7A80", order=10,
+        tagline="The car takes the lift, driver and all.",
+        summary=(
+            "A vehicle elevator that carries a car and its driver between a basement, a street "
+            "level and the floors above — where a ramp would take too much of the building."
+        ),
+        overview=(
+            "A ramp to a basement costs a building a long strip of its ground floor. A car lift "
+            "gives most of it back: the car drives onto a steel platform inside a full-height "
+            "cabin, the doors close, and it arrives at the parking level, a showroom floor or a "
+            "private garage beside the living room. It suits tight urban plots, villas with "
+            "basement parking and commercial buildings that need a second route for vehicles.\n\n"
+            "The car is heavy and the ride is short, so the engineering is about load, not speed: "
+            "a hydraulic or traction drive sized for 2,500 kg and up, a chequer-plate floor with "
+            "wheel guides, full-height doors wide enough to drive through, and controls the "
+            "driver can reach from the seat. Mechanical safety gear holds the platform whatever "
+            "the drive is doing."
+        ),
+        speed="0.15 – 0.5 m/s", capacity="2,500 – 5,000 kg",
+        stops="2 – 6 stops", drive="Hydraulic or traction",
+        min_floors=2, max_floors=6, min_persons=0, max_persons=0,
+        pit_depth="From 1,200 mm", headroom="From 4,200 mm",
+        shaft_footprint="From 3,000 × 6,000 mm", machine_room="Compact power pack or machine-room-less",
+        hero=M.product("car-lift", 1),
+        apps=["parking", "villa", "office", "industrial"],
+        safety=["overload", "power-failure", "emergency-braking", "door-protection", "emergency-comms"],
+        images=[
+            ("gallery", M.product("car-lift", 2), "An SUV parked inside a car lift, doors open"),
+            ("gallery", M.product("car-lift", 3), "A car on the parking level of a basement"),
+            ("gallery", M.product("car-lift", 4), "A private garage at street level"),
+            ("gallery", M.product("car-lift", 5), "A car waiting in an underground car park"),
+        ],
+        variants=[
+            ("ZCL-25", "Residential car lift", "One car between a villa's basement and its porch.",
+             "2,500 kg", "—", "0.15 m/s", "3,000 × 6,000 mm"),
+            ("ZCL-35", "Commercial car lift", "Basement parking for offices and apartments.",
+             "3,500 kg", "—", "0.3 m/s", "3,200 × 6,500 mm"),
+            ("ZCL-50", "Heavy vehicle lift", "SUVs, vans and showroom floors.",
+             "5,000 kg", "—", "0.5 m/s", "3,500 × 7,000 mm"),
+        ],
+        specs=[
+            ("Dimensions", "Platform", "2,500 × 5,500 mm usable", "Larger platforms to order"),
+            ("Dimensions", "Door opening", "2,500 – 3,000 mm wide", "Full-height, drive-through"),
+            ("Load", "Rated load", "2,500 – 5,000 kg", ""),
+            ("Performance", "Rated speed", "0.15 – 0.5 m/s", "By drive"),
+            ("Safety", "Safety gear", "Progressive safety gear on the car", ""),
+            ("Safety", "Floor", "Chequer plate with wheel guides", ""),
+            ("Control", "Operation", "Call buttons reachable from the driver's seat", "Remote call optional"),
+        ],
+    ),
+    dict(
+        slug="belt-lift", name="Belt-Driven Elevator", short_name="Belt Lift",
+        eyebrow="Passenger", accent="#B08D57", order=11,
+        tagline="Flat belts instead of ropes, and no machine room.",
+        summary=(
+            "A passenger lift whose car hangs from flat, coated steel belts on a compact gearless "
+            "machine in the shaft — quieter, smoother and lighter on maintenance than steel rope."
+        ),
+        overview=(
+            "Where a traditional lift hangs on round steel wire ropes, a belt lift hangs on flat "
+            "belts: steel cords sealed inside a polyurethane coat. The flat belt bends around a "
+            "far smaller sheave, so the machine shrinks enough to sit inside the shaft, the "
+            "machine room disappears, and the ride loses the hum and vibration that ropes carry "
+            "into the car.\n\n"
+            "The coating means no lubrication and no oil on the belts, and each belt is "
+            "monitored continuously, so wear is read electronically rather than by eye. For "
+            "apartments, offices and hotels it gives a quiet, level, efficient lift in the same "
+            "shaft a rope lift would need."
+        ),
+        speed="1.0 – 1.75 m/s", capacity="408 – 1,020 kg (6 – 15 persons)",
+        stops="2 – 20 stops", drive="Gearless PMSM with coated steel belts",
+        min_floors=2, max_floors=20, min_persons=6, max_persons=15,
+        pit_depth="From 1,100 mm", headroom="From 3,600 mm",
+        shaft_footprint="From 1,650 × 1,650 mm", machine_room="Not required",
+        hero=M.product("belt-lift", 1),
+        apps=["apartment", "office", "hotel", "institutional"],
+        safety=["overload", "power-failure", "emergency-braking", "fire-mode", "door-protection", "emergency-comms"],
+        images=[
+            ("gallery", M.product("belt-lift", 2), "A lift lobby in warm timber"),
+            ("gallery", M.product("belt-lift", 3), "A lift car in back-lit onyx, doors open"),
+            ("gallery", M.product("belt-lift", 4), "A residential lift landing"),
+            ("gallery", M.product("belt-lift", 5), "Lifts along a stone-clad corridor"),
+        ],
+        variants=[
+            ("ZB-6", "6-passenger", "Small residential cores.",
+             "408 kg", "6 persons", "1.0 m/s", "1,650 × 1,650 mm"),
+            ("ZB-10", "10-passenger", "The standard apartment and office lift.",
+             "680 kg", "10 persons", "1.5 m/s", "1,800 × 1,900 mm"),
+            ("ZB-15", "15-passenger", "Busy offices and hotels.",
+             "1,020 kg", "15 persons", "1.75 m/s", "2,000 × 2,100 mm"),
+        ],
+        specs=[
+            ("Dimensions", "Minimum shaft", "1,650 × 1,650 mm", "For a 6-passenger lift"),
+            ("Dimensions", "Pit depth", "1,100 – 1,400 mm", "By rated speed"),
+            ("Dimensions", "Headroom", "3,600 – 4,000 mm", "By rated speed"),
+            ("Drive", "Suspension", "Polyurethane-coated steel belts", "No lubrication"),
+            ("Drive", "Belt monitoring", "Continuous electronic", "Reports wear before it matters"),
+            ("Performance", "Rated speed", "1.0 – 1.75 m/s", ""),
+            ("Performance", "Levelling accuracy", "± 3 mm", ""),
+            ("Performance", "Noise in lift", "Under 50 dB(A)", ""),
+        ],
+    ),
 ]
 
 

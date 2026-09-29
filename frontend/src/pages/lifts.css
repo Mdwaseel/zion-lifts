@@ -63,10 +63,12 @@
   text-wrap: pretty;
 }
 
-/* the row: nine shafts, the same height, the same gap — a lift lobby seen square on */
+/* the row: one shaft per lift, the same height, the same gap — a lift lobby
+   seen square on. One column per lift, however many there are. */
 .lc-hero__shafts {
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: clamp(0.4rem, 0.8vw, 0.9rem);
   align-items: stretch;
   min-height: 0;
@@ -1162,10 +1164,11 @@
   }
 }
 
-/* the nine lifts under it, lit where the building takes them */
+/* every lift under it, lit where the building takes them */
 .lc-where__lifts {
   display: grid;
-  grid-template-columns: repeat(9, minmax(0, 1fr));
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
   gap: clamp(0.35rem, 0.7vw, 0.7rem);
 }
 
@@ -1258,6 +1261,7 @@
 
 @media (max-width: 639px) {
   .lc-where__lifts {
+    grid-auto-flow: row;
     grid-template-columns: repeat(5, minmax(0, 1fr));
     row-gap: 1rem;
   }

@@ -18,16 +18,16 @@ import './lifts.css'
 
 /* ==========================================================================
    /lifts — the collection
-   The nine systems stand on a curved arc that the scroll turns: the lift that
+   The eleven systems stand on a curved arc that the scroll turns: the lift that
    faces you plays its film and its account stands beside it. Below it, the
-   figures are nine shafts on one scale.
+   figures are eleven shafts on one scale.
    ========================================================================== */
 
 const pad = (n) => String(n).padStart(2, '0')
 
-/* --- the opening: nine shafts, side by side ------------------------------ */
+/* --- the opening: eleven shafts, side by side ------------------------------ */
 
-/** The range as it would stand in a building: nine tall shafts in a row, each
+/** The range as it would stand in a building: eleven tall shafts in a row, each
     with its own lift running in it on film. They come up one after another on
     arrival, like cars reaching a landing, and each one is a way into its page. */
 function Opening({ lifts }) {
@@ -57,11 +57,11 @@ function Opening({ lifts }) {
     <header ref={ref} className={`lc-hero ${shown ? 'is-in' : ''}`}>
       <div className="lc-hero__copy">
         <h1 className="lc-hero__title">
-          <Rise text="Nine ways to move vertically." accent={false} />
+          <Rise text="Eleven ways to move vertically." accent={false} />
         </h1>
         <p className="lc-hero__lead">
           One engineering approach underneath — a gearless machine, a rail-guided cabin and a controller that shapes
-          every start and stop. Nine shells around it, for nine kinds of building.
+          every start and stop. Eleven shells around it, for every kind of building.
         </p>
       </div>
 
@@ -261,7 +261,7 @@ function Index({ lifts }) {
   )
 }
 
-/* --- side by side: nine shafts -------------------------------------------- */
+/* --- side by side: eleven shafts -------------------------------------------- */
 
 /** the two ends of a range written as "0.3 – 1.0 m/s" or "2,000 – 2,700 kg …" */
 function range(text) {
@@ -315,7 +315,7 @@ function Compare({ lifts }) {
           <RiseIn as="h2" className="lc-h2" text="Side by side." />
           <Reveal delay={100}>
             <p className="lc-index__lead">
-              Nine shafts, one scale. Choose what to measure and each car rides to where that lift sits.
+              Eleven shafts, one scale. Choose what to measure and each car rides to where that lift sits.
             </p>
           </Reveal>
         </header>
@@ -433,7 +433,7 @@ function Compare({ lifts }) {
 /* --- where they go -------------------------------------------------------- */
 
 /** The building first, then the lifts. Pick a kind of building on the left;
-    its photograph comes up on the right with, under it, all nine lifts
+    its photograph comes up on the right with, under it, all eleven lifts
     standing as the arches they are on this page's opening. The ones the
     building takes are lit and lead to their pages; the rest stand back. */
 function Places({ applications, lifts }) {

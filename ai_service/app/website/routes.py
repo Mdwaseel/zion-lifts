@@ -104,6 +104,8 @@ STATIC_PAGES: Final[tuple[WebsitePage, ...]] = (
             "capsule lift",
             "dumbwaiter",
             "car stacker",
+            "car lift",
+            "belt lift",
             "machine room less",
             "mrl",
             "specifications",
