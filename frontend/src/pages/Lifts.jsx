@@ -503,15 +503,10 @@ function Places({ applications, lifts }) {
                 )
                 return (
                   <li key={l.slug} style={{ '--i': i }}>
-                    {ok ? (
-                      <Link to={`/lifts/${l.slug}`} className="lc-arch is-fit">
-                        {body}
-                      </Link>
-                    ) : (
-                      <span className="lc-arch" aria-hidden="true">
-                        {body}
-                      </span>
-                    )}
+                    {/* a picture of the fit, not a menu: the lifts' pages are reached above */}
+                    <span className={`lc-arch ${ok ? 'is-fit' : ''}`} aria-hidden={ok ? undefined : true}>
+                      {body}
+                    </span>
                   </li>
                 )
               })}

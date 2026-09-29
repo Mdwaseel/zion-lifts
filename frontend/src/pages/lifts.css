@@ -1132,8 +1132,7 @@
   color: #fff;
 }
 
-.lc-where__list button:focus-visible,
-.lc-arch:focus-visible {
+.lc-where__list button:focus-visible {
   outline: 2px solid var(--teal);
   outline-offset: 2px;
 }
@@ -1286,16 +1285,6 @@
   box-shadow:
     0 0 0 2px var(--teal),
     var(--light-shadow);
-}
-
-@media (hover: hover) {
-  .lc-arch.is-fit:hover {
-    transform: translateY(-6px);
-  }
-
-  .lc-arch.is-fit:hover .lc-arch__name {
-    color: var(--teal);
-  }
 }
 
 /* narrower: the buildings become a row you swipe, the lifts wrap */
