@@ -61,8 +61,22 @@ The car lift's own images (`car-lift-01`, `car-lift-02` and the `lifts/car-lift*
 | `car-lift-03` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/14844362/) |
 | `car-lift-04` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/37703762/) |
 | `car-lift-05` | Car lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/27639775/) |
-| `belt-lift-01` | Belt lift - hero, and lifts/belt-lift (square crop) | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/28347479/) |
-| `belt-lift-02` | Belt lift - gallery, and its room on the home page | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/26729558/) |
-| `belt-lift-03` | Belt lift - gallery, and lifts/belt-lift-open (square crop) | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/7722159/) |
+| `belt-lift-01` | Belt lift - hero and its room on the home page; also lifts/belt-lift and lifts/belt-lift-open (4:5 crops) and the belt lift films | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/7722159/) |
+| `belt-lift-02` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/26729558/) |
+| `belt-lift-03` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/28347479/) |
 | `belt-lift-04` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/35851979/) |
 | `belt-lift-05` | Belt lift - gallery | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/26729563/) |
+
+## Cabin configurator plates
+
+Ten of the cabin options have no render of their own yet. Their plates are
+composites made by `assets-src/finish-plates/make_plates.py` from the nearest
+existing render, so they share its light and lens: `material-gold`,
+`control-tft`, `control-full-touch`, `floor-wooden`, `floor-tiles`,
+`door-swing`, `door-half-glass`, `door-plain-ss`, `light-wall-lamps` and
+`light-chandelier`. They stand in until purpose-made renders arrive. One of
+them uses a stock photograph:
+
+| Asset | Used for | Licence | Source |
+| --- | --- | --- | --- |
+| `assets-src/finish-plates/src/chandelier-pexels-14772933.jpg` | The chandelier in `light-chandelier` | [Pexels](https://www.pexels.com/license/) | [pexels](https://www.pexels.com/photo/14772933/) |

@@ -158,6 +158,60 @@
   }
 }
 
+/* "not sure yet" on a plate: what the decision is between, two by two,
+   dimmed behind a question */
+.cs__unsure {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.7rem;
+}
+
+.cs__unsure-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 2px;
+  background: #0d0f12;
+  filter: saturate(0.8) brightness(0.62);
+}
+
+.cs__unsure-grid > span {
+  position: relative;
+  overflow: hidden;
+}
+
+.cs__unsure-mark {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 4.25rem;
+  height: 4.25rem;
+  border: 1px solid rgba(46, 201, 202, 0.6);
+  border-radius: 50%;
+  background: rgba(7, 8, 10, 0.55);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 0 40px -6px rgba(46, 201, 202, 0.45);
+  color: var(--teal-bright);
+}
+
+.cs__unsure-note {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(245, 245, 242, 0.9);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.8);
+}
+
 /* a line of light crosses the plate whenever its finish changes */
 .cs__sheen {
   position: absolute;
@@ -379,6 +433,72 @@
   outline-offset: 2px;
 }
 
+/* "not sure yet": a dashed swatch with a question in it, not a colour */
+.cs__opt.is-unsure .cs__swatch {
+  border: 1px dashed rgba(255, 255, 255, 0.45);
+  box-shadow: none;
+  color: var(--teal-bright);
+}
+
+.cs__opt.is-unsure.is-on .cs__swatch {
+  border-style: solid;
+  border-color: var(--teal-bright);
+  background: var(--teal);
+  color: #fff;
+}
+
+/* the options and, for the panel, what any panel can also carry */
+.cs__panel {
+  display: grid;
+  justify-items: center;
+  gap: 1.1rem;
+  width: 100%;
+}
+
+.cs__feats {
+  display: grid;
+  justify-items: center;
+  gap: 0.7rem;
+  max-width: 62rem;
+  animation: cs-opt 0.6s var(--ease-out) 0.3s both;
+}
+
+.cs__feats-title {
+  font-family: var(--font-mono);
+  font-size: var(--t-micro);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-faint);
+}
+
+.cs__feats ul {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0;
+  list-style: none;
+}
+
+/* information, not choices: tinted chips with no hover */
+.cs__feats li {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.6rem;
+  padding: 0 1rem;
+  border: 1px solid rgba(46, 201, 202, 0.28);
+  border-radius: var(--radius-pill);
+  background: rgba(46, 201, 202, 0.08);
+  font-size: var(--t-small);
+  color: var(--fg);
+}
+
+.cs__feats li svg {
+  flex: none;
+  color: var(--teal-bright);
+}
+
 /* the specification, carried along the bottom as one glass bar */
 .cs__bar {
   display: grid;
@@ -520,7 +640,8 @@
   .cs__sheen,
   .cs__plate-foot strong,
   .cs__spec strong,
-  .cs__opt {
+  .cs__opt,
+  .cs__feats {
     animation: none;
   }
 

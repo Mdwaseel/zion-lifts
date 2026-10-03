@@ -76,23 +76,20 @@ export const AWARDS = [
   },
 ]
 
-/* The home page's short version: one line per awarding body. */
-export const RECOGNITION = [
-  {
-    id: 'tba',
+/* The home page's version: the Times Business Awards lead — four years
+   running — with the two listings and the certificate beside them. */
+export const HOME_AWARDS = {
+  lead: {
     logo: '/media/awards/times-business-2024.webp',
-    title: 'Best Lifts Manufacturers & Suppliers',
     body: 'Times Business Awards, Hyderabad',
+    title: 'Best Lifts Manufacturers & Suppliers',
     years: ['2021', '2022', '2023', '2024'],
+    note: 'Four years in a row, presented by The Times of India.',
+    href: TOI_TBA_2021,
+    cta: 'Read in The Times of India',
   },
-  {
-    id: 'io',
-    logo: '/media/awards/industry-outlook-2024.webp',
-    title: 'Top 10 Elevator Manufacturers',
-    body: 'Industry Outlook',
-    years: ['2022', '2024'],
-  },
-]
+  more: ['io-2024', 'io-2022', 'apts-iso'],
+}
 
 /* In the press, and on record. Each opens in a new tab: the article where
    the publication has one online, otherwise the page itself at full size. */

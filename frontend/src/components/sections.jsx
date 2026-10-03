@@ -348,7 +348,7 @@ export function TestimonialRow({ testimonials = [], title = 'In their words' }) 
    reduced.
    ========================================================================== */
 
-const CLIENT_COUNT = 65
+const CLIENT_COUNT = 80
 
 export function ClientLogos({
   eyebrow = 'Our clients',

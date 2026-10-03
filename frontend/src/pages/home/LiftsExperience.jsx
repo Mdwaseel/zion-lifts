@@ -35,7 +35,7 @@ export const ROOMS = {
   dumbwaiter: { src: '/media/products/dumbwaiter-02.jpg', pos: '50% 50%' },
   'car-stacker': { src: '/media/products/car-stacker-02.jpg', pos: '50% 50%' },
   'car-lift': { src: '/media/products/car-lift-01.jpg', pos: '50% 60%' },
-  'belt-lift': { src: '/media/products/belt-lift-02.jpg', pos: '50% 50%' },
+  'belt-lift': { src: '/media/products/belt-lift-01.jpg', pos: '50% 50%' },
 }
 
 export const FEATURES = [

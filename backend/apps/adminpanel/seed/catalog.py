@@ -75,25 +75,35 @@ FINISHES = [
     ("material", "walnut", "Walnut veneer", "Book-matched veneer panels in a steel frame.", "#6B4A33", "#4A3121", "premium", 4),
     ("material", "stone-grey", "Stone laminate", "Marble-effect laminate for high-traffic buildings.", "#C7C2B8", "#A29C90", "standard", 5),
     ("material", "obsidian", "Black mirror", "Mirror-polished black stainless with a fine etch.", "#1B1E21", "#0B0B0B", "premium", 6),
+    ("material", "gold", "Gold", "PVD gold-finish stainless steel, mirror or hairline.", "#D9B44A", "#A8822A", "premium", 7),
     # flooring
     ("floor", "granite", "Granite", "Sealed granite slab, matched to the lobby.", "#6E6A66", "#4C4945", "premium", 1),
     ("floor", "marble", "Marble", "Statuario-type marble with a honed finish.", "#E4E1DA", "#C4BFB4", "premium", 2),
     ("floor", "vinyl", "Commercial vinyl", "Slip-resistant sheet vinyl for hospitals and offices.", "#8E959A", "#6B7276", "standard", 3),
     ("floor", "chequer", "Steel chequer plate", "Anti-slip plate for goods and service lifts.", "#7D8286", "#5A5F63", "standard", 4),
+    ("floor", "wooden", "Wooden flooring", "Engineered wood planks, sealed against daily wear.", "#A0703F", "#6E4A2A", "premium", 5),
+    ("floor", "tiles", "Tiles", "Vitrified tiles, laid to match the lobby floor.", "#D8D0C2", "#B7AD9C", "standard", 6),
     # lighting
     ("light", "cove", "Perimeter cove", "Indirect LED cove around a floating ceiling.", "#F2E4C8", "#D8C49A", "premium", 1),
     ("light", "spots", "Recessed spots", "Discreet warm-white downlights in a flat ceiling.", "#F4EFE4", "#D9D2C2", "standard", 2),
     ("light", "starlight", "Starlight ceiling", "Dense fibre-point ceiling, as at Lekha Nilayam.", "#FFF3D6", "#E8D5A6", "signature", 3),
     ("light", "linear", "Linear channels", "Continuous LED channels running the length of the lift.", "#EFF3F5", "#CBD3D8", "standard", 4),
+    ("light", "wall-lamps", "Wall lamps", "Warm wall-mounted lamps in place of a lit ceiling.", "#F4D8A4", "#D3AE6E", "premium", 5),
+    ("light", "chandelier", "Chandelier", "A crystal chandelier — possible in an 8-foot cabin.", "#FFF4D8", "#E2C68A", "signature", 6),
     # doors
     ("door", "centre-auto", "Centre-opening automatic", "Two panels parting from the centre — the quietest option.", "#B9BEC2", "#8E959A", "standard", 1),
     ("door", "side-auto", "Side-opening automatic", "Telescopic panels to one side, for narrow shafts.", "#ADB3B7", "#868C90", "standard", 2),
     ("door", "glass-auto", "Glass automatic", "Toughened glass panels in a metal frame.", "#CBDDE0", "#9FB8BD", "premium", 3),
     ("door", "manual-swing", "Manual swing + collapsible", "Economical landing doors for low-traffic homes.", "#9AA0A5", "#73797D", "standard", 4),
+    ("door", "swing", "Swing door", "Hinged landing door with a slim vision panel.", "#B9BEC2", "#8E959A", "standard", 5),
+    ("door", "half-glass", "Half glass", "A door glazed in its upper half, to see the lift arrive.", "#C7D6DA", "#97ADB3", "standard", 6),
+    ("door", "plain-ss", "Plain door (fire-rated)", "Plain stainless steel, fire-rated, with no glazing.", "#AEB3B7", "#80868B", "standard", 7),
     # control panel
     ("control", "brushed-cop", "Brushed steel COP", "Full-height panel with micro-movement buttons.", "#B9BEC2", "#8E959A", "standard", 1),
     ("control", "touch-cop", "Capacitive touch COP", "Flush glass panel with backlit floor markings.", "#25292C", "#0F1113", "premium", 2),
     ("control", "braille-cop", "Braille & audio COP", "Tactile markings and voice announcement, accessibility-ready.", "#A8AEB2", "#7E858A", "standard", 3),
+    ("control", "full-touch", "Full touch COP", "One glass touch screen carries every call and control.", "#1C2126", "#090B0D", "premium", 4),
+    ("control", "tft", "TFT screen COP", "A TFT display of up to 15.5 inches for floor, time and messages.", "#2B3137", "#111417", "premium", 5),
     # handrail
     ("handrail", "round-steel", "Round steel handrail", "32 mm brushed steel on three sides.", "#B9BEC2", "#8E959A", "standard", 1),
     ("handrail", "flat-brass", "Flat brass handrail", "Rectangular brass rail on the rear wall.", "#B08D57", "#8A6B3B", "premium", 2),
@@ -149,15 +159,15 @@ LIFTS = [
             "A home lift is judged on different terms to a commercial one. It runs a handful of "
             "trips a day, so raw throughput matters less than how it sounds at night, how it looks "
             "from the living room, and how little of the plan it consumes. Zion builds home "
-            "elevators around a compact machine-room-less drive, so the only space you give up is "
-            "the shaft itself.\n\n"
+            "elevators around a compact machine-room-less traction drive — or a hydraulic one, "
+            "where the house suits it — so the lift asks for little more than its shaft.\n\n"
             "Finishes are chosen with the interior, not from a fixed catalogue — brass, walnut, "
             "stone, mirror steel and glass all work within the same cabin shell. Where there is no "
             "existing shaft, a self-supporting steel structure with glazed infill can be built "
             "inside a stairwell or against an external wall."
         ),
-        speed="0.3 – 1.0 m/s", capacity="272 – 408 kg (4 – 6 persons)",
-        stops="2 – 6 stops", drive="Machine-room-less gearless traction",
+        speed="0.3 – 0.5 m/s", capacity="272 – 408 kg (4 – 6 persons)",
+        stops="2 – 6 stops", drive="MRL gearless traction or hydraulic",
         min_floors=2, max_floors=6, min_persons=3, max_persons=6,
         pit_depth="From 350 mm", headroom="From 2,600 mm",
         shaft_footprint="From 1,100 × 1,000 mm", machine_room="Not required",
@@ -190,7 +200,8 @@ LIFTS = [
             ("Dimensions", "Clear door opening", "700 – 900 mm", ""),
             ("Power", "Supply", "3-phase 415 V or 1-phase 230 V", "Depending on drive"),
             ("Power", "Standby draw", "Under 100 W", "With cabin lighting on standby"),
-            ("Performance", "Rated speed", "0.3 – 1.0 m/s", ""),
+            ("Drive", "Drive options", "MRL gearless traction or hydraulic", "Hydraulic suits low-rise homes"),
+            ("Performance", "Rated speed", "0.3 – 0.5 m/s", ""),
             ("Performance", "Levelling accuracy", "± 5 mm", "Loaded or empty"),
             ("Performance", "Noise in lift", "Under 55 dB(A)", "At rated speed"),
         ],
@@ -214,7 +225,7 @@ LIFTS = [
             "the middle of the room."
         ),
         speed="0.5 – 1.5 m/s", capacity="408 – 1,020 kg (6 – 15 persons)",
-        stops="2 – 12 stops", drive="Gearless traction, MRL or overhead",
+        stops="2 – 12 stops", drive="Gearless traction",
         min_floors=2, max_floors=12, min_persons=6, max_persons=15,
         pit_depth="From 900 mm", headroom="From 3,600 mm",
         shaft_footprint="From 1,600 × 1,600 mm", machine_room="Not required",
@@ -365,11 +376,11 @@ LIFTS = [
             "not show handprints the way mirror does, micro-movement buttons rated for millions of "
             "operations, and flooring that can be replaced in a night without taking the lift apart."
         ),
-        speed="1.0 – 2.5 m/s", capacity="544 – 1,600 kg (8 – 24 persons)",
+        speed="1.0 – 2.5 m/s", capacity="408 – 1,632 kg (6 – 24 persons)",
         stops="2 – 20 stops", drive="Gearless traction with group control",
-        min_floors=3, max_floors=20, min_persons=8, max_persons=24,
+        min_floors=3, max_floors=20, min_persons=6, max_persons=24,
         pit_depth="From 1,400 mm", headroom="From 4,000 mm",
-        shaft_footprint="From 1,900 × 2,000 mm", machine_room="Not required",
+        shaft_footprint="From 1,700 × 1,800 mm", machine_room="Not required",
         hero=M.frame("chath-entrance"),
         hero_video=M.video("chath-restaurant", loop=True),
         apps=["office", "hotel", "institutional", "apartment"],
@@ -383,15 +394,17 @@ LIFTS = [
             ("gallery", M.interior(6), "Retail lift entrance"),
         ],
         variants=[
-            ("ZP-8", "8-passenger", "Boutique offices and small hotels.",
-             "544 kg", "8 persons", "1.0 m/s", "1,900 × 2,000 mm"),
+            ("ZP-6", "6-passenger", "Boutique offices, clinics and small hotels.",
+             "408 kg", "6 persons", "1.0 m/s", "1,700 × 1,800 mm"),
             ("ZP-13", "13-passenger", "The standard commercial lift.",
              "884 kg", "13 persons", "1.5 m/s", "2,000 × 2,100 mm"),
             ("ZP-20", "20-passenger", "Main lobby duty in a busy building.",
              "1,360 kg", "20 persons", "2.5 m/s", "2,100 × 2,400 mm"),
+            ("ZP-24", "24-passenger", "The largest lift, for the busiest lobbies.",
+             "1,632 kg", "24 persons", "2.5 m/s", "2,400 × 2,600 mm"),
         ],
         specs=[
-            ("Dimensions", "Minimum shaft", "1,900 × 2,000 mm", ""),
+            ("Dimensions", "Minimum shaft", "1,700 × 1,800 mm", ""),
             ("Dimensions", "Clear door opening", "900 – 1,200 mm", ""),
             ("Control", "Group control", "Up to 8 lifts", "Duplex, triplex and group collective"),
             ("Control", "Dispatch", "Full collective selective", ""),
@@ -674,7 +687,7 @@ LIFTS = [
         safety=["overload", "power-failure", "emergency-braking", "fire-mode", "door-protection", "emergency-comms"],
         images=[
             ("gallery", M.product("belt-lift", 2), "A lift lobby in warm timber"),
-            ("gallery", M.product("belt-lift", 3), "A lift car in back-lit onyx, doors open"),
+            ("gallery", M.product("belt-lift", 3), "Copper-finished lift doors in a marble lobby"),
             ("gallery", M.product("belt-lift", 4), "A residential lift landing"),
             ("gallery", M.product("belt-lift", 5), "Lifts along a stone-clad corridor"),
         ],

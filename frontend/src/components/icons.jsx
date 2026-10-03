@@ -100,6 +100,49 @@ export function Lock({ size = 16, ...rest }) {
   )
 }
 
+/* --- what an operating panel can carry ------------------------------------ */
+
+/** GSM auto-dialler: a mobile signal */
+export function SignalMark({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <path d="M5 19.5v-3M9.7 19.5v-6.5M14.3 19.5V9.5M19 19.5V5.5" />
+    </svg>
+  )
+}
+
+/** RFID: a card and the field it is read through */
+export function CardMark({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <rect x="2.8" y="7" width="12.4" height="9.5" rx="1.6" />
+      <path d="M5.8 13.3h3.4M18 9.3a4 4 0 010 5.4M20.6 6.9a7.4 7.4 0 010 10.2" />
+    </svg>
+  )
+}
+
+/** biometric: a fingerprint */
+export function FingerprintMark({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <path d="M6.2 17.6A9 9 0 015.1 9.4a7.3 7.3 0 0113.8.7M19.2 13.5a14.8 14.8 0 01-1 4.6" />
+      <path d="M8.6 19.3a11.6 11.6 0 01-.9-6.4 4.4 4.4 0 018.7.6c.1 2-.2 4-.8 5.9" />
+      <path d="M12 12.6c.2 2.9-.3 5.5-1.3 7.6" />
+    </svg>
+  )
+}
+
+/** intercom: the speaker you talk to */
+export function IntercomMark({ size = 16, ...rest }) {
+  return (
+    <svg {...base} width={size} height={size} {...rest}>
+      <rect x="6" y="3" width="12" height="18" rx="2.2" />
+      <path d="M9.5 7.2h5M9.5 9.7h5M9.5 12.2h5" />
+      <circle cx="12" cy="16.7" r="1.4" />
+    </svg>
+  )
+}
+
 /* --- service pillar marks ------------------------------------------------ */
 
 export function Wrench({ size = 22, ...rest }) {

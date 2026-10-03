@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
 import Reveal from '@/components/Reveal'
-import { RECOGNITION } from '@/data/awards'
-import { Arrow, ArrowDown, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
+import { AWARDS, HOME_AWARDS } from '@/data/awards'
+import { Arrow, ArrowDown, ArrowOut, Check, CogMark, Pin, UpDownMark, UsersMark } from '@/components/icons'
 import { gsap } from '@/lib/gsap'
 import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
 
@@ -340,31 +340,95 @@ export function Certifications() {
           ))}
         </ul>
 
-        {/* the awards, in brief — one line per awarding body, the full record on /about */}
-        <Reveal className="recog" delay={120}>
-          <p className="recog__label">Awards &amp; recognition</p>
-          <ul className="recog__list">
-            {RECOGNITION.map((r) => (
-              <li key={r.id} className="recog__item">
-                <span className="recog__mark">
-                  <img src={r.logo} alt={r.body} loading="lazy" decoding="async" />
-                </span>
-                <span className="recog__copy">
-                  <strong>{r.title}</strong>
-                  <span>{r.body}</span>
-                  <span className="recog__years">
-                    {r.years.map((y) => (
-                      <em key={y}>{y}</em>
-                    ))}
+      </div>
+    </section>
+  )
+}
+
+/* ==========================================================================
+   10b · AWARDS — the recognition, at the size it deserves
+   The Times Business Awards lead: their mark large on a warm well, the four
+   years it was won set out as medals. Beside it the two Industry Outlook
+   listings and the ISO certificate, each its own mark. Every card opens its
+   source — the article or the certificate — in a new tab.
+   ========================================================================== */
+
+export function Awards() {
+  const { lead } = HOME_AWARDS
+  const more = HOME_AWARDS.more.map((id) => AWARDS.find((a) => a.id === id)).filter(Boolean)
+
+  return (
+    <section className="section on-stone haw" aria-labelledby="haw-title">
+      <div className="shell">
+        <header className="haw__head">
+          <div>
+            <Reveal variant="fade">
+              <p className="haw__eyebrow">Awards &amp; recognition</p>
+            </Reveal>
+            <Reveal delay={70}>
+              <h2 className="haw__title" id="haw-title">
+                Recognised, year after year.
+              </h2>
+            </Reveal>
+          </div>
+          <Reveal delay={140} className="haw__aside">
+            <p className="haw__lead">
+              Four Times Business Awards in a row, two Industry Outlook Top 10 listings, and a quality system
+              certified to ISO 9001:2015.
+            </p>
+            <Link to="/about#awards" className="haw__all">
+              All awards &amp; press <Arrow size={14} />
+            </Link>
+          </Reveal>
+        </header>
+
+        <div className="haw__grid">
+          <Reveal delay={100} className="haw__first">
+            <a href={lead.href} target="_blank" rel="noopener noreferrer" className="haw-lead">
+              <span className="haw-lead__well">
+                <img src={lead.logo} alt={`${lead.body} 2024`} loading="lazy" decoding="async" />
+              </span>
+              <span className="haw-lead__body">{lead.body}</span>
+              <span className="haw-lead__title">{lead.title}</span>
+              <span className="haw-lead__years">
+                {lead.years.map((y) => (
+                  <span key={y} className="haw-medal">
+                    <Check size={15} aria-hidden="true" />
+                    {y}
                   </span>
-                </span>
-              </li>
+                ))}
+              </span>
+              <span className="haw-lead__note">{lead.note}</span>
+              <span className="haw__cta">
+                {lead.cta} <ArrowOut size={14} />
+                <span className="sr-only"> (opens in a new tab)</span>
+              </span>
+            </a>
+          </Reveal>
+
+          <ul className="haw__more">
+            {more.map((a, i) => (
+              <Reveal as="li" key={a.id} delay={170 + i * 70} className={a.id === 'apts-iso' ? 'is-wide' : ''}>
+                <a href={a.href} target="_blank" rel="noopener noreferrer" className="haw-card">
+                  <span className="haw-card__well">
+                    <img src={a.logo} alt={`${a.body} ${a.year}`} loading="lazy" decoding="async" />
+                  </span>
+                  <span className="haw-card__text">
+                    <span className="haw-card__meta">
+                      <span>{a.body}</span>
+                      <span>{a.year}</span>
+                    </span>
+                    <span className="haw-card__title">{a.title}</span>
+                    <span className="haw__cta">
+                      {a.cta} <ArrowOut size={13} />
+                      <span className="sr-only"> (opens in a new tab)</span>
+                    </span>
+                  </span>
+                </a>
+              </Reveal>
             ))}
           </ul>
-          <Link to="/about#awards" className="recog__go">
-            All awards <Arrow size={14} />
-          </Link>
-        </Reveal>
+        </div>
       </div>
     </section>
   )

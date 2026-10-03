@@ -3897,32 +3897,25 @@ canvas.hero__film.is-in {
   }
 }
 
-/* --- the awards, in brief -------------------------------------------------
-   One card under the certification row, in the same white on ivory: a label,
-   one line per awarding body with its own mark, and the way to the full
-   record on /about. The marks keep their colour — they are the only colour
-   in the section, which is what makes the band read as the achievement. */
-.recog {
+/* --- 10b AWARDS ---------------------------------------------------------- */
+/* The recognition at full size, on the ivory: the Times Business Awards as
+   the lead card — their mark large, the four years won as medals — with the
+   two listings and the certificate as cards of their own beside it. */
+.haw__head {
   display: grid;
-  align-items: center;
-  gap: clamp(1rem, 2vw, 2rem);
-  max-width: 68rem;
-  margin: clamp(0.75rem, 1.5vw, 1.25rem) auto 0;
-  padding: clamp(1.1rem, 1.8vw, 1.5rem) clamp(1.1rem, 2.2vw, 2rem);
-  border: 1px solid var(--light-border);
-  border-radius: 12px;
-  background: var(--light-card);
-  box-shadow: var(--light-shadow);
-  text-align: left;
+  gap: 1.25rem;
+  margin-bottom: clamp(2rem, 1.5rem + 3vw, 4rem);
 }
 
 @media (min-width: 900px) {
-  .recog {
-    grid-template-columns: auto minmax(0, 1fr) auto;
+  .haw__head {
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: end;
+    gap: clamp(2rem, 6vw, 7rem);
   }
 }
 
-.recog__label {
+.haw__eyebrow {
   font-size: var(--t-eyebrow);
   font-weight: var(--w-semibold);
   letter-spacing: 0.18em;
@@ -3930,111 +3923,315 @@ canvas.hero__film.is-in {
   color: var(--accent);
 }
 
-@media (min-width: 900px) {
-  .recog__label {
-    max-width: 8rem;
-    line-height: 1.5;
+.haw__title {
+  margin-top: 0.8rem;
+  max-width: 14ch;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(2.5rem, 1.3rem + 4.2vw, 5.5rem);
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  color: var(--fg);
+  text-wrap: balance;
+}
+
+.haw__aside {
+  display: grid;
+  justify-items: start;
+  gap: 1.25rem;
+}
+
+.haw__lead {
+  max-width: 44ch;
+  font-size: var(--t-lead);
+  line-height: 1.45;
+  color: var(--fg-dim);
+  text-wrap: pretty;
+}
+
+.haw__all {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border-radius: var(--radius-pill);
+  background: var(--light-text);
+  font-size: var(--t-small);
+  font-weight: var(--w-semibold);
+  color: #fff;
+  transition: background-color var(--dur) var(--ease-out);
+}
+
+@media (hover: hover) {
+  .haw__all:hover {
+    background: var(--teal);
   }
 }
 
-.recog__list {
+.haw__grid {
   display: grid;
-  gap: clamp(1rem, 2vw, 1.5rem);
-  padding: 0;
-  list-style: none;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
 }
 
-@media (min-width: 640px) {
-  .recog__list {
+/* side by side only where the three beside the lead keep a readable width */
+@media (min-width: 1200px) {
+  .haw__grid {
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 1fr);
+  }
+}
+
+.haw__first {
+  display: flex;
+}
+
+/* --- the lead: the Times Business Awards ---------------------------------- */
+.haw-lead,
+.haw-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--light-border);
+  border-radius: var(--radius-xl);
+  background: var(--light-card);
+  box-shadow: var(--light-shadow);
+  color: var(--fg);
+  transition:
+    border-color 0.4s var(--ease-out),
+    box-shadow 0.4s var(--ease-out),
+    transform 0.4s var(--ease-out);
+}
+
+.haw-lead {
+  padding: clamp(0.9rem, 0.7rem + 0.8vw, 1.4rem);
+}
+
+@media (hover: hover) {
+  .haw-lead:hover,
+  .haw-card:hover {
+    border-color: rgba(21, 21, 21, 0.2);
+    box-shadow: var(--light-shadow-lift);
+    transform: translateY(-3px);
+  }
+
+  .haw-lead:hover img,
+  .haw-card:hover img {
+    transform: scale(1.03);
+  }
+}
+
+.haw-lead:focus-visible,
+.haw-card:focus-visible,
+.haw__all:focus-visible {
+  outline: 2px solid var(--light-mark);
+  outline-offset: 4px;
+}
+
+/* the mark on a warm well, lit a little brighter at its centre */
+.haw-lead__well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+  max-height: 24rem;
+  padding: clamp(1.5rem, 0.8rem + 3vw, 3.75rem);
+  border-radius: calc(var(--radius-xl) - 0.5rem);
+  background: radial-gradient(110% 90% at 50% 42%, #fffdf8 0%, var(--paper-2) 72%);
+}
+
+/* contained by both sides of the well, whatever shape the mark is */
+.haw-lead__well img,
+.haw-card__well img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  min-height: 0;
+  object-fit: contain;
+  transition: transform 0.7s var(--ease-out);
+}
+
+.haw-lead__body {
+  margin-top: clamp(1.1rem, 0.8rem + 1vw, 1.6rem);
+  padding-inline: 0.4rem;
+  font-size: var(--t-eyebrow);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.haw-lead__title {
+  margin-top: 0.5rem;
+  padding-inline: 0.4rem;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.7rem, 1.2rem + 1.7vw, 2.7rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* the years it was won, as medals */
+.haw-lead__years {
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  gap: 0.55rem;
+  margin-top: 1.15rem;
+  padding-inline: 0.4rem;
+}
+
+.haw-medal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  min-height: 2.75rem;
+  padding: 0 1.05rem 0 0.8rem;
+  border: 1.5px solid var(--teal);
+  border-radius: var(--radius-pill);
+  background: rgba(6, 111, 112, 0.07);
+  font-size: var(--t-body);
+  font-weight: var(--w-semibold);
+  font-variant-numeric: tabular-nums;
+  color: var(--teal);
+}
+
+/* a phone: the four medals two by two */
+@media (max-width: 479px) {
+  .haw-lead__years {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.recog__item {
-  display: flex;
-  align-items: center;
-  gap: clamp(0.85rem, 1.4vw, 1.15rem);
-}
-
-@media (min-width: 900px) {
-  .recog__item + .recog__item {
-    padding-left: clamp(1rem, 2vw, 1.5rem);
-    border-left: 1px solid var(--light-border);
-  }
-}
-
-.recog__mark {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: clamp(6.5rem, 9vw, 8.25rem);
-  aspect-ratio: 16 / 10;
-  padding: 0.55rem 0.7rem;
-  border-radius: 8px;
-  background: var(--light-surface);
-}
-
-.recog__mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.recog__copy {
-  display: grid;
-  gap: 0.15rem;
-  min-width: 0;
-}
-
-.recog__copy strong {
-  font-size: var(--t-small);
-  font-weight: var(--w-semibold);
-  line-height: 1.3;
-  color: var(--fg);
-}
-
-.recog__copy > span {
-  font-size: var(--t-micro);
-  line-height: 1.4;
-  color: var(--fg-faint);
-}
-
-.recog__years {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-top: 0.3rem;
-}
-
-.recog__years em {
-  padding: 0.1rem 0.5rem;
-  border: 1px solid var(--light-border);
-  border-radius: var(--radius-pill);
-  font-style: normal;
-  font-size: var(--t-micro);
-  font-weight: var(--w-semibold);
-  font-variant-numeric: tabular-nums;
+.haw-lead__note {
+  margin-top: 0.95rem;
+  padding-inline: 0.4rem;
+  font-size: var(--t-body);
+  line-height: 1.5;
   color: var(--fg-dim);
 }
 
-.recog__go {
+.haw__cta {
   display: inline-flex;
   align-items: center;
-  justify-self: start;
-  gap: 0.45rem;
-  min-height: 2.75rem;
-  padding: 0 1.1rem;
-  border-radius: var(--radius-pill);
-  background: var(--light-text);
-  color: #fff;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding: 1.1rem 0.4rem 0.25rem;
   font-size: var(--t-small);
   font-weight: var(--w-semibold);
-  white-space: nowrap;
-  transition: background 0.3s var(--ease-out);
+  color: var(--teal);
 }
 
-.recog__go:hover {
-  background: var(--accent);
+.haw__cta svg {
+  transition: transform var(--dur-fast) var(--ease-out);
+}
+
+.haw-lead:hover .haw__cta svg,
+.haw-card:hover .haw__cta svg {
+  transform: translate(2px, -2px);
+}
+
+/* --- beside it: the listings and the certificate --------------------------- */
+.haw__more {
+  display: grid;
+  gap: clamp(0.75rem, 1.2vw, 1.25rem);
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 560px) {
+  .haw__more {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .haw__more > .is-wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.haw__more > li {
+  display: flex;
+}
+
+.haw-card {
+  padding: clamp(0.75rem, 0.6rem + 0.5vw, 1rem);
+}
+
+.haw-card__well {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  height: clamp(8.5rem, 6.5rem + 5vw, 12rem);
+  padding: clamp(1.25rem, 0.8rem + 1.4vw, 2rem);
+  border-radius: calc(var(--radius-xl) - 0.5rem);
+  background: var(--paper-2);
+}
+
+.haw-card__text {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+}
+
+.haw-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.2rem 1rem;
+  margin-top: 1rem;
+  padding-inline: 0.4rem;
+  font-size: var(--t-micro);
+  font-weight: var(--w-semibold);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.haw-card__meta span:last-child {
+  color: var(--fg-faint);
+  white-space: nowrap;
+}
+
+.haw-card__title {
+  margin-top: 0.5rem;
+  padding-inline: 0.4rem;
+  font-family: var(--font-serif);
+  font-weight: 300;
+  font-size: clamp(1.2rem, 1rem + 0.55vw, 1.5rem);
+  line-height: 1.16;
+  letter-spacing: -0.012em;
+  text-wrap: balance;
+}
+
+/* the certificate runs the full width: its mark beside its words */
+@media (min-width: 560px) {
+  .haw__more > .is-wide .haw-card {
+    flex-direction: row;
+    align-items: stretch;
+    gap: clamp(1rem, 2vw, 1.75rem);
+  }
+
+  .haw__more > .is-wide .haw-card__well {
+    flex: 0 0 46%;
+    height: auto;
+    min-height: 9rem;
+  }
+
+  .haw__more > .is-wide .haw-card__meta {
+    margin-top: 0.4rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .haw-lead,
+  .haw-card,
+  .haw-lead img,
+  .haw-card img {
+    transition: none;
+  }
 }
 
 /* --- 11 PROJECTS REEL ---------------------------------------------------- */

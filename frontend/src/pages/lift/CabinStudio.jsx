@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom'
 
 import { Img } from '@/components/Media'
 import Reveal from '@/components/Reveal'
-import { Arrow, Check } from '@/components/icons'
+import { Arrow, CardMark, Check, FingerprintMark, IntercomMark, Lock, SignalMark } from '@/components/icons'
+import { HelpMark } from '@/components/place-marks'
 import { gsap } from '@/lib/gsap'
 import { useMediaQuery, useReducedMotion } from '@/lib/hooks'
 
@@ -24,12 +25,48 @@ import './cabin-studio.css'
 
 const pad = (n) => String(n).padStart(2, '0')
 
+/* "Not sure yet" is a real answer to every decision, and travels with the
+   enquiry as one — choosing is part of what Zion does. */
+const UNSURE = { slug: 'unsure', name: 'Not sure yet', description: "We'll suggest one", unsure: true }
+
+/** what any operating panel can be fitted with, whichever one is chosen */
+const PANEL_FEATURES = [
+  [Lock, 'Password access'],
+  [SignalMark, 'GSM auto-dialler'],
+  [CardMark, 'RFID card access'],
+  [FingerprintMark, 'Biometric access'],
+  [IntercomMark, 'Intercom'],
+]
+
+/** the render a choice puts on its plate; "not sure" shows what it is between */
+const shotFor = (key, option) => (option.unsure ? `unsure:${key}` : plateFor(key, option.slug))
+
+/** the "not sure" plate: the decision's own options side by side, and a question mark */
+function UnsureShot({ group }) {
+  const picks = group.options.filter((o) => !o.unsure).slice(0, 4)
+  return (
+    <span className="cs__unsure">
+      <span className="cs__unsure-grid">
+        {picks.map((o) => (
+          <span key={o.slug}>
+            <Img src={plateFor(group.key, o.slug)} alt="" sizes="(min-width: 900px) 12vw, 31vw" objectPosition={group.pos} />
+          </span>
+        ))}
+      </span>
+      <span className="cs__unsure-mark" aria-hidden="true">
+        <HelpMark size={30} />
+      </span>
+      <span className="cs__unsure-note">We'll suggest one</span>
+    </span>
+  )
+}
+
 export default function CabinStudio({ lift, finishes }) {
   const groups = useMemo(
     () =>
-      GROUPS.map((g) => ({ ...g, options: (finishes ?? []).filter((f) => f.category === g.key) })).filter(
-        (g) => g.options.length,
-      ),
+      GROUPS.map((g) => ({ ...g, options: (finishes ?? []).filter((f) => f.category === g.key) }))
+        .filter((g) => g.options.length)
+        .map((g) => ({ ...g, options: [...g.options, UNSURE] })),
     [finishes],
   )
 
@@ -79,8 +116,8 @@ export default function CabinStudio({ lift, finishes }) {
 
   const pick = (g, o) => {
     setSeen((old) => {
-      const was = old[g.key] ?? [plateFor(g.key, chosen(g).slug)]
-      const src = plateFor(g.key, o.slug)
+      const was = old[g.key] ?? [shotFor(g.key, chosen(g))]
+      const src = shotFor(g.key, o)
       return { ...old, [g.key]: was.includes(src) ? was : [...was, src] }
     })
     setChoice((c) => ({ ...c, [g.key]: o.slug }))
@@ -125,7 +162,8 @@ export default function CabinStudio({ lift, finishes }) {
         />
         <Reveal delay={120}>
           <p className="cs__lead">
-            Five decisions — ceiling, walls, floor, panel and doors. Whatever you land on travels with your enquiry.
+            Five decisions — ceiling, walls, floor, panel and doors. Not sure about one? Say so, and we will
+            suggest it. Whatever you land on travels with your enquiry.
           </p>
         </Reveal>
       </header>
@@ -141,7 +179,7 @@ export default function CabinStudio({ lift, finishes }) {
         <div className="cs__hand">
           {groups.map((g, i) => {
             const sel = chosen(g)
-            const now = plateFor(g.key, sel.slug)
+            const now = shotFor(g.key, sel)
             const plates = seen[g.key] ?? [now]
             const d = i - at
             const Mark = g.icon
@@ -158,7 +196,11 @@ export default function CabinStudio({ lift, finishes }) {
                 <span className="cs__plate-in">
                   {plates.map((src) => (
                     <span key={src} className={`cs__shot ${src === now ? 'is-on' : ''}`}>
-                      <Img src={src} alt="" sizes="(min-width: 900px) 24vw, 62vw" objectPosition={g.pos} />
+                      {src.startsWith('unsure:') ? (
+                        <UnsureShot group={g} />
+                      ) : (
+                        <Img src={src} alt="" sizes="(min-width: 900px) 24vw, 62vw" objectPosition={g.pos} />
+                      )}
                     </span>
                   ))}
                   <span className="cs__sheen" key={now} aria-hidden="true" />
@@ -201,31 +243,51 @@ export default function CabinStudio({ lift, finishes }) {
           })}
         </div>
 
-        <div className="cs__opts" role="tabpanel" id="cs-panel" aria-labelledby={`cs-tab-${current.key}`} key={current.key}>
-          {current.options.map((o, i) => {
-            const on = chosen(current).slug === o.slug
-            return (
-              <button
-                key={o.slug}
-                type="button"
-                className={`cs__opt ${on ? 'is-on' : ''}`}
-                style={{ '--i': i }}
-                onClick={() => pick(current, o)}
-                aria-pressed={on}
-                title={o.description}
-              >
-                <span
-                  className="cs__swatch"
-                  style={{ background: `linear-gradient(142deg, ${o.swatch_hex}, ${o.swatch_hex_2 || o.swatch_hex})` }}
-                  aria-hidden="true"
+        <div className="cs__panel" role="tabpanel" id="cs-panel" aria-labelledby={`cs-tab-${current.key}`} key={current.key}>
+          <div className="cs__opts">
+            {current.options.map((o, i) => {
+              const on = chosen(current).slug === o.slug
+              return (
+                <button
+                  key={o.slug}
+                  type="button"
+                  className={`cs__opt ${on ? 'is-on' : ''} ${o.unsure ? 'is-unsure' : ''}`}
+                  style={{ '--i': i }}
+                  onClick={() => pick(current, o)}
+                  aria-pressed={on}
+                  title={o.description}
                 >
-                  {on && <Check size={13} />}
-                </span>
-                <span className="cs__opt-name">{o.name}</span>
-                {o.tier && o.tier !== 'standard' && <span className="cs__tier">{o.tier}</span>}
-              </button>
-            )
-          })}
+                  <span
+                    className="cs__swatch"
+                    style={
+                      o.unsure
+                        ? undefined
+                        : { background: `linear-gradient(142deg, ${o.swatch_hex}, ${o.swatch_hex_2 || o.swatch_hex})` }
+                    }
+                    aria-hidden="true"
+                  >
+                    {on ? <Check size={13} /> : o.unsure && <HelpMark size={20} />}
+                  </span>
+                  <span className="cs__opt-name">{o.name}</span>
+                  {o.tier && o.tier !== 'standard' && <span className="cs__tier">{o.tier}</span>}
+                </button>
+              )
+            })}
+          </div>
+
+          {current.key === 'control' && (
+            <div className="cs__feats">
+              <p className="cs__feats-title">Any panel can also carry</p>
+              <ul>
+                {PANEL_FEATURES.map(([Icon, label]) => (
+                  <li key={label}>
+                    <Icon size={18} aria-hidden="true" />
+                    {label}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
         <div className="cs__bar">

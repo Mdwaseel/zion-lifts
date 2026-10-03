@@ -11,7 +11,7 @@ import { Installations } from './home/Installations'
 import { LiftsExperience } from './home/LiftsExperience'
 import { Engineering } from './home/Machine'
 import CabinStudio from './lift/CabinStudio'
-import { Blueprint, Certifications, Details, ProjectsReel } from './home/Proof'
+import { Awards, Blueprint, Certifications, Details, ProjectsReel } from './home/Proof'
 import './home/home.css'
 
 export default function Home() {
@@ -36,6 +36,7 @@ export default function Home() {
       <CabinStudio finishes={finishes ?? []} />
       <Blueprint />
       <Certifications />
+      <Awards />
       <ProjectsReel projects={projects ?? []} />
       <Installations />
       <Details />
